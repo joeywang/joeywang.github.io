@@ -1,0 +1,103 @@
+---
+layout: post
+title:  "How to avoid N plus one problems"
+date:   2024-07-03 14:41:26 +0100
+categories: Rails
+---
+# joins, preload, eager_load, and includes
+
+## joins
+#### Use this when you only care about the users with questions
+```bash
+> User.joins(:questions).to_a;0
+  User Load (0.8ms)  SELECT "users".* FROM "users" INNER JOIN "questions" ON "questions"."user_id" = "users"."id"
+```
+
+
+### If you only care about id and name
+```bash
+> User.joins(:questions).select(:id, :name).to_a;0
+  User Load (1.0ms)  SELECT "users"."id", "users"."name" FROM "users" INNER JOIN "questions" ON "questions"."user_id" = "users"."id"
+```
+or
+```bash
+> User.joins(:questions).pluck(:id, :name)
+```
+
+## Preload
+```bash
+> User.preload(:questions).to_a;0
+  User Load (0.5ms)  SELECT "users".* FROM "users"
+  Question Load (0.7ms)  SELECT "questions".* FROM "questions" WHERE "questions"."user_id" IN ($1, $2, $3, $4, $5)  [["user_id", 1], ["user_id", 2], ["user_id", 3], ["user_id", 4], ["user_id", 5]]
+```
+
+## Eager load: one query
+```bash
+> User.eager_load(:questions).to_a
+  SQL (0.9ms)  SELECT "users"."id" AS t0_r0, "users"."login" AS t0_r1, "users"."name" AS t0_r2, "users"."slug" AS t0_r3, "users"."email" AS t0_r4, "users"."encrypted_password" AS t0_r5, "users"."reset_password_token" AS t0_r6, "users"."reset_password_sent_at" AS t0_r7, "users"."remember_created_at" AS t0_r8, "users"."created_at" AS t0_r9, "users"."updated_at" AS t0_r10, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" LEFT OUTER JOIN "questions" ON "questions"."user_id" = "users"."id"
+```
+
+### Combine with joins
+```bash
+> User.joins(:questions).eager_load(:questions).to_a
+```  
+  
+## includes
+```bash
+> User.includes(:questions).select(:id, :name).to_a;0
+  User Load (0.7ms)  SELECT "users"."id", "users"."name" FROM "users"
+  Question Load (0.4ms)  SELECT "questions".* FROM "questions" WHERE "questions"."user_id" IN ($1, $2, $3, $4, $5)  [["user_id", 1], ["user_id", 2], ["user_id", 3], ["user_id", 4], ["user_id", 5]]
+```
+
+### with references (eager_load will be used)
+```bash
+> User.includes(:questions).select(:id, :name).references(:questions).to_a;0
+  SQL (0.9ms)  SELECT "users"."id", "users"."name", "users"."id" AS t0_r0, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" LEFT OUTER JOIN "questions" ON "questions"."user_id" = "users"."id"
+```
+### with joins  (eager_load will be used)
+> User.joins(:questions).includes(:questions).select(:id, :name).to_a;0
+  SQL (0.9ms)  SELECT "users"."id", "users"."name", "users"."id" AS t0_r0, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" INNER JOIN "questions" ON "questions"."user_id" = "users"."id"
+  
+
+# Antipatterns which causing the N+1 again
+
+Any futher methods using DB related operator will causing a new query. For example: `count`, `order`, `where`
+
+## use count (user `size` instead of `count`)
+> User.includes(:questions).select(:id, :name).references(:questions).map { |user| user.questions.count }
+  SQL (1.0ms)  SELECT "users"."id", "users"."name", "users"."id" AS t0_r0, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" LEFT OUTER JOIN "questions" ON "questions"."user_id" = "users"."id"
+  Question Count (0.3ms)  SELECT COUNT(*) FROM "questions" WHERE "questions"."user_id" = $1  [["user_id", 2]]
+  Question Count (0.2ms)  SELECT COUNT(*) FROM "questions" WHERE "questions"."user_id" = $1  [["user_id", 4]]
+    
+## use order    
+> User.includes(:questions).select(:id, :name).references(:questions).map { |user| user.questions.order(:id).to_a };0
+  SQL (0.8ms)  SELECT "users"."id", "users"."name", "users"."id" AS t0_r0, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" LEFT OUTER JOIN "questions" ON "questions"."user_id" = "users"."id"
+  Question Load (0.2ms)  SELECT "questions".* FROM "questions" WHERE "questions"."user_id" = $1 ORDER BY "questions"."id" ASC  [["user_id", 2]]
+
+## use where
+> User.includes(:questions).select(:id, :name).references(:questions).map { |user| user.questions.where(title: '').to_a };0
+  SQL (0.8ms)  SELECT "users"."id", "users"."name", "users"."id" AS t0_r0, "questions"."id" AS t1_r0, "questions"."user_id" AS t1_r1, "questions"."title" AS t1_r2, "questions"."body" AS t1_r3, "questions"."answered_at" AS t1_r4, "questions"."views_count" AS t1_r5, "questions"."answers_count" AS t1_r6, "questions"."comments_count" AS t1_r7, "questions"."created_at" AS t1_r8, "questions"."updated_at" AS t1_r9 FROM "users" LEFT OUTER JOIN "questions" ON "questions"."user_id" = "users"."id"
+  Question Load (0.3ms)  SELECT "questions".* FROM "questions" WHERE "questions"."user_id" = $1 AND "questions"."title" = $2  [["user_id", 2], ["title", ""]]
+  Question Load (0.3ms)  SELECT "questions".* FROM "questions" WHERE "questions"."user_id" = $1 AND "questions"."title" = $2  [["user_id", 4], ["title", ""]]
+
+## Others like `limit`, `select`, `distinct`, `reoder`, `rewhere`, `reselect`
+
+
+## solutions
+Use ruby function to filter or sort when loaded
+```ruby
+user.questions.sort_by(&:created_at)
+# or
+user.questions.reject { |question| question.title.empty? }
+```
+
+```ruby
+has_many(:empty_questions, -> { where(title: '') }, class_name: Question)
+```
+
+```ruby
+User.includes(:empty_questions).map { |user| user.empty_questions }
+```
+
+
+
