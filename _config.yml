@@ -28,7 +28,7 @@ twitter_username: alazycoder2
 github_username:  joeywang
 
 # Build settings
-theme: minima
+theme: jekyll-theme-chirpy
 plugins:
   - jekyll-feed
 
