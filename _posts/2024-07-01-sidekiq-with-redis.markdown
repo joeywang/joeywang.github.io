@@ -2,6 +2,7 @@
 layout: post
 title:  "Mastering Redis Memory Management with Microserver and Sidekiq"
 date:   2024-07-01 14:41:26 +0100
+pin: true
 categories: Rails
 ---
 **Mastering Redis Memory Management with Microserver and Sidekiq**

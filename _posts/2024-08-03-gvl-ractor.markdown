@@ -2,6 +2,7 @@
 layout: post
 title:  "Ractor to solve the problem of GVL"
 date:   2024-08-03 14:41:26 +0100
+pin: true
 categories: Ruby
 ---
 # GIL/GVL

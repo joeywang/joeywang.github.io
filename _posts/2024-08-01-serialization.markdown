@@ -2,6 +2,7 @@
 layout: post
 title:  "Streamlining the Data Symphony: Enhancing Serialization in Ruby on Rails"
 date:   2024-08-01 14:41:26 +0100
+pin: true
 categories: Rails
 ---
 # **Streamlining the Data Symphony: Enhancing Serialization in Ruby on Rails**

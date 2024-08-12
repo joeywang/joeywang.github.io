@@ -1,0 +1,16 @@
+-
+  type: youtube
+  icon: 'fa-brands fa-youtube'
+  url: 'https://www.youtube.com/@alazycoder101'
+-
+  type: github
+  icon: 'fa-brands fa-github'
+  url: 'https://github.com/joeywang'
+-
+  type: email
+  icon: 'fas fa-envelope'
+  noblank: true            # open link in current tab
+-
+  type: rss
+  icon: 'fas fa-rss'
+  noblank: true
