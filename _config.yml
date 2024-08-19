@@ -40,19 +40,13 @@ plugins:
 tabs:
   - title: "About"
     url: "/about/"
+    icon: "fas fa-user"
   - title: "Blog"
     url: "/blog/"
     icon: "fas fa-pen-nib"
   - title: "Projets"
     url: "/projects/"
     icon: "fas fa-laptop-code"
-    icon: "fas fa-user"
-  - title: "Categories"
-    url: "/categories/"
-    icon: "fas fa-stream"
-  - title: "Tags"
-    url: "/tags/"
-    icon: "fas fa-tags"
 analytics:
   google:
     id: "G-E31NLRCXN6"
