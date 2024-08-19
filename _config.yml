@@ -53,6 +53,8 @@ tabs:
   - title: "About"
     url: "/about/"
     icon: "fas fa-user"
+google_analytics:
+  id: "G-E31NLRCXN6"
 pagination:
   enabled: true
   per_page: 5
