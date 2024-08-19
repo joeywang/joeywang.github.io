@@ -53,8 +53,9 @@ tabs:
   - title: "Tags"
     url: "/tags/"
     icon: "fas fa-tags"
-google_analytics:
-  id: "G-E31NLRCXN6"
+analytics:
+  google:
+    id: "G-E31NLRCXN6"
 pagination:
   enabled: true
   per_page: 5
