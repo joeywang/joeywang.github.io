@@ -37,10 +37,26 @@ social:
 theme: jekyll-theme-chirpy
 plugins:
   - jekyll-feed
-links:
+tabs:
+  - title: "Categories"
+    url: "/categories/"
+    icon: "fas fa-stream"
+  - title: "Tags"
+    url: "/tags/"
+    icon: "fas fa-tags"
+  - title: "Blog"
+    url: "/blog/"
+    icon: "fas fa-pen-nib"
+  - title: "Projets"
+    url: "/projects/"
+    icon: "fas fa-laptop-code"
   - title: "About"
     url: "/about/"
-
+    icon: "fas fa-user"
+pagination:
+  enabled: true
+  per_page: 5
+  permalink: '/page:num/'
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
