@@ -38,21 +38,21 @@ theme: jekyll-theme-chirpy
 plugins:
   - jekyll-feed
 tabs:
-  - title: "Categories"
-    url: "/categories/"
-    icon: "fas fa-stream"
-  - title: "Tags"
-    url: "/tags/"
-    icon: "fas fa-tags"
+  - title: "About"
+    url: "/about/"
   - title: "Blog"
     url: "/blog/"
     icon: "fas fa-pen-nib"
   - title: "Projets"
     url: "/projects/"
     icon: "fas fa-laptop-code"
-  - title: "About"
-    url: "/about/"
     icon: "fas fa-user"
+  - title: "Categories"
+    url: "/categories/"
+    icon: "fas fa-stream"
+  - title: "Tags"
+    url: "/tags/"
+    icon: "fas fa-tags"
 google_analytics:
   id: "G-E31NLRCXN6"
 pagination:

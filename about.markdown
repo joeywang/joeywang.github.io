@@ -39,3 +39,4 @@ Visionary Senior Software Engineer with over two decades of expertise in cutting
   - Advanced Course Management System: Engineered a state-of-the-art system using Ruby on Rails, Stimulus, and Turbo, reducing course creation time by 50%
   - Enterprise Learning Management System (LMS): Designed and implemented a customizable LMS serving over 100,000 users, with 99.9% uptime
   - Education Platform WordPress Homepage: Crafted a high-performance, SEO-optimized WordPress site, increasing organic traffic by 40%
+# [DevOps](/about2/)
