@@ -29,11 +29,6 @@ author_profile: true
   - Designed and maintained a highly available, fault-tolerant cloud infrastructure
   - Led initiative to implement Infrastructure as Code, resulting in 99.99% uptime
 
-### CCOSS (Jun 2003 – Aug 2005)
-  Senior Linux Systems Engineer
-  - Pioneered a groundbreaking network computing solution for embedded Linux, yielding a 40% performance boost
-  - Developed custom kernel modules to enhance system stability and security
-
 ## Key Projects:
   - Microservices Cloud Migration: Led the seamless transition of a monolithic Ruby on Rails application to a microservices architecture on GCP, resulting in 50% improved scalability and 30% cost reduction
   - Kubernetes Optimization: Engineered a high-performance Kubernetes cluster for WordPress, improving scalability by 10% and reducing infrastructure costs by 25%

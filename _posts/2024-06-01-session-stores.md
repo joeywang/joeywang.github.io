@@ -2,7 +2,6 @@
 layout: post
 title:  "Ruby on Rails Session Management Options"
 date:   2024-06-01 14:41:26 +0100
-pin: true
 categories: Rails
 ---
 # Ruby on Rails Session Management Options
