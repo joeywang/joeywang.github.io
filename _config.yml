@@ -47,6 +47,12 @@ tabs:
   - title: "Projets"
     url: "/projects/"
     icon: "fas fa-laptop-code"
+  - title: "Categories"
+    url: "/categories/"
+    icon: "fas fa-stream"
+  - title: "Tags"
+    url: "/tags/"
+    icon: "fas fa-tags"
 analytics:
   google:
     id: "G-E31NLRCXN6"
@@ -54,6 +60,15 @@ pagination:
   enabled: true
   per_page: 5
   permalink: '/page:num/'
+
+jekyll-archives:
+  enabled: [categories, tags]
+  layouts:
+    category: category
+    tag: tag
+  permalinks:
+    tag: /tags/:name/
+    category: /categories/:name/
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
@@ -73,3 +88,4 @@ pagination:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
