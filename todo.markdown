@@ -5,19 +5,19 @@ permalink: /todo/
 ---
 
 ### DevOps
-  - build private cloud solution with openstack.
-  - implement GitOps with ArgoCD.
-  - try to replace google speech API with whisper from openAI.
-  - partitioning for big table with PostgreSQL.
+- **Develop a Private Cloud**: Create a private cloud infrastructure using OpenStack.
+- **Implement GitOps**: Utilize ArgoCD for implementing a GitOps workflow.
+- **API Replacement**: Explore replacing Google Speech API with OpenAI's Whisper for speech recognition tasks.
+- **Database Optimization**: Perform partitioning on large tables within PostgreSQL to enhance performance.
 
 ### Languages
-  - run small webapp project with Rust.
-  - web service with Golang to compare the performance of different languages.
+- **Rust Web Application**: Initiate a small web application project using Rust to understand its capabilities.
+- **Golang Web Service**: Develop a web service in Golang to benchmark the performance against other programming languages.
 
 ### Ruby
-  - scale pods based on queue length or average service time for each request in puma.
-  - dig deeper into Ruby implementation to be able to improve performance.
+- **Performance Scaling**: Implement dynamic scaling of Puma server pods based on queue length or average service time per request.
+- **Deep Dive into Ruby**: Gain a deeper understanding of Ruby's internals to identify and implement performance improvements.
 
-### Game
-  - make a game with any lguanges or framework just for fun.
+### Game Development
+- **Fun Game Project**: Develop a game using any language or framework for recreational purposes and to explore different development techniques.
 
