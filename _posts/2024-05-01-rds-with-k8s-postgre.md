@@ -3,7 +3,7 @@ layout: post
 title:  "Scaling PostgreSQL on Kubernetes with Kubegres"
 date:   2024-05-01 14:41:26 +0100
 categories: PostgreSQL
-pinned: true
+pin: true
 ---
 
 # Scaling PostgreSQL on Kubernetes with Kubegres
