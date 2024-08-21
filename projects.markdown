@@ -31,7 +31,6 @@ permalink: /projects/
 |---|---|---|
 |<img width="380" alt="letstalk" src="assets/img/re/letstalk.png">|<img width="280" alt="letstalk" src="assets/img/re/test_centre.png">|<img width="280" alt="pe4" src="assets/img/re/PE4_lesson_menu.png">|
 
-|GCP Kubernetese Cluster|
-|---|
-|<img width="280" alt="kubernetes" src="assets/img/re/k8s.jpg">|
-
+|GCP Kubernetese Cluster|CI CD System | Typical Rails app in K8S|
+|---|---|---|
+|<img width="280" alt="cms" src="assets/img/re/k8s.jpg">| <img width="280" alt="mobile" src="assets/img/re/cicd.png">|<img width="280" alt="cms" src="assets/img/re/k8s-rails.png">|
