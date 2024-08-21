@@ -19,6 +19,7 @@
 # in the templates via {{ site.myvariable }}.
 
 title: Joey
+tagline: A developer's world
 email: joeyw@reallyenglish.com
 description: >- # this means to ignore newlines until "baseurl:"
   The world of learning is constantly evolving and working on e-learning allows me to be a part of that challenge. I love being in a supportive team, with people from different backgrounds and specialties, and exploring the opportunities that we make possible together.
@@ -31,6 +32,7 @@ twitter:
 github:
   username: joeywang
 social:
+  name: Joey
   email: joeyw@reallyenglish.com
 
 # Build settings
