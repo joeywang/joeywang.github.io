@@ -53,6 +53,9 @@ tabs:
   - title: "Tags"
     url: "/tags/"
     icon: "fas fa-tags"
+  - title: "Todo"
+    url: "/todo/"
+    icon: "fas fa-tasks"
 analytics:
   google:
     id: "G-E31NLRCXN6"
