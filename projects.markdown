@@ -25,7 +25,9 @@ permalink: /projects/
 
 * <a href="https://demo.learning.re/en/lesson_2822391.html">Demo Lesson: Entrepreneurship</a>
 * <a href="https://assets.learning.re/rels/scorm/starter/en/i-like-shopping.zip">SCORM Lesson </a>
+* <a href="https://learning.re/rels/scorm/demo/scorm12.html">SCORM Lesson Test </a>
 * <a href="https://www.iaeuk.net/">WordPress website in container</a>
+* <a href="https://iaeuk.onrender.com/">Company website: canvas</a>
 
 |LetsTalk|Test Center|Practical English|
 |---|---|---|
