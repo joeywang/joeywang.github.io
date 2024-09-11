@@ -19,6 +19,10 @@ author_profile: true
 
 ## Professional Experience:
 
+### Reallyenglish (Jan 2022 - Now): Lead Engineer(Freelancer)
+  - Improve existing cloud platform solutions
+  - Build toolchain to deploy whole systems
+
 ### Ably (Jan 2022 – Nov 2022): Senior DevOps Engineer
   - Boosted system performance by 20% through advanced Puma and Ruby optimizations
   - Spearheaded cloud migration strategy, successfully prototyping Heroku to AWS transition

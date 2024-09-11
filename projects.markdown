@@ -16,10 +16,9 @@ permalink: /projects/
 |---|---|---|
 |<img width="280" alt="cms" src="assets/img/re/cms4.png">| <img width="280" alt="mobile" src="assets/img/re/lexicon.png">| <img width="280" alt="mobile" src="assets/img/re/pe7.png">|
 
-|Coaching System | Grading Management System| User Managment System |
+|Coaching System | Grading Management System| User Management System |
 |---|---|---|
 |<img width="280" alt="cms" src="assets/img/re/crm.png">| <img width="280" alt="mobile" src="assets/img/re/gms.png">| <img width="280" alt="mobile" src="assets/img/re/ums.png">|
-
 
 <img alt="course" src="assets/img/re/len.png">
 
@@ -29,10 +28,10 @@ permalink: /projects/
 * <a href="https://www.iaeuk.net/">WordPress website in container</a>
 * <a href="https://iaeuk.onrender.com/">Company website: canvas</a>
 
-|LetsTalk|Test Center|Practical English|
-|---|---|---|
-|<img width="380" alt="letstalk" src="assets/img/re/letstalk.png">|<img width="280" alt="letstalk" src="assets/img/re/test_centre.png">|<img width="280" alt="pe4" src="assets/img/re/PE4_lesson_menu.png">|
-
 |GCP Kubernetese Cluster|CI CD System | Typical Rails app in K8S|
 |---|---|---|
 |<img width="280" alt="cms" src="assets/img/re/k8s.jpg">| <img width="280" alt="mobile" src="assets/img/re/cicd.png">|<img width="280" alt="cms" src="assets/img/re/k8s-rails.png">|
+
+|LetsTalk|Test Center|Practical English|
+|---|---|---|
+|<img width="380" alt="letstalk" src="assets/img/re/letstalk.png">|<img width="280" alt="letstalk" src="assets/img/re/test_centre.png">|<img width="280" alt="pe4" src="assets/img/re/PE4_lesson_menu.png">|

@@ -21,7 +21,7 @@ Visionary Senior Software Engineer with over two decades of expertise in cutting
   - RESTful API Design & Integration
 
 ## Professional Experience:
-### Kitman Labs (Feb 2023 – July 2023): Senior Web Engineer
+### Kitman Labs (Feb 2023 – July 2024): Senior Web Engineer
   - Spearheaded development of cutting-edge athlete management and performance tracking features
   - Boosted application performance by 10% through strategic refactoring and query optimization
   - Collaborated with data scientists to implement machine learning models for predictive analytics
@@ -30,6 +30,11 @@ Visionary Senior Software Engineer with over two decades of expertise in cutting
   - Engineered system-wide optimizations resulting in a 20% performance improvement
   - Pioneered containerization efforts, successfully Dockerizing complex Ruby on Rails applications
   - Implemented real-time data streaming features, enhancing user engagement by 15%
+
+### Reallyenglish (Jan 2022 - Now): Lead Engineer(Freelancer)
+  - Maintaining a high-performance, scalable platform using Ruby on Rails
+  - Improve existing mobile Apps/JS Apps
+  - Bug fixing and feature development
 
 ### Reallyenglish (Oct 2005 - Jan 2022): Lead Ruby Developer
   - Architected and developed three generations of a robust Learning Management System (LMS)
