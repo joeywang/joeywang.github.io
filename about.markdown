@@ -5,6 +5,9 @@ permalink: /about/
 author_profile: true
 ---
 
+[📄 Download Resume (PDF)](/assets/pdf/JoeyW-dev.pdf){: .btn .btn-link .btn-lg style="float: right;"}
+
+
 ## Summary
 Visionary Senior Software Engineer with over two decades of expertise in cutting-edge web development, specializing in Ruby on Rails applications. Proven innovator with a track record of architecting high-performance, scalable software solutions that drive business growth and enhance user experiences. Passionate about leveraging technology to solve complex problems and deliver exceptional value.
 

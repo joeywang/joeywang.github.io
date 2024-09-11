@@ -4,6 +4,7 @@ title: About(DevOps)
 permalink: /about2/
 author_profile: true
 ---
+[📄 Download Resume (PDF)](/assets/pdf/JoeyW-DevOps.pdf){: .btn .btn-link .btn-lg style="float: right;"}
 ## Summary:
    Innovative Senior DevOps Engineer and SRE with 20+ years of experience in web development and cloud infrastructure optimization. Expert in Ruby on Rails applications, with a proven track record of revolutionizing development processes and architecting highly scalable, resilient solutions. Consistently delivers performance improvements and cost-effective cloud strategies that drive business growth.
 
