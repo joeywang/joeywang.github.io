@@ -7,7 +7,7 @@ permalink: /todo/
 ### DevOps
 - **Develop a Private Cloud**: Create a private cloud infrastructure using OpenStack.
 - **Implement GitOps**: Utilize ArgoCD for implementing a GitOps workflow.
-- **API Replacement**: Explore replacing Google Speech API with OpenAI's Whisper for speech recognition tasks.
+- ~~**API Replacement**: Explore replacing Google Speech API with OpenAI's Whisper for speech recognition tasks.~~
 - **Database Optimization**: Perform partitioning on large tables within PostgreSQL to enhance performance.
 
 ### Languages
@@ -19,5 +19,11 @@ permalink: /todo/
 - **Deep Dive into Ruby**: Gain a deeper understanding of Ruby's internals to identify and implement performance improvements.
 
 ### Game Development
-- **Fun Game Project**: Develop a game using any language or framework for recreational purposes and to explore different development techniques.
+- ~~**Fun Game Project**: Develop a game using any language or framework for recreational purposes and to explore different development techniques.~~
+- **Multiplayer Game**: Develop a multiplayer game using any language or framework for recreation purposes.
 
+### Mobile App
+- **Native App**: Develop a native app using any language or framework for recreation purposes.
+- **English study App**: Develop an app to help students learn English
+- **Authoring Tool**: Develop an authoring tool for build activities to
+  help with English learning
