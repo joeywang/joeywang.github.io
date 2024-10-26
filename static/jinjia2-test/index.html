@@ -142,7 +142,37 @@ Your items:
 {% for item in items %}
 - {{ item }}
 {% endfor %}
-{% endif %}</textarea>
+{% endif %}
+
+// Python-style slicing using slice filter:
+Slice [1:-1]: {{ name | slice(1,-1) }}
+Slice [2:5]: {{ name | slice(2,5) }}
+Slice [:3]: {{ name | slice(0,3) }}
+Slice [-3:]: {{ name | slice(-3) }}
+
+// Using JavaScript substring:
+First 3 chars: {{ name | substring(0,3) }}
+Last 3 chars: {{ name | substring(-3) }}
+
+// Array slicing:
+Items [1:-1]: {{ items | slice(1,-1) | dump }}
+First 2 items: {{ items | slice(0,2) | dump }}
+Last 2 items: {{ items | slice(-2) | dump }}
+
+// Python-style slicing:
+Slice [1:-1]: {{ name[1:-1] }}
+Slice [2:5]: {{ name[2:5] }}
+Slice [:3]: {{ name[:3] }}
+Slice [-3:]: {{ name[-3:] }}
+Slice [:-3]: {{ name[:-3] }}
+
+// Array slicing:
+Items [1:-1]: {{ items[1:-1] | dump }}
+First 2 items: {{ items[:2] | dump }}
+Last 2 items: {{ items[-2:] | dump }}
+
+
+            </textarea>
         </div>
         
         <div class="section">
@@ -169,6 +199,30 @@ Your items:
     </div>
 
     <script>
+        // Create Python-style slice parser
+        function parseSlice(str) {
+            const parts = str.split(':');
+            if (parts.length === 1) {
+                return [parseInt(parts[0]), parseInt(parts[0]) + 1];
+            }
+            return [
+                parts[0] ? parseInt(parts[0]) : 0,
+                parts[1] ? parseInt(parts[1]) : undefined
+            ];
+        }
+
+        // Custom preprocessor for template
+        function preprocessTemplate(template) {
+            // Replace Python-style slicing with function calls
+            return template.replace(/\[\s*(-?\d*)\s*:\s*(-?\d*)\s*\]/g, function(match, start, end) {
+                if (!start) start = '0';
+                if (!end) end = '';
+                return `| slice(${start},${end})`;
+            }).replace(/\[\s*(-?\d+)\s*\]/g, function(match, index) {
+                return `| slice(${index},${parseInt(index)+1})`;
+            });
+        }
+
         // Create a new Nunjucks environment
         const env = new nunjucks.Environment();
 
@@ -186,6 +240,42 @@ Your items:
                 return JSON.stringify(str, null, indent);
             }
             return JSON.stringify(str);
+        });
+
+        // Add slice filter to handle Python-style slicing
+        env.addFilter('slice', function(arr, start, end) {
+            if (typeof arr === 'string') {
+                if (end === undefined) {
+                    end = arr.length;
+                }
+                if (start < 0) start = arr.length + start;
+                if (end < 0) end = arr.length + end;
+                return arr.slice(start, end);
+            }
+            if (Array.isArray(arr)) {
+                if (end === undefined) {
+                    end = arr.length;
+                }
+                if (start < 0) start = arr.length + start;
+                if (end < 0) end = arr.length + end;
+                return arr.slice(start, end);
+            }
+            return arr;
+        });
+
+        // Add substring filter for JavaScript-style substring
+        env.addFilter('substring', function(str, start, end) {
+            if (typeof str !== 'string') return str;
+            if (end === undefined) {
+                if (start < 0) {
+                    return str.slice(start);
+                }
+                return str.substring(start);
+            }
+            if (start < 0 || end < 0) {
+                return str.slice(start, end);
+            }
+            return str.substring(start, end);
         });
 
         const jsonExample = {
