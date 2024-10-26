@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/3.2.4/nunjucks.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <style>
+        /* Previous styles remain the same */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 1200px;
@@ -43,10 +44,20 @@
         }
         h2 {
             color: #666;
-            margin-top: 0;
+        }
+        .examples code {
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        /* Rest of previous styles... */
+        .format-toggle {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            font-size: 14px;
         }
         button {
             background: #4CAF50;
@@ -158,9 +169,32 @@ Your items:
     </div>
 
     <script>
+        // Create a new Nunjucks environment
+        const env = new nunjucks.Environment();
+
+        // Add dump filter (equivalent to tojson)
+        env.addFilter('dump', function(str, spaces) {
+            return spaces ? JSON.stringify(str, null, spaces) : JSON.stringify(str);
+        });
+
+        // Add tojson and other custom filters to nunjucks
+        nunjucks.configure({ autoescape: true });
+
+        // Add tojson filter
+        env.addFilter('tojson', function(str, indent) {
+            if (indent) {
+                return JSON.stringify(str, null, indent);
+            }
+            return JSON.stringify(str);
+        });
+
         const jsonExample = {
             name: "World",
-            items: ["apple", "banana", "orange"]
+            items: ["apple", "banana", "orange"],
+            data: {
+                key1: "value1",
+                key2: ["item1", "item2"]
+            }
         };
 
         const yamlExample = 
@@ -168,7 +202,12 @@ Your items:
 items:
   - apple
   - banana
-  - orange`;
+  - orange
+data:
+  key1: value1
+  key2:
+    - item1
+    - item2`;
 
         function setInitialData() {
             const formatToggle = document.getElementById('formatToggle');
@@ -195,6 +234,7 @@ items:
                     dataField.value = JSON.stringify(data, null, 2);
                 }
                 document.getElementById('error').textContent = '';
+                renderTemplate();
             } catch (error) {
                 document.getElementById('error').textContent = `Error converting format: ${error.message}`;
             }
@@ -212,9 +252,6 @@ items:
                 const data = formatToggle.checked ? 
                     jsyaml.load(dataText) : 
                     JSON.parse(dataText);
-                
-                // Configure nunjucks
-                nunjucks.configure({ autoescape: true });
                 
                 // Render template
                 const result = nunjucks.renderString(templateText, data);
