@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Migrating OTP Services from Google Authenticator to Other Providers"
-date: "{{ page.date }}"
+date: "2025-01-01"
 categories: security otp authentication
 ---
 
