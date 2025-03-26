@@ -1,7 +1,6 @@
 ---
 layout: post
-title: "🚫 5 Parameter-Related Code Smells and How to Refactor
-Them"
+title: "🚫 5 Parameter-Related Code Smells and How to Refactor Them"
 date: "2025-01-10"
 categories: code smell refactoring
 ---
