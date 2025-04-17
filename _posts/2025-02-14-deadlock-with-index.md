@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance"
+date: "2025-01-01"
+categories: database performance integrity
+---
+
 # Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance
 
 ## Introduction
@@ -82,6 +89,83 @@ Updating books with the same `genre_id` will:
 
 ---
 
+## Gap Insertion Intent: A Strategy for Reducing Lock Contention
+
+Certain database operations, particularly those involving ordered data, can benefit from a pattern called "gap insertion intent." This strategy deliberately leaves spaces between sequential values (typically in numeric IDs or sort orders) to allow for easy future insertions without requiring extensive reordering or locking of existing data.
+
+### How Gap Insertion Intent Works
+
+Instead of assigning consecutive integers (1, 2, 3...) as sort positions or ordering values, you use larger increments (e.g., 1000, 2000, 3000) to leave significant gaps between values. This approach has several advantages:
+
+1. **Reduced lock contention**: When inserting new records between existing ones, fewer rows need to be updated or locked
+2. **Fewer deadlocks**: With fewer lock operations needed, deadlock probability decreases
+3. **Better concurrency**: Multiple transactions can insert items in different gaps simultaneously
+
+### Examples in Database Operations
+
+#### Example 1: Task Ordering System
+
+Consider a task management system where tasks have a specific display order:
+
+```sql
+-- Initial tasks with gap insertion intent
+INSERT INTO tasks (id, title, sort_order) VALUES
+(1, 'Research competitors', 1000),
+(2, 'Create wireframes', 2000),
+(3, 'Build prototype', 3000);
+```
+
+When a user needs to insert a task between existing ones:
+
+```sql
+-- Insert between tasks 1 and 2 without updating other rows
+INSERT INTO tasks (id, title, sort_order) VALUES
+(4, 'Review market analysis', 1500);
+```
+
+Without gap insertion intent, this operation would require updating multiple rows and potentially cause deadlocks in high-concurrency environments.
+
+#### Example 2: Menu Organization
+
+For a restaurant application with menu sections:
+
+```sql
+-- Initial menu items with gap insertion strategy
+INSERT INTO menu_sections (id, name, display_order) VALUES
+(1, 'Appetizers', 1000),
+(2, 'Main Courses', 2000),
+(3, 'Desserts', 3000);
+```
+
+Adding a new section becomes trivial:
+
+```sql
+-- Insert between sections without reordering
+INSERT INTO menu_sections (id, name, display_order) VALUES
+(4, 'Beverages', 2500);
+```
+
+### Implementation Approaches
+
+1. **Fixed gap size**: Use consistent increments like 100, 1000, etc.
+2. **Fractional strategy**: For inserting between positions A and B, use (A+B)/2
+3. **Logarithmic spacing**: Use larger gaps at the beginning of the sequence
+
+### When to Consider Rebalancing
+
+Eventually, gaps between values may become too small (e.g., needing to insert between positions 1001 and 1002). At this point, a rebalancing operation can redistribute the values with new gaps:
+
+```sql
+-- Example rebalancing operation
+UPDATE tasks
+SET sort_order = sort_order * 1000
+ORDER BY sort_order;
+```
+
+This operation temporarily increases lock contention but creates new gaps for future insertions.
+
+---
+
 ## How to Mitigate Deadlocks
 
 ### General Strategies
@@ -89,6 +173,7 @@ Updating books with the same `genre_id` will:
 - **Process disjoint row ranges in parallel**
 - **Batch updates** to reduce lock hold time
 - **Avoid unnecessary FK constraints** in high-write workloads
+- **Implement gap insertion intent** for ordering fields
 - Use appropriate **transaction isolation levels**
 
 ### Foreign Key-Specific Strategies
@@ -124,9 +209,8 @@ Updating books with the same `genre_id` will:
 
 Deadlocks are an unavoidable risk in transactional databases, especially when concurrency and referential integrity intersect. Both MySQL and PostgreSQL handle them with different internal mechanisms, but the end result is the same: unexpected rollbacks and operational pain.
 
-Whether to use foreign keys or not depends on your system’s needs:
+Whether to use foreign keys or not depends on your system's needs:
 - Favor **foreign keys** when data integrity is critical and throughput is moderate
 - Favor **application-enforced rules** when scaling high-write, distributed systems
 
-Understanding locking behavior and access patterns is the key to building deadlock-resilient systems—regardless of your database of choice.
-
+Understanding locking behavior, implementing strategies like gap insertion intent, and analyzing access patterns are key to building deadlock-resilient systems—regardless of your database of choice.
