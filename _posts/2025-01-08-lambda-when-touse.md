@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "When to Use AWS Lambda for API Endpoints — A Practical Decision Guide""
+title: "When to Use AWS Lambda for API Endpoints — A Practical Decision Guide"
 date: "2025-01-08"
 categories: security otp authentication
 ---

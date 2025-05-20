@@ -2,7 +2,10 @@
 layout: post
 title: "Best Practices for Handling Out-of-Order Updates"
 date: "2025-02-16"
-categories: "race conditions" fifo updates
+categories:
+- "race conditions"
+- fifo
+- updates
 ---
 
 # Addressing Out-of-Order Updates in Concurrent Systems
