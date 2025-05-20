@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Debugging Transaction Deadlocks in Rails Tests: A Case Study
+title: "Debugging Transaction Deadlocks in Rails Tests: A Case Study"
 date: "2025-03-15"
 categories: rails deadlock queue jobs
 ---

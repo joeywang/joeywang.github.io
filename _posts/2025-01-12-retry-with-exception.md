@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Retry Mechanisms in Ruby: Best Practices, Pros, and Cons""
+title: "Retry Mechanisms in Ruby: Best Practices, Pros, and Cons"
 date: "2025-01-12"
-categories: retry exception performance
+categories: ruby retry exception handling
 ---
 
 **Retry Mechanisms in Ruby: Best Practices, Pros, and Cons**

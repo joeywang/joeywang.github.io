@@ -1,7 +1,9 @@
 ---
 layout: post
-title: From Rails to Laravel: A Story of Conquering Racing Updates and “Last Update Wins”
-date: 2025-01-03 21:34 +0000
+title: "From Rails to Laravel: A Story of Conquering Racing Updates and “Last Update Wins”"
+categories: Rails
+tags: [Rails, Laravel, Sidekiq, SQS]
+date: "2025-01-03 21:34 +0000"
 ---
 # From Rails to Laravel: A Story of Conquering Racing Updates and “Last Update Wins”
 
