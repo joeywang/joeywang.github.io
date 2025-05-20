@@ -1,4 +1,5 @@
-type: post
+---
+layout: post
 title: "Level Up Your Terminal Fu: Mastering Command-Line Editing in
 Zsh"
 date: 2025-03-17
