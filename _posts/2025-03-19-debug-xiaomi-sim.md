@@ -1,11 +1,9 @@
 ---
+layout: post
 title: Debugging "No Signal" on Your Xiaomi Device – From Dialer Codes to ADB Logs
 date: 2025-03-19
 tags: [Xiaomi, Android, Debugging, ADB, SIM Card]
-summary: A comprehensive guide to diagnosing and resolving "No SIM" or
-"No Signal" issues on Xiaomi devices, using built-in diagnostic tools
-and ADB.
-layout: post
+categories: security otp authentication
 ---
 
 ## Deep Dive: Debugging "No Signal" on Your Xiaomi Device – From Dialer Codes to ADB Logs
