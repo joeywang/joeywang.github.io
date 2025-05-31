@@ -1,0 +1,103 @@
+# _data/cv_data.yml
+
+title: "Joey Wang - Senior Software Engineer" # Page title
+name: "Joey Wang"
+job_title: "Senior Software Engineer"
+
+contact_email: "joeyw@reallyenglish.com"
+github_url: "https://github.com/joeywang"
+linkedin_url: "https://www.linkedin.com/in/joey-dev"
+
+summary_text: "Highly accomplished Senior Software Engineer with over two decades of expertise in architecting and delivering impactful Ruby on Rails applications that significantly enhance user experience and accelerate business growth. Proven innovator in optimizing high-performance, scalable software solutions. Passionate about tackling complex technical challenges, fostering engineering best practices, and contributing to the open-source community."
+
+experience:
+  - id: 'kitman'
+    company: 'Kitman Labs'
+    role: 'Senior Web Engineer'
+    period: 'Feb 2023 – July 2023'
+    details:
+      - 'Spearheaded the design and development of advanced features for athlete management and performance tracking systems, resulting in improved data accuracy and user engagement with new analytical tools.'
+      - 'Achieved a 10% improvement in application performance through strategic code refactoring and database query optimization.'
+      - 'Collaborated effectively with data scientists to integrate machine learning models, enabling predictive analytics functionalities.'
+  - id: 'ably'
+    company: 'Ably'
+    role: 'Senior Web Engineer'
+    period: 'Jan 2022 – Nov 2022'
+    details:
+      - 'Engineered significant system-wide optimizations in Ruby and Puma configurations, resulting in a 20% overall performance boost.'
+      - 'Pioneered containerization initiatives by successfully Dockerizing complex Ruby on Rails applications, improving deployment consistency.'
+      - 'Implemented real-time data streaming features, contributing to a 15% increase in user engagement.'
+  - id: 'reallyenglish'
+    company: 'Reallyenglish'
+    role: 'Lead Ruby Developer'
+    period: 'Oct 2005 - Jan 2022'
+    details:
+      - 'Led the architecture and end-to-end development of three generations of a sophisticated Learning Management System (LMS), serving a large user base.'
+      - 'Drove a 25% increase in customer satisfaction by conceptualizing and implementing innovative, user-focused features.'
+      - 'Mentored and guided junior developers, cultivating a team culture centered on code quality, best practices, and continuous improvement.'
+
+skills:
+  'Languages & Frameworks':
+    - name: 'Ruby on Rails'
+      value: 95
+    - name: 'Ruby'
+      value: 95
+    - name: 'JavaScript'
+      value: 85
+    - name: 'Node.js'
+      value: 70
+    - name: 'React Native'
+      value: 65
+    - name: 'Python'
+      value: 75
+    - name: 'PHP'
+      value: 60
+  'Databases':
+    - name: 'PostgreSQL'
+      value: 90
+    - name: 'MySQL'
+      value: 85
+    - name: 'MongoDB'
+      value: 70
+    - name: 'Oracle'
+      value: 65
+  'DevOps & Tools':
+    - name: 'Docker'
+      value: 80
+    - name: 'CI/CD'
+      value: 85
+    - name: 'GCP/AWS'
+      value: 70
+    - name: 'Git'
+      value: 95
+  'Practices & Architecture':
+    - name: 'Agile/Scrum'
+      value: 90
+    - name: 'TDD'
+      value: 90
+    - name: 'System Design'
+      value: 85
+    - name: 'API Design'
+      value: 88
+
+projects:
+  - title: 'Enterprise Learning Management System (LMS)'
+    description: 'Architected and led the development of a scalable, customizable LMS using Ruby on Rails, supporting over 100,000 active users and maintaining 99.9% uptime.'
+  - title: 'Advanced Course Management System'
+    description: 'Engineered a state-of-the-art CMS leveraging Ruby on Rails, Stimulus, and Turbo, which successfully reduced course creation and management time by 50%.'
+  - title: 'Mobile Learning Application'
+    description: 'Led the full development lifecycle of a feature-rich React Native app, incorporating offline learning capabilities and achieving a 4.8-star rating on app stores.'
+  - title: 'Practical English Course Platform'
+    description: 'Architected and delivered a comprehensive and scalable e-learning platform using Node.js, Ruby, and JavaScript, leading to a 30% uplift in user engagement.'
+  - title: 'Education Platform WordPress Homepage'
+    description: 'Developed a high-performance, SEO-optimized WordPress main site, resulting in a 40% increase in organic traffic and improved lead generation.'
+  - title: 'Containerization Initiative'
+    description: 'Pioneered efforts to Dockerize complex legacy applications, significantly improving deployment consistency and developer onboarding.'
+
+open_source_intro: "Actively contribute to various open-source projects, such as providing performance patches to Ruby libraries or developing widely-used Docker images for Rails applications. Contributions typically focus on:"
+open_source_contributions:
+  - 'Identifying and resolving potential bugs to improve software stability and reliability.'
+  - 'Proactively upgrading project dependencies to maintain security and leverage modern functionalities.'
+  - 'Enhancing projects by forking repositories, developing, and contributing new features.'
+  - 'Improving project accessibility and deployment by adding Docker containerization.'
+  - 'Building and deploying public Docker images to facilitate sharing and ease of use for the community.'

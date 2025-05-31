@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site.data.cv_data.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ '/assets/css/resume_custom.css' | relative_url }}">
+    </head>
+<body class="antialiased">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <aside class="w-full md:w-64 bg-white/80 backdrop-blur-sm border-r border-gray-200/80 p-6 md:sticky md:top-0 md:self-start md:h-screen">
+            <h1 class="text-2xl font-bold text-gray-800">{{ site.data.cv_data.name }}</h1>
+            <p class="text-sm text-gray-500 mb-6">{{ site.data.cv_data.job_title }}</p>
+            <nav id="navigation" class="space-y-2">
+                <a href="#summary" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <span class="mr-3">👋</span> Summary
+                </a>
+                <a href="#experience" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <span class="mr-3">📈</span> Experience
+                </a>
+                <a href="#skills" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <span class="mr-3">🛠️</span> Skills
+                </a>
+                <a href="#projects" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <span class="mr-3">🚀</span> Key Projects
+                </a>
+                <a href="#opensource" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                     <span class="mr-3">🌐</span> Open Source
+                </a>
+            </nav>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</h3>
+                <div class="mt-3 space-y-2 text-sm">
+                    <p class="text-gray-600">{{ site.data.cv_data.contact_email }}</p>
+                    <a href="{{ site.data.cv_data.github_url }}" target="_blank" class="text-blue-600 hover:underline">GitHub</a>
+                    <a href="{{ site.data.cv_data.linkedin_url }}" target="_blank" class="text-blue-600 hover:underline">LinkedIn</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10">
+            <section id="summary" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Summary</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    {{ site.data.cv_data.summary_text }}
+                </p>
+                {{ content }} </section>
+
+            <section id="experience" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8">Professional Experience</h2>
+                <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+                    <div class="w-full md:w-1/3">
+                        <div id="timeline-nav" class="relative">
+                            {% for job in site.data.cv_data.experience %}
+                            <div class="timeline-item relative pl-8 pb-8 cursor-pointer" data-jobid="{{ job.id }}">
+                                {% unless forloop.last %}
+                                <div class="absolute left-[10px] top-3 w-0.5 h-full bg-gray-200"></div>
+                                {% endunless %}
+                                <div class="timeline-dot absolute left-0 top-1.5 w-5 h-5 bg-gray-200 rounded-full border-4 border-white transition-all duration-300"></div>
+                                <h3 class="timeline-title text-md font-medium text-gray-600 transition-colors">{{ job.company }}</h3>
+                                <p class="text-sm text-gray-400">{{ job.period }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div id="experience-details" class="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-sm">
+                        {% assign first_job = site.data.cv_data.experience[0] %}
+                        <h3 class="text-2xl font-bold text-gray-800">{{ first_job.role }}</h3>
+                        <p class="text-md font-medium text-gray-600 mb-1">{{ first_job.company }}</p>
+                        <p class="text-sm text-gray-400 mb-6">{{ first_job.period }}</p>
+                        <ul class="space-y-3 text-gray-600 list-disc list-inside">
+                            {% for detail in first_job.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="skills" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Core Competencies</h2>
+                <p class="text-gray-600 mb-6">This chart provides a visual representation of key technical skills, categorized for clarity. Interact with the filters to explore different areas of expertise.</p>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="mb-4 text-center">
+                        <div id="skill-filters" class="inline-flex rounded-md shadow-sm" role="group">
+                            {% assign skill_categories = site.data.cv_data.skills | keys %}
+                            {% for category_name in skill_categories %}
+                            <button type="button" data-category="{{ category_name | escape }}" class="skill-filter-button px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 {% if forloop.first %}rounded-l-lg border-l{% endif %} {% if forloop.last %}rounded-r-lg border-r{% endif %}">
+                                {{ category_name }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="projects" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Key Projects</h2>
+                <p class="text-gray-600 mb-8">A selection of significant projects demonstrating architectural leadership and technical execution. These examples highlight a commitment to building robust, scalable, and impactful applications.</p>
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for project in site.data.cv_data.projects %}
+                    <div class="project-card bg-white p-6 rounded-lg shadow-sm border border-transparent hover:border-gray-300">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{{ project.title }}</h3>
+                        <p class="text-gray-600">{{ project.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section id="opensource" class="scroll-mt-20">
+                 <h2 class="text-3xl font-bold text-gray-800 mb-4">Open Source Contributions</h2>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <p class="text-gray-600 mb-4">{{ site.data.cv_data.open_source_intro }}</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        {% for item in site.data.cv_data.open_source_contributions %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Pass Jekyll data to JavaScript using the 'jsonify' filter
+        var jekyllCvData = {
+            experience: {{ site.data.cv_data.experience | jsonify }},
+            skills: {{ site.data.cv_data.skills | jsonify }}
+        };
+    </script>
+    <script src="{{ '/assets/js/resume_interactive.js' | relative_url }}"></script>
+</body>
+</html>

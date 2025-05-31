@@ -1,0 +1,45 @@
+/* assets/css/resume_custom.css */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F8F7F4;
+    color: #3D3D3D;
+}
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 400px;
+}
+@media (min-width: 768px) {
+    .chart-container {
+        height: 500px;
+    }
+}
+.nav-link.active {
+    background-color: #EAE8E2;
+    color: #2D2D2D;
+    font-weight: 600;
+}
+.timeline-item.active .timeline-dot {
+    background-color: #BF9270;
+    transform: scale(1.25);
+}
+ .timeline-item.active .timeline-title {
+    color: #BF9270;
+    font-weight: 600;
+}
+.project-card {
+    transition: all 0.3s ease-in-out;
+}
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+/* Custom class for the active skill filter button */
+#skill-filters button.active-filter {
+    background-color: #EAE8E2;
+    color: #2D2D2D;
+    font-weight: 600;
+}
