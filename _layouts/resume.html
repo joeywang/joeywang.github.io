@@ -89,10 +89,10 @@
                 <div class="bg-white p-6 rounded-lg shadow-sm">
                     <div class="mb-4 text-center">
                         <div id="skill-filters" class="inline-flex rounded-md shadow-sm" role="group">
-                            {% assign skill_categories = site.data.cv_data.skills | keys %}
+                            {% assign skill_categories = site.data.cv_data.skills %}
                             {% for category_name in skill_categories %}
-                            <button type="button" data-category="{{ category_name | escape }}" class="skill-filter-button px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 {% if forloop.first %}rounded-l-lg border-l{% endif %} {% if forloop.last %}rounded-r-lg border-r{% endif %}">
-                                {{ category_name }}
+                            <button type="button" data-category="{{ category_name[0] | escape }}" class="skill-filter-button px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 {% if forloop.first %}rounded-l-lg border-l{% endif %} {% if forloop.last %}rounded-r-lg border-r{% endif %}">
+                                {{ category_name[0] }}
                             </button>
                             {% endfor %}
                         </div>
