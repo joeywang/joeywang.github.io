@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to YAML Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mono-font {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white">JSON to YAML Converter</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">Instantly convert your JSON data to YAML format.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- JSON Input -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">JSON Input</h2>
+                    <button id="clearJson" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors">Clear</button>
+                </div>
+                <textarea id="jsonInput" class="w-full h-96 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 mono-font focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Paste your JSON here..."></textarea>
+            </div>
+
+            <!-- YAML Output -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">YAML Output</h2>
+                    <button id="copyYaml" class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors">Copy</button>
+                </div>
+                <textarea id="yamlOutput" class="w-full h-96 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 mono-font focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" readonly placeholder="Your YAML will appear here..."></textarea>
+            </div>
+        </main>
+
+        <div class="text-center mt-8">
+            <button id="convertBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                Convert
+            </button>
+        </div>
+        
+        <!-- Message Box -->
+        <div id="messageBox" class="fixed bottom-5 right-5 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg hidden animate-pulse">
+            <p id="messageText"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const jsonInput = document.getElementById('jsonInput');
+            const yamlOutput = document.getElementById('yamlOutput');
+            const convertBtn = document.getElementById('convertBtn');
+            const copyYamlBtn = document.getElementById('copyYaml');
+            const clearJsonBtn = document.getElementById('clearJson');
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+
+            // --- Event Listeners ---
+
+            // Convert button click handler
+            convertBtn.addEventListener('click', () => {
+                const jsonString = jsonInput.value.trim();
+                if (!jsonString) {
+                    showMessage('Please enter some JSON to convert.', 'error');
+                    return;
+                }
+
+                try {
+                    const jsonObj = JSON.parse(jsonString);
+                    // The jsyaml library is loaded from the CDN
+                    const yamlString = jsyaml.dump(jsonObj);
+                    yamlOutput.value = yamlString;
+                } catch (error) {
+                    showMessage('Invalid JSON format. Please check your input.', 'error');
+                    yamlOutput.value = `Error: ${error.message}`;
+                }
+            });
+            
+            // Auto-conversion on paste
+            jsonInput.addEventListener('paste', (event) => {
+                // Use a short timeout to allow the pasted content to appear in the textarea
+                setTimeout(() => {
+                    convertBtn.click();
+                }, 100);
+            });
+
+            // Copy YAML to clipboard
+            copyYamlBtn.addEventListener('click', () => {
+                if (!yamlOutput.value) {
+                    showMessage('Nothing to copy!', 'error');
+                    return;
+                }
+                // Using the older execCommand for wider compatibility in iframes
+                yamlOutput.select();
+                yamlOutput.setSelectionRange(0, 99999); // For mobile devices
+                try {
+                    document.execCommand('copy');
+                    showMessage('YAML copied to clipboard!', 'success');
+                } catch (err) {
+                    showMessage('Failed to copy YAML.', 'error');
+                }
+                window.getSelection().removeAllRanges();
+            });
+
+            // Clear JSON input
+            clearJsonBtn.addEventListener('click', () => {
+                jsonInput.value = '';
+                yamlOutput.value = '';
+                showMessage('Input cleared.', 'success');
+            });
+
+            // --- Utility Functions ---
+
+            /**
+             * Shows a message to the user.
+             * @param {string} message - The message to display.
+             * @param {'success'|'error'} type - The type of message.
+             */
+            function showMessage(message, type = 'success') {
+                messageText.textContent = message;
+                messageBox.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg animate-pulse`;
+                
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+
+                messageBox.classList.remove('hidden');
+
+                setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
