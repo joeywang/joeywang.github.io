@@ -58,6 +58,9 @@ tabs:
   - title: "Todo"
     url: "/todo/"
     icon: "fas fa-tasks"
+  - title: "Tools"
+    url: "/tools/"
+    icon: "fas fa-wrench"
 analytics:
   google:
     id: "G-E31NLRCXN6"
