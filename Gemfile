@@ -17,6 +17,7 @@ gem "minima", "~> 2.5"
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.12"
   gem 'jekyll-compose'
+  gem 'jekyll-archives'
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -38,3 +39,5 @@ gem "jekyll-theme-chirpy", "~> 7.0"
 gem "csv", "~> 3.3"
 
 gem "base64", "~> 0.3.0"
+
+gem "logger", "~> 1.6"

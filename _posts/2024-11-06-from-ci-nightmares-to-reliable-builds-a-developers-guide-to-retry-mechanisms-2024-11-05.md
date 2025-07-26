@@ -86,7 +86,7 @@ jobs:
           path: |
             ~/.npm
             ~/.bundle
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/Gemfile.lock') }}
+          key: {% raw %}${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/Gemfile.lock') }}{% endraw %}
 
       - name: Install dependencies with retry
         uses: nick-invision/retry@v2
@@ -107,7 +107,7 @@ jobs:
             docker build \
               --network-retry-count 3 \
               --network-retry-interval 30 \
-              -t myapp:${{ github.sha }} .
+              -t myapp:{% raw %}${{ github.sha }}{% endraw %} .
 ```
 
 ## The Results: A Success Story
@@ -157,9 +157,9 @@ retry 3 10 npm ci
   uses: actions/cache@v2
   with:
     path: /tmp/.buildx-cache
-    key: ${{ runner.os }}-buildx-${{ github.sha }}
+    key: {% raw %}${{ runner.os }}-buildx-${{ github.sha }}{% endraw %}
     restore-keys: |
-      ${{ runner.os }}-buildx-
+      {% raw %}${{ runner.os }}-buildx-{% endraw %}
 
 - name: Build with cache
   uses: docker/build-push-action@v2

@@ -39,6 +39,7 @@ social:
 theme: jekyll-theme-chirpy
 plugins:
   - jekyll-feed
+  - jekyll-archives
 tabs:
   - title: "About"
     url: "/about/"
@@ -156,6 +157,8 @@ exclude:
   - LICENSE
   - "*.config.js"
   - package*.json
+  - assets/404.html
+  - assets/feed.xml
 
 jekyll-archives:
   enabled: [categories, tags]
