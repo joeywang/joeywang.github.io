@@ -2,6 +2,8 @@
 layout: archives
 title: Blog
 permalink: /blog/
+pagination:
+  enabled: true
 ---
 <div class="pagination">
   {% if site.pagination.previous_page %}

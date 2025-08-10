@@ -47,7 +47,7 @@ tabs:
   - title: "Blog"
     url: "/blog/"
     icon: "fas fa-pen-nib"
-  - title: "Projets"
+  - title: "Projects"
     url: "/projects/"
     icon: "fas fa-laptop-code"
   - title: "Categories"
@@ -152,7 +152,6 @@ exclude:
   - "*.gem"
   - "*.gemspec"
   - docs
-  - tools
   - README.md
   - LICENSE
   - "*.config.js"
