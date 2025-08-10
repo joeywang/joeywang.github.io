@@ -4,7 +4,7 @@ title: Projects
 permalink: /projects/
 ---
 
-## Projects
+## Own Projects
 
 ### GCSE Tools
 
@@ -12,11 +12,23 @@ permalink: /projects/
 
 ### Huarongdao
 
-- [GCSE Tools](static/huarongdao/)
+- [Huarongdao](static/huarongdao/)
 
-### Huarongdao
+### Kubegres: PostgresSQL Operator
 
-- [GCSE Tools](static/huarongdao/)
+- [Kubegres](https://github.com/reallyenglish-global/kubegres)
+
+### pgpoolII on K8S: pgpool as load balancer
+
+- [Run Pgpool-II on Kubernetes](https://github.com/reallyenglish-global/pgpool2_on_k8s)
+
+### rels-session: Session management with redis
+
+- [Rels Session](https://github.com/reallyenglish-global/rels_session)
+
+### GCP Postgres: includes gsutil tools
+
+- [Kubegres](https://github.com/reallyenglish-global/gcp-postgres)
 
 ## Key Projects
 
