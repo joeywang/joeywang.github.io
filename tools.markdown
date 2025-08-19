@@ -6,6 +6,13 @@ permalink: /tools/
 
 ## Development Tools
 
+### Client-Side Tools
+- **[Static Tools Collection](/static/)** - Pure client-side tools that run in your browser
+  - [Password Generator](/static/password-generator/) - Generate strong, secure passwords
+  - [UUID Generator](/static/uuid-generator/) - Generate universally unique identifiers
+  - [All-in-One Data Converter](/static/converter) - Convert between various data formats
+  - [JSON To YAML Converter](/static/json2yaml) - Convert JSON to YAML and vice versa
+
 ### Converter
 - **Pandoc** - Markdown to HTML converter
 - **All-in-One Data Converter** - [Converter](/static/converter)
