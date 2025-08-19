@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Formatter</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 1200px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .format-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .format-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #495057;
+        }
+        
+        .format-btn:hover {
+            border-color: #84fab0;
+            background: #f8f9fa;
+        }
+        
+        .format-btn.active {
+            background: #84fab0;
+            color: #333;
+            border-color: #84fab0;
+        }
+        
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .editor-panel, .preview-panel {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .copy-btn {
+            background: #84fab0;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: #72e9a0;
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        textarea, .preview-content {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus, .preview-content:focus {
+            outline: none;
+            border-color: #84fab0;
+        }
+        
+        .preview-content {
+            background: #f8f9fa;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #f5c6cb;
+            display: none;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .examples {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .example-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .example-item:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        
+        .example-content {
+            font-size: 0.9rem;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .option input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .option label {
+            font-weight: normal;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Code Formatter</h1>
+        <p class="subtitle">Format JSON, YAML, XML and other code formats - all in your browser</p>
+        
+        <div class="format-selector">
+            <div class="format-btn active" data-format="json">JSON</div>
+            <div class="format-btn" data-format="yaml">YAML</div>
+            <div class="format-btn" data-format="xml">XML</div>
+            <div class="format-btn" data-format="sql">SQL</div>
+            <div class="format-btn" data-format="html">HTML</div>
+            <div class="format-btn" data-format="css">CSS</div>
+        </div>
+        
+        <div class="options">
+            <div class="option">
+                <input type="checkbox" id="indent-spaces" checked>
+                <label for="indent-spaces">Use spaces for indentation</label>
+            </div>
+            <div class="option">
+                <input type="number" id="indent-size" min="1" max="8" value="2" style="width: 50px; padding: 5px;">
+                <label for="indent-size">Indent size</label>
+            </div>
+        </div>
+        
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <label for="input-code">Input Code</label>
+                    <button class="copy-btn" id="copy-input">Copy</button>
+                </div>
+                <textarea id="input-code" placeholder="Paste your code here...">{
+  "name": "John Doe",
+  "age": 30,
+  "email": "john.doe@example.com",
+  "address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "zipcode": "10001"
+  },
+  "hobbies": [
+    "reading",
+    "swimming",
+    "coding"
+  ],
+  "isActive": true
+}</textarea>
+            </div>
+            
+            <div class="preview-panel">
+                <div class="panel-header">
+                    <label>Formatted Output</label>
+                    <button class="copy-btn" id="copy-output">Copy</button>
+                </div>
+                <div class="preview-content" id="output-code"></div>
+            </div>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="actions">
+            <button class="action-btn" id="format-btn">
+                <span>✨</span> Format Code
+            </button>
+            <button class="action-btn" id="minify-btn">
+                <span>🔻</span> Minify Code
+            </button>
+            <button class="action-btn" id="validate-btn">
+                <span>✅</span> Validate
+            </button>
+        </div>
+        
+        <div class="examples">
+            <h3>Examples</h3>
+            <div class="example-grid">
+                <div class="example-item" data-format="json">
+                    <div class="example-title">JSON Example</div>
+                    <div class="example-content">{"users":[{"id":1,"name":"John","active":true},{"id":2,"name":"Jane","active":false}]}</div>
+                </div>
+                <div class="example-item" data-format="yaml">
+                    <div class="example-title">YAML Example</div>
+                    <div class="example-content">database: host: localhost port: 5432 name: myapp development: debug: true</div>
+                </div>
+                <div class="example-item" data-format="xml">
+                    <div class="example-title">XML Example</div>
+                    <div class="example-content"><users><user id="1"><name>John</name><active>true</active></user></users></div>
+                </div>
+                <div class="example-item" data-format="sql">
+                    <div class="example-title">SQL Example</div>
+                    <div class="example-content">SELECT u.name, p.title FROM users u JOIN posts p ON u.id = p.user_id WHERE u.active = 1 ORDER BY p.created_at DESC;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Code formatted successfully!</div>
+    
+    <script>
+        // DOM Elements
+        const formatButtons = document.querySelectorAll('.format-btn');
+        const inputCode = document.getElementById('input-code');
+        const outputCode = document.getElementById('output-code');
+        const formatBtn = document.getElementById('format-btn');
+        const minifyBtn = document.getElementById('minify-btn');
+        const validateBtn = document.getElementById('validate-btn');
+        const copyInputBtn = document.getElementById('copy-input');
+        const copyOutputBtn = document.getElementById('copy-output');
+        const errorDiv = document.getElementById('error');
+        const notification = document.getElementById('notification');
+        const exampleItems = document.querySelectorAll('.example-item');
+        const indentSpaces = document.getElementById('indent-spaces');
+        const indentSize = document.getElementById('indent-size');
+        
+        // Current format
+        let currentFormat = 'json';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            formatCode();
+        });
+        
+        // Format selection
+        formatButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                formatButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentFormat = button.getAttribute('data-format');
+                formatCode();
+            });
+        });
+        
+        // Format button event listener
+        formatBtn.addEventListener('click', formatCode);
+        
+        // Minify button event listener
+        minifyBtn.addEventListener('click', minifyCode);
+        
+        // Validate button event listener
+        validateBtn.addEventListener('click', validateCode);
+        
+        // Copy input button
+        copyInputBtn.addEventListener('click', () => {
+            copyToClipboard(inputCode.value);
+        });
+        
+        // Copy output button
+        copyOutputBtn.addEventListener('click', () => {
+            copyToClipboard(outputCode.textContent);
+        });
+        
+        // Example items
+        exampleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const format = item.getAttribute('data-format');
+                
+                // Set active format
+                formatButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.format-btn[data-format="${format}"]`).classList.add('active');
+                currentFormat = format;
+                
+                // Load example
+                loadExample(format);
+            });
+        });
+        
+        // Input change event
+        inputCode.addEventListener('input', formatCode);
+        
+        // Options change events
+        indentSpaces.addEventListener('change', formatCode);
+        indentSize.addEventListener('change', formatCode);
+        
+        // Format code
+        function formatCode() {
+            const code = inputCode.value;
+            clearError();
+            
+            if (!code.trim()) {
+                outputCode.textContent = '';
+                return;
+            }
+            
+            try {
+                let formatted = '';
+                const indentValue = indentSpaces.checked ? ' '.repeat(parseInt(indentSize.value)) : '\t';
+                
+                switch(currentFormat) {
+                    case 'json':
+                        const jsonObj = JSON.parse(code);
+                        formatted = JSON.stringify(jsonObj, null, indentValue);
+                        break;
+                    case 'yaml':
+                        const yamlObj = jsyaml.load(code);
+                        formatted = jsyaml.dump(yamlObj, {
+                            indent: parseInt(indentSize.value),
+                            lineWidth: -1
+                        });
+                        break;
+                    case 'xml':
+                        formatted = formatXML(code, indentValue);
+                        break;
+                    case 'sql':
+                        formatted = formatSQL(code);
+                        break;
+                    case 'html':
+                        formatted = formatHTML(code, indentValue);
+                        break;
+                    case 'css':
+                        formatted = formatCSS(code);
+                        break;
+                    default:
+                        formatted = code;
+                }
+                
+                outputCode.textContent = formatted;
+            } catch (e) {
+                showError(`Error formatting ${currentFormat.toUpperCase()}: ${e.message}`);
+                outputCode.textContent = code; // Show original code on error
+            }
+        }
+        
+        // Minify code
+        function minifyCode() {
+            const code = inputCode.value;
+            clearError();
+            
+            if (!code.trim()) {
+                outputCode.textContent = '';
+                return;
+            }
+            
+            try {
+                let minified = '';
+                
+                switch(currentFormat) {
+                    case 'json':
+                        const jsonObj = JSON.parse(code);
+                        minified = JSON.stringify(jsonObj, null, 0);
+                        break;
+                    case 'yaml':
+                        const yamlObj = jsyaml.load(code);
+                        minified = jsyaml.dump(yamlObj, { lineWidth: -1 });
+                        break;
+                    case 'xml':
+                        minified = minifyXML(code);
+                        break;
+                    case 'sql':
+                        minified = minifySQL(code);
+                        break;
+                    case 'html':
+                        minified = minifyHTML(code);
+                        break;
+                    case 'css':
+                        minified = minifyCSS(code);
+                        break;
+                    default:
+                        minified = code.replace(/\s+/g, ' ').trim();
+                }
+                
+                outputCode.textContent = minified;
+                inputCode.value = minified;
+            } catch (e) {
+                showError(`Error minifying ${currentFormat.toUpperCase()}: ${e.message}`);
+            }
+        }
+        
+        // Validate code
+        function validateCode() {
+            const code = inputCode.value;
+            clearError();
+            
+            if (!code.trim()) {
+                showNotification('Empty input - nothing to validate');
+                return;
+            }
+            
+            try {
+                switch(currentFormat) {
+                    case 'json':
+                        JSON.parse(code);
+                        showNotification('Valid JSON!');
+                        break;
+                    case 'yaml':
+                        jsyaml.load(code);
+                        showNotification('Valid YAML!');
+                        break;
+                    case 'xml':
+                        validateXML(code);
+                        showNotification('Valid XML!');
+                        break;
+                    case 'sql':
+                        validateSQL(code);
+                        showNotification('Valid SQL syntax!');
+                        break;
+                    case 'html':
+                        validateHTML(code);
+                        showNotification('Valid HTML!');
+                        break;
+                    case 'css':
+                        validateCSS(code);
+                        showNotification('Valid CSS!');
+                        break;
+                    default:
+                        showNotification('Validation not available for this format');
+                }
+            } catch (e) {
+                showError(`Invalid ${currentFormat.toUpperCase()}: ${e.message}`);
+            }
+        }
+        
+        // Format XML
+        function formatXML(xml, indent) {
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xml, "text/xml");
+                
+                if (xmlDoc.querySelector("parsererror")) {
+                    throw new Error("Invalid XML");
+                }
+                
+                const serializer = new XMLSerializer();
+                const formatted = serializer.serializeToString(xmlDoc);
+                
+                // Basic indentation (simplified)
+                return formatted.replace(/></g, '>\n<')
+                    .replace(/^[\s\S]*$/g, function(m) {
+                        return m.replace(/^(<[^>]+>)/gm, function(n) {
+                            return '  ' + n;
+                        });
+                    });
+            } catch (e) {
+                // Fallback to basic formatting
+                return xml.replace(/></g, '>\n<');
+            }
+        }
+        
+        // Minify XML
+        function minifyXML(xml) {
+            return xml.replace(/>\s+</g, '><').trim();
+        }
+        
+        // Format SQL (simplified)
+        function formatSQL(sql) {
+            return sql
+                .replace(/;/g, ';\n')
+                .replace(/(SELECT|FROM|WHERE|JOIN|ON|ORDER BY|GROUP BY|HAVING|LIMIT)/gi, '\n$1')
+                .replace(/\n\s*\n/g, '\n')
+                .trim();
+        }
+        
+        // Minify SQL
+        function minifySQL(sql) {
+            return sql.replace(/\s+/g, ' ').trim();
+        }
+        
+        // Format HTML (simplified)
+        function formatHTML(html, indent) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                return doc.body.innerHTML.replace(/></g, '>\n<');
+            } catch (e) {
+                return html.replace(/></g, '>\n<');
+            }
+        }
+        
+        // Minify HTML
+        function minifyHTML(html) {
+            return html.replace(/\s+/g, ' ').trim();
+        }
+        
+        // Format CSS (simplified)
+        function formatCSS(css) {
+            return css
+                .replace(/{/g, ' {\n  ')
+                .replace(/;/g, ';\n  ')
+                .replace(/}/g, '\n}\n')
+                .replace(/  }\n/g, '}\n')
+                .replace(/;\n\s*}/g, '; }')
+                .trim();
+        }
+        
+        // Minify CSS
+        function minifyCSS(css) {
+            return css.replace(/\s+/g, ' ')
+                .replace(/\s*{\s*/g, '{')
+                .replace(/\s*;\s*/g, ';')
+                .replace(/\s*}\s*/g, '}')
+                .trim();
+        }
+        
+        // Validate XML
+        function validateXML(xml) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xml, "text/xml");
+            
+            if (xmlDoc.querySelector("parsererror")) {
+                throw new Error("Invalid XML syntax");
+            }
+        }
+        
+        // Validate SQL (basic)
+        function validateSQL(sql) {
+            // Very basic validation - just check for common syntax elements
+            if (!sql.trim()) {
+                throw new Error("Empty SQL statement");
+            }
+        }
+        
+        // Validate HTML (basic)
+        function validateHTML(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            
+            if (doc.querySelector("parsererror")) {
+                throw new Error("Invalid HTML syntax");
+            }
+        }
+        
+        // Validate CSS (basic)
+        function validateCSS(css) {
+            // Very basic validation
+            if (!css.trim()) {
+                throw new Error("Empty CSS");
+            }
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy', true);
+            });
+        }
+        
+        // Show error
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        // Clear error
+        function clearError() {
+            errorDiv.style.display = 'none';
+        }
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.style.background = isError ? '#dc3545' : '#28a745';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Load example
+        function loadExample(format) {
+            let example = '';
+            
+            switch(format) {
+                case 'json':
+                    example = `{"users":[{"id":1,"name":"John Doe","email":"john@example.com","active":true,"roles":["user","admin"]},{"id":2,"name":"Jane Smith","email":"jane@example.com","active":false,"roles":["user"]}],"settings":{"theme":"dark","notifications":true,"language":"en"}}`;
+                    break;
+                case 'yaml':
+                    example = `app:
+  name: MyApp
+  version: 1.0.0
+  environment: production
+
+database:
+  host: localhost
+  port: 5432
+  name: myapp_db
+  credentials:
+    username: admin
+    password: secret123
+
+features:
+  - authentication
+  - analytics
+  - notifications
+
+logging:
+  level: info
+  file: /var/log/app.log`;
+                    break;
+                case 'xml':
+                    example = `<?xml version="1.0" encoding="UTF-8"?>
+<catalog>
+  <book id="1">
+    <author>Gambardella, Matthew</author>
+    <title>XML Developer's Guide</title>
+    <genre>Computer</genre>
+    <price>44.95</price>
+    <publish_date>2000-10-01</publish_date>
+    <description>An in-depth look at creating applications with XML.</description>
+  </book>
+  <book id="2">
+    <author>Ralls, Kim</author>
+    <title>Midnight Rain</title>
+    <genre>Fantasy</genre>
+    <price>5.95</price>
+    <publish_date>2000-12-16</publish_date>
+    <description>A former architect battles corporate zombies.</description>
+  </book>
+</catalog>`;
+                    break;
+                case 'sql':
+                    example = `SELECT u.id, u.name, u.email, p.title, p.content
+FROM users u
+JOIN posts p ON u.id = p.user_id
+WHERE u.active = 1
+  AND p.published = 1
+  AND p.created_at >= '2023-01-01'
+ORDER BY p.created_at DESC
+LIMIT 10;
+
+INSERT INTO users (name, email, created_at)
+VALUES ('John Doe', 'john@example.com', NOW()),
+       ('Jane Smith', 'jane@example.com', NOW());
+
+UPDATE products 
+SET price = price * 1.1 
+WHERE category = 'electronics';`;
+                    break;
+                case 'html':
+                    example = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #f5f5f5;
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Our Website</h1>
+    <div class="card">
+      <h2>About Us</h2>
+      <p>This is a sample paragraph about our company.</p>
+    </div>
+    <div class="card">
+      <h2>Our Services</h2>
+      <ul>
+        <li>Web Development</li>
+        <li>Mobile Apps</li>
+        <li>Consulting</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>`;
+                    break;
+                case 'css':
+                    example = `body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  color: #333;
+  margin-top: 0;
+}
+
+.card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.btn {
+  display: inline-block;
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #0056b3;
+}`;
+                    break;
+                default:
+                    example = `// Sample code for ${format}`;
+            }
+            
+            inputCode.value = example;
+            formatCode();
+        }
+    </script>
+</body>
+</html>

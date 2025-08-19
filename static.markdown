@@ -28,6 +28,7 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **[Regex Tester](/static/regex-tester/)** - Test regular expressions with real-time feedback
 - **[Base64 Encoder/Decoder](/static/base64-converter/)** - Encode and decode Base64 data
 - **[Markdown to PDF Converter](/static/markdown-pdf/)** - Convert Markdown documents to PDF files
+- **[Code Formatter](/static/code-formatter/)** - Format code in various languages (JSON, YAML, XML, SQL, HTML, CSS)
 
 ### Coming Soon
 
@@ -36,7 +37,6 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **Color Converter** - Convert between different color formats (HEX, RGB, HSL)
 - **Lorem Ipsum Generator** - Generate placeholder text for design and development
 - **QR Code Generator** - Create QR codes from text or URLs
-- **Code Formatter** - Format code in various languages (JSON, SQL, XML)
 - **Unit Converter** - Convert between different units of measurement
 - **Cron Expression Parser** - Parse and understand cron expressions
 - **URL Encoder/Decoder** - Encode and decode URLs and URL components
