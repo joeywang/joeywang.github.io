@@ -27,10 +27,10 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 
 - **[Regex Tester](/static/regex-tester/)** - Test regular expressions with real-time feedback
 - **[Base64 Encoder/Decoder](/static/base64-converter/)** - Encode and decode Base64 data
+- **[Markdown to PDF Converter](/static/markdown-pdf/)** - Convert Markdown documents to PDF files
 
 ### Coming Soon
 
-- **HTML to PDF Converter** - Convert HTML pages to PDF using WebAssembly
 - **Image Optimizer** - Compress and optimize images without uploading
 - **JWT Decoder** - Decode JSON Web Tokens to view their contents
 - **Color Converter** - Convert between different color formats (HEX, RGB, HSL)
@@ -40,7 +40,6 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **Unit Converter** - Convert between different units of measurement
 - **Cron Expression Parser** - Parse and understand cron expressions
 - **URL Encoder/Decoder** - Encode and decode URLs and URL components
-- **Markdown Preview** - Preview markdown as HTML in real-time
 - **HTTP Status Code Reference** - Quick reference for HTTP status codes
 - **Git Cheatsheet** - Common Git commands and workflows
 
