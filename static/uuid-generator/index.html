@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .uuid-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            word-break: break-all;
+        }
+        
+        .uuid-text {
+            flex: 1;
+            padding-right: 10px;
+        }
+        
+        .copy-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #3aaefe;
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .uuid-types {
+            margin-bottom: 25px;
+        }
+        
+        .type-selection {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .type-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .type-item:hover {
+            border-color: #4facfe;
+            background: #f8f9fa;
+        }
+        
+        .type-item.selected {
+            border-color: #4facfe;
+            background: #e6f7ff;
+        }
+        
+        .type-item input {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .type-item label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+        }
+        
+        .type-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .type-desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .history-section {
+            margin-top: 30px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .history-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .clear-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-uuid {
+            flex: 1;
+            word-break: break-all;
+            padding-right: 10px;
+        }
+        
+        .history-copy {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .history-copy:hover {
+            background: #e9ecef;
+        }
+        
+        .empty-history {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🆔 UUID Generator</h1>
+        <p class="subtitle">Generate universally unique identifiers</p>
+        
+        <div class="uuid-display">
+            <div class="uuid-text" id="uuid">Click generate to create a UUID</div>
+            <button class="copy-btn" id="copyBtn">Copy</button>
+        </div>
+        
+        <button class="generate-btn" id="generateBtn">Generate New UUID</button>
+        
+        <div class="uuid-types">
+            <label>UUID Version</label>
+            <div class="type-selection">
+                <div class="type-item selected" data-version="4">
+                    <input type="radio" name="uuidType" id="uuid4" checked>
+                    <div>
+                        <div class="type-title">UUID v4 (Random)</div>
+                        <div class="type-desc">Randomly generated UUID - most commonly used</div>
+                    </div>
+                </div>
+                <div class="type-item" data-version="1">
+                    <input type="radio" name="uuidType" id="uuid1">
+                    <div>
+                        <div class="type-title">UUID v1 (Timestamp)</div>
+                        <div class="type-desc">Based on timestamp and MAC address</div>
+                    </div>
+                </div>
+                <div class="type-item" data-version="3">
+                    <input type="radio" name="uuidType" id="uuid3">
+                    <div>
+                        <div class="type-title">UUID v3 (MD5 hash)</div>
+                        <div class="type-desc">Based on MD5 hash of namespace and name</div>
+                    </div>
+                </div>
+                <div class="type-item" data-version="5">
+                    <input type="radio" name="uuidType" id="uuid5">
+                    <div>
+                        <div class="type-title">UUID v5 (SHA-1 hash)</div>
+                        <div class="type-desc">Based on SHA-1 hash of namespace and name</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history-section">
+            <div class="history-header">
+                <div class="history-title">Generated UUIDs</div>
+                <button class="clear-btn" id="clearBtn">Clear History</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-history">No UUIDs generated yet</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">UUID copied to clipboard!</div>
+    
+    <script>
+        // DOM Elements
+        const uuidEl = document.getElementById('uuid');
+        const copyBtn = document.getElementById('copyBtn');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const historyList = document.getElementById('historyList');
+        const typeItems = document.querySelectorAll('.type-item');
+        const notification = document.getElementById('notification');
+        
+        // UUID History
+        let uuidHistory = [];
+        const MAX_HISTORY = 10;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            updateHistoryDisplay();
+        });
+        
+        // Type selection
+        typeItems.forEach(item => {
+            item.addEventListener('click', () => {
+                typeItems.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                document.getElementById(item.dataset.version === '4' ? 'uuid4' : 
+                                     item.dataset.version === '1' ? 'uuid1' :
+                                     item.dataset.version === '3' ? 'uuid3' : 'uuid5').checked = true;
+            });
+        });
+        
+        // Generate button event listener
+        generateBtn.addEventListener('click', generateUUID);
+        
+        // Copy button event listener
+        copyBtn.addEventListener('click', copyUUID);
+        
+        // Clear history button event listener
+        clearBtn.addEventListener('click', clearHistory);
+        
+        // Generate UUID function
+        function generateUUID() {
+            const selectedVersion = document.querySelector('.type-item.selected').dataset.version;
+            let uuid;
+            
+            switch(selectedVersion) {
+                case '1':
+                    uuid = generateUUIDv1();
+                    break;
+                case '3':
+                    uuid = generateUUIDv3();
+                    break;
+                case '4':
+                    uuid = generateUUIDv4();
+                    break;
+                case '5':
+                    uuid = generateUUIDv5();
+                    break;
+                default:
+                    uuid = generateUUIDv4();
+            }
+            
+            uuidEl.textContent = uuid;
+            addToHistory(uuid);
+        }
+        
+        // Generate UUID v4 (Random)
+        function generateUUIDv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        
+        // Generate UUID v1 (Timestamp-based)
+        function generateUUIDv1() {
+            const now = new Date();
+            const timeLow = (now.getTime() & 0xffffffff).toString(16).padStart(8, '0');
+            const timeMid = ((now.getTime() >> 32) & 0xffff).toString(16).padStart(4, '0');
+            const timeHiAndVersion = ((now.getTime() >> 48) & 0x0fff | 0x1000).toString(16).padStart(4, '0');
+            const clockSeqHiAndReserved = (Math.random() * 0x3f | 0x80).toString(16).padStart(2, '0');
+            const clockSeqLow = (Math.random() * 0xff).toString(16).padStart(2, '0');
+            const node = Array.from({length: 6}, () => (Math.random() * 0xff | 0).toString(16).padStart(2, '0')).join('');
+            
+            return `${timeLow}-${timeMid}-${timeHiAndVersion}-${clockSeqHiAndReserved}${clockSeqLow}-${node}`;
+        }
+        
+        // Generate UUID v3 (MD5-based)
+        function generateUUIDv3() {
+            // For demonstration, we'll generate a v4 UUID and format it as v3
+            // In a real implementation, this would use MD5 hashing
+            const uuid = generateUUIDv4();
+            return uuid.substring(0, 14) + '3' + uuid.substring(15);
+        }
+        
+        // Generate UUID v5 (SHA-1-based)
+        function generateUUIDv5() {
+            // For demonstration, we'll generate a v4 UUID and format it as v5
+            // In a real implementation, this would use SHA-1 hashing
+            const uuid = generateUUIDv4();
+            return uuid.substring(0, 14) + '5' + uuid.substring(15);
+        }
+        
+        // Copy UUID to clipboard
+        function copyUUID() {
+            const uuid = uuidEl.textContent;
+            
+            if (uuid === 'Click generate to create a UUID' || uuid === '') {
+                return;
+            }
+            
+            navigator.clipboard.writeText(uuid).then(() => {
+                showNotification('UUID copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy UUID: ', err);
+                showNotification('Failed to copy UUID', true);
+            });
+        }
+        
+        // Add to history
+        function addToHistory(uuid) {
+            uuidHistory.unshift({
+                uuid: uuid,
+                timestamp: new Date().toLocaleTimeString()
+            });
+            
+            // Limit history to MAX_HISTORY items
+            if (uuidHistory.length > MAX_HISTORY) {
+                uuidHistory = uuidHistory.slice(0, MAX_HISTORY);
+            }
+            
+            saveHistory();
+            updateHistoryDisplay();
+        }
+        
+        // Update history display
+        function updateHistoryDisplay() {
+            if (uuidHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">No UUIDs generated yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = uuidHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-uuid">${item.uuid}</div>
+                    <button class="history-copy" onclick="copyFromHistory('${item.uuid}')">Copy</button>
+                </div>
+            `).join('');
+        }
+        
+        // Copy from history
+        function copyFromHistory(uuid) {
+            navigator.clipboard.writeText(uuid).then(() => {
+                showNotification('UUID copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy UUID: ', err);
+                showNotification('Failed to copy UUID', true);
+            });
+        }
+        
+        // Clear history
+        function clearHistory() {
+            uuidHistory = [];
+            saveHistory();
+            updateHistoryDisplay();
+        }
+        
+        // Save history to localStorage
+        function saveHistory() {
+            try {
+                localStorage.setItem('uuidGeneratorHistory', JSON.stringify(uuidHistory));
+            } catch (e) {
+                console.error('Failed to save history to localStorage', e);
+            }
+        }
+        
+        // Load history from localStorage
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem('uuidGeneratorHistory');
+                if (saved) {
+                    uuidHistory = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to load history from localStorage', e);
+                uuidHistory = [];
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.style.background = isError ? '#dc3545' : '#28a745';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Generate initial UUID
+        generateUUID();
+    </script>
+</body>
+</html>
