@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Status Codes Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #84fab0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #84fab0;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-category {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .category-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-title .range {
+            background: #84fab0;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .status-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .status-code {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        .status-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .usage {
+            background: #fff;
+            border-left: 3px solid #84fab0;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HTTP Status Codes Cheatsheet</h1>
+            <p class="subtitle">Common HTTP status codes and their meanings</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Cheatsheets</a>
+        
+        <div class="section">
+            <h2 class="section-title">Informational Responses (100-199)</h2>
+            <div class="status-grid">
+                <div class="status-category">
+                    <div class="category-title">
+                        1xx Informational
+                        <span class="range">100-199</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">100</div>
+                            <div class="status-name">Continue</div>
+                        </div>
+                        <div class="status-description">The server has received the request headers and the client should proceed to send the request body.</div>
+                        <div class="usage">Used in HTTP/1.1 to resume or continue requests with large bodies.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">101</div>
+                            <div class="status-name">Switching Protocols</div>
+                        </div>
+                        <div class="status-description">The requester has asked the server to switch protocols and the server has agreed to do so.</div>
+                        <div class="usage">Commonly used for WebSocket upgrades.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">102</div>
+                            <div class="status-name">Processing (WebDAV)</div>
+                        </div>
+                        <div class="status-description">The server has received and is processing the request, but no response is available yet.</div>
+                        <div class="usage">Used to prevent timeouts in WebDAV requests that take time.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Successful Responses (200-299)</h2>
+            <div class="status-grid">
+                <div class="status-category">
+                    <div class="category-title">
+                        2xx Success
+                        <span class="range">200-299</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">200</div>
+                            <div class="status-name">OK</div>
+                        </div>
+                        <div class="status-description">The request has succeeded. The meaning of the success depends on the HTTP method.</div>
+                        <div class="usage">Standard response for successful GET, POST, PUT, PATCH, or DELETE requests.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">201</div>
+                            <div class="status-name">Created</div>
+                        </div>
+                        <div class="status-description">The request has been fulfilled, resulting in the creation of a new resource.</div>
+                        <div class="usage">Standard response for successful POST requests that create resources.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">202</div>
+                            <div class="status-name">Accepted</div>
+                        </div>
+                        <div class="status-description">The request has been accepted for processing, but the processing has not been completed.</div>
+                        <div class="usage">Used for asynchronous processing where the result is not immediately available.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">204</div>
+                            <div class="status-name">No Content</div>
+                        </div>
+                        <div class="status-description">The server successfully processed the request and is not returning any content.</div>
+                        <div class="usage">Commonly returned by DELETE requests or API endpoints that don't need to return data.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">206</div>
+                            <div class="status-name">Partial Content</div>
+                        </div>
+                        <div class="status-description">The server is delivering only part of the resource due to a range header sent by the client.</div>
+                        <div class="usage">Used for resumeable downloads or streaming content.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Redirection Messages (300-399)</h2>
+            <div class="status-grid">
+                <div class="status-category">
+                    <div class="category-title">
+                        3xx Redirection
+                        <span class="range">300-399</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">301</div>
+                            <div class="status-name">Moved Permanently</div>
+                        </div>
+                        <div class="status-description">The resource has been moved permanently to a new URI.</div>
+                        <div class="usage">Used for permanent URL redirections. Browsers cache this redirect.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">302</div>
+                            <div class="status-name">Found (Moved Temporarily)</div>
+                        </div>
+                        <div class="status-description">The resource is temporarily under a different URI.</div>
+                        <div class="usage">Used for temporary redirects. Browsers do not cache this redirect.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">304</div>
+                            <div class="status-name">Not Modified</div>
+                        </div>
+                        <div class="status-description">The resource has not been modified since the version specified by the request headers.</div>
+                        <div class="usage">Used for caching. Client can use cached version of resource.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">307</div>
+                            <div class="status-name">Temporary Redirect</div>
+                        </div>
+                        <div class="status-description">The target resource resides temporarily under a different URI.</div>
+                        <div class="usage">Similar to 302 but requires the same HTTP method to be used.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">308</div>
+                            <div class="status-name">Permanent Redirect</div>
+                        </div>
+                        <div class="status-description">The target resource has been assigned a new permanent URI.</div>
+                        <div class="usage">Similar to 301 but requires the same HTTP method to be used.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Client Error Responses (400-499)</h2>
+            <div class="status-grid">
+                <div class="status-category">
+                    <div class="category-title">
+                        4xx Client Errors
+                        <span class="range">400-499</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">400</div>
+                            <div class="status-name">Bad Request</div>
+                        </div>
+                        <div class="status-description">The server cannot or will not process the request due to something that is perceived to be a client error.</div>
+                        <div class="usage">Generic client error response for malformed requests.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">401</div>
+                            <div class="status-name">Unauthorized</div>
+                        </div>
+                        <div class="status-description">The client must authenticate itself to get the requested response.</div>
+                        <div class="usage">Returned when authentication is required but has failed or not been provided.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">403</div>
+                            <div class="status-name">Forbidden</div>
+                        </div>
+                        <div class="status-description">The client does not have access rights to the content.</div>
+                        <div class="usage">Returned when user is authenticated but doesn't have permission to access the resource.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">404</div>
+                            <div class="status-name">Not Found</div>
+                        </div>
+                        <div class="status-description">The server cannot find the requested resource.</div>
+                        <div class="usage">Most common error when a resource doesn't exist at the requested URI.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">405</div>
+                            <div class="status-name">Method Not Allowed</div>
+                        </div>
+                        <div class="status-description">The request method is known by the server but is not supported by the target resource.</div>
+                        <div class="usage">Returned when trying to use POST on a read-only resource, for example.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">409</div>
+                            <div class="status-name">Conflict</div>
+                        </div>
+                        <div class="status-description">The request conflicts with the current state of the server.</div>
+                        <div class="usage">Commonly returned when trying to create a resource that already exists.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">410</div>
+                            <div class="status-name">Gone</div>
+                        </div>
+                        <div class="status-description">The resource requested is no longer available and will not be available again.</div>
+                        <div class="usage">Used when a resource has been permanently deleted.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">422</div>
+                            <div class="status-name">Unprocessable Entity</div>
+                        </div>
+                        <div class="status-description">The request was well-formed but was unable to be followed due to semantic errors.</div>
+                        <div class="usage">Commonly returned by APIs when validation fails.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">429</div>
+                            <div class="status-name">Too Many Requests</div>
+                        </div>
+                        <div class="status-description">The user has sent too many requests in a given amount of time.</div>
+                        <div class="usage">Used for rate limiting to prevent abuse.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Server Error Responses (500-599)</h2>
+            <div class="status-grid">
+                <div class="status-category">
+                    <div class="category-title">
+                        5xx Server Errors
+                        <span class="range">500-599</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">500</div>
+                            <div class="status-name">Internal Server Error</div>
+                        </div>
+                        <div class="status-description">The server has encountered a situation it doesn't know how to handle.</div>
+                        <div class="usage">Generic server error response when no more specific message is appropriate.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">501</div>
+                            <div class="status-name">Not Implemented</div>
+                        </div>
+                        <div class="status-description">The request method is not supported by the server and cannot be handled.</div>
+                        <div class="usage">Returned when the server doesn't recognize the request method.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">502</div>
+                            <div class="status-name">Bad Gateway</div>
+                        </div>
+                        <div class="status-description">The server, while acting as a gateway or proxy, received an invalid response from the upstream server.</div>
+                        <div class="usage">Common in microservice architectures when a downstream service fails.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">503</div>
+                            <div class="status-name">Service Unavailable</div>
+                        </div>
+                        <div class="status-description">The server is not ready to handle the request, often due to maintenance or overload.</div>
+                        <div class="usage">Used during maintenance windows or when server is temporarily overloaded.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">504</div>
+                            <div class="status-name">Gateway Timeout</div>
+                        </div>
+                        <div class="status-description">The server, while acting as a gateway or proxy, did not get a response in time from the upstream server.</div>
+                        <div class="usage">Returned when a gateway times out waiting for a response from another server.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header">
+                            <div class="status-code">505</div>
+                            <div class="status-name">HTTP Version Not Supported</div>
+                        </div>
+                        <div class="status-description">The HTTP version used in the request is not supported by the server.</div>
+                        <div class="usage">Rarely used. Returned when server doesn't support the HTTP version in the request.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

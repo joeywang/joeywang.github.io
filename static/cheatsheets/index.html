@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Cheatsheets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: #333;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 30px auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .category-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #ff9a9e;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cheatsheets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .cheatsheet-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cheatsheet-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-category {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .card-link {
+            display: inline-block;
+            background: #ff9a9e;
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .card-link:hover {
+            background: #ff7b8a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .cheatsheets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Developer Cheatsheets</h1>
+            <p class="subtitle">Quick references for developers - all in one place</p>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search cheatsheets...">
+        </div>
+        
+        <div class="categories">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="web">Web</button>
+            <button class="category-btn" data-category="backend">Backend</button>
+            <button class="category-btn" data-category="devops">DevOps</button>
+            <button class="category-btn" data-category="database">Database</button>
+            <button class="category-btn" data-category="tools">Tools</button>
+        </div>
+        
+        <div class="cheatsheets-grid">
+            <div class="cheatsheet-card" data-category="web">
+                <div class="card-header">
+                    <h2 class="card-title">HTML Cheatsheet</h2>
+                    <div class="card-category">Web</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Essential HTML tags, elements, and attributes for web development.</p>
+                    <a href="html-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="web">
+                <div class="card-header">
+                    <h2 class="card-title">CSS Cheatsheet</h2>
+                    <div class="card-category">Web</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Common CSS properties, selectors, and layout techniques.</p>
+                    <a href="css-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="web">
+                <div class="card-header">
+                    <h2 class="card-title">JavaScript Cheatsheet</h2>
+                    <div class="card-category">Web</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Key JavaScript syntax, methods, and ES6+ features.</p>
+                    <a href="javascript-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="backend">
+                <div class="card-header">
+                    <h2 class="card-title">Git Cheatsheet</h2>
+                    <div class="card-category">Tools</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Essential Git commands for version control.</p>
+                    <a href="git-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="database">
+                <div class="card-header">
+                    <h2 class="card-title">SQL Cheatsheet</h2>
+                    <div class="card-category">Database</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Common SQL queries, joins, and database operations.</p>
+                    <a href="sql-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="devops">
+                <div class="card-header">
+                    <h2 class="card-title">Docker Cheatsheet</h2>
+                    <div class="card-category">DevOps</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Essential Docker commands for containerization.</p>
+                    <a href="docker-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="tools">
+                <div class="card-header">
+                    <h2 class="card-title">Regex Cheatsheet</h2>
+                    <div class="card-category">Tools</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Common regular expressions and patterns.</p>
+                    <a href="regex-cheatsheet.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+            
+            <div class="cheatsheet-card" data-category="backend">
+                <div class="card-header">
+                    <h2 class="card-title">HTTP Status Codes</h2>
+                    <div class="card-category">Backend</div>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Common HTTP status codes and their meanings.</p>
+                    <a href="http-status-codes.html" class="card-link">View Cheatsheet</a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>All cheatsheets are client-side and run in your browser. No data is sent to any server.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Category filtering
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const cheatsheetCards = document.querySelectorAll('.cheatsheet-card');
+        
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                const category = button.getAttribute('data-category');
+                
+                // Filter cards
+                cheatsheetCards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            cheatsheetCards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-description').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

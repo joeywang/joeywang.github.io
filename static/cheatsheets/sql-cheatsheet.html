@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ffecd2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffecd2;
+        }
+        
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .cheatsheet-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .item-content {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .item-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .two-column {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .cheatsheet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .two-column {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL Cheatsheet</h1>
+            <p class="subtitle">Common SQL queries, joins, and database operations</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Cheatsheets</a>
+        
+        <div class="section">
+            <h2 class="section-title">Data Definition Language (DDL)</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Creating Tables</div>
+                    <div class="item-content">CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE,
+  age INT CHECK (age >= 0),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id),
+  amount DECIMAL(10,2),
+  status VARCHAR(50) DEFAULT 'pending'
+);</div>
+                    <div class="item-description">Creating tables with constraints</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Modifying Tables</div>
+                    <div class="item-content">ALTER TABLE users
+ADD COLUMN phone VARCHAR(20);
+
+ALTER TABLE users
+DROP COLUMN phone;
+
+ALTER TABLE users
+ALTER COLUMN email TYPE VARCHAR(300);
+
+ALTER TABLE users
+RENAME COLUMN name TO full_name;
+
+ALTER TABLE users
+ADD CONSTRAINT unique_email UNIQUE (email);
+
+DROP TABLE IF EXISTS temp_table;</div>
+                    <div class="item-description">Modifying existing table structure</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Data Manipulation Language (DML)</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">INSERT Statements</div>
+                    <div class="item-content">INSERT INTO users (name, email, age)
+VALUES ('John Doe', 'john@example.com', 30);
+
+INSERT INTO users (name, email, age)
+VALUES 
+  ('Jane Smith', 'jane@example.com', 25),
+  ('Bob Johnson', 'bob@example.com', 35);
+
+INSERT INTO users (name, email)
+SELECT name, email 
+FROM temp_users 
+WHERE active = true;</div>
+                    <div class="item-description">Adding data to tables</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">UPDATE Statements</div>
+                    <div class="item-content">UPDATE users
+SET age = 31
+WHERE id = 1;
+
+UPDATE users
+SET 
+  email = 'newemail@example.com',
+  is_active = false
+WHERE age > 65;
+
+UPDATE users
+SET age = age + 1
+WHERE birth_year = 1990;</div>
+                    <div class="item-description">Modifying existing data</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">DELETE Statements</div>
+                    <div class="item-content">DELETE FROM users
+WHERE id = 1;
+
+DELETE FROM users
+WHERE created_at < '2020-01-01';
+
+DELETE FROM users
+WHERE status = 'inactive';
+
+-- Delete all records (be careful!)
+DELETE FROM users;
+
+-- Truncate (faster, resets auto-increment)
+TRUNCATE TABLE users;</div>
+                    <div class="item-description">Removing data from tables</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">SELECT Queries</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Basic SELECT</div>
+                    <div class="item-content">SELECT * FROM users;
+
+SELECT name, email FROM users;
+
+SELECT DISTINCT country FROM users;
+
+SELECT name AS user_name, email AS user_email
+FROM users;
+
+SELECT COUNT(*) FROM users;
+
+SELECT COUNT(*) as user_count
+FROM users
+WHERE age >= 18;</div>
+                    <div class="item-description">Basic data retrieval</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">WHERE Clause</div>
+                    <div class="item-content">SELECT * FROM users
+WHERE age > 25;
+
+SELECT * FROM users
+WHERE name LIKE 'John%';
+
+SELECT * FROM users
+WHERE email IN ('john@example.com', 'jane@example.com');
+
+SELECT * FROM users
+WHERE age BETWEEN 18 AND 65;
+
+SELECT * FROM users
+WHERE created_at >= '2023-01-01';
+
+SELECT * FROM users
+WHERE is_active = true
+AND age > 18
+OR email LIKE '%.edu';</div>
+                    <div class="item-description">Filtering query results</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Sorting and Limiting</div>
+                    <div class="item-content">SELECT * FROM users
+ORDER BY name ASC;
+
+SELECT * FROM users
+ORDER BY age DESC, name ASC;
+
+SELECT * FROM users
+ORDER BY created_at DESC
+LIMIT 10;
+
+SELECT * FROM users
+ORDER BY id
+LIMIT 10 OFFSET 20; -- Skip first 20, get next 10</div>
+                    <div class="item-description">Sorting and pagination</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Joins</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">INNER JOIN</div>
+                    <div class="item-content">SELECT u.name, o.amount, o.status
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
+
+SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name;</div>
+                    <div class="item-description">Matching records from both tables</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">LEFT/RIGHT JOIN</div>
+                    <div class="item-content">SELECT u.name, o.amount
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
+
+SELECT u.name, COALESCE(SUM(o.amount), 0) as total_spent
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name;</div>
+                    <div class="item-description">Including unmatched records</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">FULL OUTER JOIN</div>
+                    <div class="item-content">SELECT u.name, o.amount
+FROM users u
+FULL OUTER JOIN orders o ON u.id = o.user_id;
+
+SELECT 
+  COALESCE(u.name, 'No User') as user_name,
+  COALESCE(o.amount, 0) as amount
+FROM users u
+FULL OUTER JOIN orders o ON u.id = o.user_id;</div>
+                    <div class="item-description">All records from both tables</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Aggregation and Grouping</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Aggregate Functions</div>
+                    <div class="item-content">SELECT 
+  COUNT(*) as total_users,
+  AVG(age) as average_age,
+  MIN(age) as youngest,
+  MAX(age) as oldest,
+  SUM(balance) as total_balance
+FROM users;
+
+SELECT 
+  country,
+  COUNT(*) as user_count,
+  AVG(age) as avg_age
+FROM users
+GROUP BY country;</div>
+                    <div class="item-description">Calculating summary statistics</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">HAVING Clause</div>
+                    <div class="item-content">SELECT country, COUNT(*) as user_count
+FROM users
+GROUP BY country
+HAVING COUNT(*) > 10;
+
+SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name
+HAVING COUNT(o.id) > 5;
+
+SELECT 
+  EXTRACT(YEAR FROM created_at) as year,
+  COUNT(*) as user_count
+FROM users
+GROUP BY EXTRACT(YEAR FROM created_at)
+HAVING COUNT(*) > 100;</div>
+                    <div class="item-description">Filtering grouped results</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Subqueries and Advanced</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Subqueries</div>
+                    <div class="item-content">SELECT name, email
+FROM users
+WHERE id IN (
+  SELECT user_id 
+  FROM orders 
+  WHERE amount > 1000
+);
+
+SELECT name, email
+FROM users
+WHERE age > (
+  SELECT AVG(age) 
+  FROM users
+);
+
+SELECT 
+  name,
+  (SELECT COUNT(*) FROM orders WHERE user_id = u.id) as order_count
+FROM users u;</div>
+                    <div class="item-description">Queries within queries</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">UNION and CASE</div>
+                    <div class="item-content">SELECT name FROM users
+UNION
+SELECT company_name FROM companies;
+
+SELECT 
+  name,
+  CASE 
+    WHEN age < 18 THEN 'Minor'
+    WHEN age BETWEEN 18 AND 65 THEN 'Adult'
+    ELSE 'Senior'
+  END as age_group
+FROM users;</div>
+                    <div class="item-description">Combining results and conditional logic</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Window Functions</div>
+                    <div class="item-content">SELECT 
+  name,
+  salary,
+  ROW_NUMBER() OVER (ORDER BY salary DESC) as rank,
+  RANK() OVER (ORDER BY salary DESC) as salary_rank,
+  LAG(salary) OVER (ORDER BY hire_date) as prev_salary
+FROM employees;
+
+SELECT 
+  department,
+  name,
+  salary,
+  AVG(salary) OVER (PARTITION BY department) as dept_avg
+FROM employees;</div>
+                    <div class="item-description">Advanced analytical functions</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Common Functions</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">String Functions</div>
+                    <div class="item-content">SELECT 
+  UPPER(name) as upper_name,
+  LOWER(email) as lower_email,
+  LENGTH(name) as name_length,
+  SUBSTRING(email, 1, 5) as email_part,
+  CONCAT(first_name, ' ', last_name) as full_name,
+  REPLACE(email, 'old.com', 'new.com') as updated_email,
+  TRIM('  text  ') as trimmed_text
+FROM users;</div>
+                    <div class="item-description">Text manipulation functions</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Date Functions</div>
+                    <div class="item-content">SELECT 
+  created_at,
+  DATE(created_at) as date_only,
+  EXTRACT(YEAR FROM created_at) as year,
+  EXTRACT(MONTH FROM created_at) as month,
+  DATE_PART('year', created_at) as year_part,
+  NOW() as current_time,
+  CURRENT_DATE as today,
+  created_at + INTERVAL '1 day' as tomorrow
+FROM users;</div>
+                    <div class="item-description">Date and time manipulation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

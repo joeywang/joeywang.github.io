@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #84fab0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #84fab0;
+        }
+        
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .cheatsheet-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .item-content {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .item-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .two-column {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .cheatsheet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .two-column {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Git Cheatsheet</h1>
+            <p class="subtitle">Essential Git commands for version control</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Cheatsheets</a>
+        
+        <div class="section">
+            <h2 class="section-title">Setup and Configuration</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Global Configuration</div>
+                    <div class="item-content"># Set global username
+git config --global user.name "Your Name"
+
+# Set global email
+git config --global user.email "you@example.com"
+
+# Set default editor
+git config --global core.editor "code --wait"
+
+# List all global settings
+git config --global --list
+
+# Set default branch name
+git config --global init.defaultBranch main</div>
+                    <div class="item-description">Global Git configuration</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Repository Setup</div>
+                    <div class="item-content"># Initialize a new repository
+git init
+
+# Clone an existing repository
+git clone https://github.com/user/repo.git
+
+# Clone to a specific directory
+git clone https://github.com/user/repo.git my-project
+
+# Clone a specific branch
+git clone -b branch-name https://github.com/user/repo.git</div>
+                    <div class="item-description">Setting up Git repositories</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Basic Snapshotting</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Working with Files</div>
+                    <div class="item-content"># Check repository status
+git status
+
+# Add files to staging
+git add file.txt
+git add *.js
+git add .                    # Add all changes
+
+# Remove files
+git rm file.txt
+git rm --cached file.txt     # Remove from tracking only
+
+# Move/rename files
+git mv old.txt new.txt
+
+# Commit changes
+git commit -m "Commit message"
+git commit -a -m "Commit all tracked files"</div>
+                    <div class="item-description">Basic file operations</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Viewing Changes</div>
+                    <div class="item-content"># View changes in working directory
+git diff
+
+# View staged changes
+git diff --staged
+git diff --cached
+
+# View changes for specific file
+git diff file.txt
+
+# Compare branches
+git diff branch1..branch2
+
+# View commit history
+git log
+git log --oneline
+git log -5                     # Last 5 commits
+git log --author="John"
+git log --since="2 weeks ago"</div>
+                    <div class="item-description">Viewing changes and history</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Branching and Merging</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Branch Management</div>
+                    <div class="item-content"># List branches
+git branch
+git branch -r                  # Remote branches
+git branch -a                  # All branches
+
+# Create a new branch
+git branch feature-branch
+
+# Switch to a branch
+git checkout feature-branch
+git switch feature-branch       # Newer syntax
+
+# Create and switch in one command
+git checkout -b feature-branch
+git switch -c feature-branch    # Newer syntax
+
+# Delete a branch
+git branch -d feature-branch    # Safe delete
+git branch -D feature-branch    # Force delete</div>
+                    <div class="item-description">Branch creation and management</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Merging</div>
+                    <div class="item-content"># Merge a branch
+git checkout main
+git merge feature-branch
+
+# Merge without fast-forward
+git merge --no-ff feature-branch
+
+# Abort a merge (if conflicts)
+git merge --abort
+
+# Rebase (alternative to merge)
+git checkout feature-branch
+git rebase main
+
+# Abort a rebase
+git rebase --abort
+
+# Continue after resolving conflicts
+git rebase --continue</div>
+                    <div class="item-description">Branch merging strategies</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Remote Branches</div>
+                    <div class="item-content"># List remote repositories
+git remote -v
+
+# Add a remote
+git remote add origin https://github.com/user/repo.git
+
+# Fetch changes from remote
+git fetch origin
+git fetch origin branch-name
+
+# Pull changes (fetch + merge)
+git pull origin main
+git pull --rebase origin main
+
+# Push changes
+git push origin main
+git push -u origin feature-branch  # Set upstream
+git push origin --delete branch-name  # Delete remote branch</div>
+                    <div class="item-description">Working with remote repositories</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Undoing Changes</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Undoing Working Directory Changes</div>
+                    <div class="item-content"># Discard changes in working directory
+git checkout -- file.txt
+git restore file.txt            # Newer syntax
+
+# Discard all changes
+git checkout -- .
+git restore .                   # Newer syntax
+
+# Unstage files
+git reset HEAD file.txt
+git restore --staged file.txt   # Newer syntax
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit and changes
+git reset --hard HEAD~1
+
+# Revert a specific commit
+git revert commit-hash</div>
+                    <div class="item-description">Reverting and undoing changes</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Advanced Undoing</div>
+                    <div class="item-content"># Reset to specific commit
+git reset --hard commit-hash
+
+# Reset to remote state
+git fetch origin
+git reset --hard origin/main
+
+# Recover deleted commits
+git reflog
+git reset --hard HEAD@{1}
+
+# Cherry-pick specific commits
+git cherry-pick commit-hash
+
+# Create a tag
+git tag v1.0
+git tag -a v1.0 -m "Version 1.0"
+git push origin v1.0</div>
+                    <div class="item-description">Advanced recovery techniques</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Stashing and Cleaning</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Stashing Changes</div>
+                    <div class="item-content"># Stash current changes
+git stash
+
+# Stash with description
+git stash save "Work in progress"
+
+# List stashes
+git stash list
+
+# Apply latest stash
+git stash apply
+
+# Apply specific stash
+git stash apply stash@{1}
+
+# Apply and remove stash
+git stash pop
+
+# Drop a stash
+git stash drop
+git stash drop stash@{1}
+
+# Clear all stashes
+git stash clear</div>
+                    <div class="item-description">Temporarily saving changes</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Cleaning</div>
+                    <div class="item-content"># Remove untracked files
+git clean -f
+
+# Remove untracked files and directories
+git clean -fd
+
+# Dry run (see what would be removed)
+git clean -n
+
+# Remove ignored files too
+git clean -fdx
+
+# Interactive cleaning
+git clean -fdi</div>
+                    <div class="item-description">Removing untracked files</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Inspection and Comparison</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Viewing History</div>
+                    <div class="item-content"># Detailed log
+git log --stat
+git log -p                      # Show patches
+git log --graph --oneline --all
+
+# Search commit messages
+git log --grep="bugfix"
+
+# Search in commit content
+git log -S "function_name"
+
+# Show specific commit
+git show commit-hash
+git show HEAD~2
+
+# View file history
+git log --follow file.txt
+
+# Compare commits
+git diff commit1 commit2</div>
+                    <div class="item-description">Detailed history inspection</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Blame and Bisect</div>
+                    <div class="item-content"># See who changed each line
+git blame file.txt
+
+# See who changed specific lines
+git blame -L 10,20 file.txt
+
+# Binary search for bug
+git bisect start
+git bisect bad                  # Current commit is bad
+git bisect good v1.0            # Last good commit
+# Test the code, then:
+git bisect bad                  # If still bad
+git bisect good                 # If good
+git bisect reset                # Exit bisect mode</div>
+                    <div class="item-description">Finding when bugs were introduced</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

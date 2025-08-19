@@ -30,6 +30,18 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **[Markdown to PDF Converter](/static/markdown-pdf/)** - Convert Markdown documents to PDF files
 - **[Code Formatter](/static/code-formatter/)** - Format code in various languages (JSON, YAML, XML, SQL, HTML, CSS)
 
+### Developer Cheatsheets
+
+- **[Cheatsheet Collection](/static/cheatsheets/)** - Quick references for common developer tasks
+  - [HTML Cheatsheet](/static/cheatsheets/html-cheatsheet.html) - Essential HTML tags and elements
+  - [CSS Cheatsheet](/static/cheatsheets/css-cheatsheet.html) - Common CSS properties and layout techniques
+  - [JavaScript Cheatsheet](/static/cheatsheets/javascript-cheatsheet.html) - Key JavaScript syntax and methods
+  - [Git Cheatsheet](/static/cheatsheets/git-cheatsheet.html) - Essential Git commands for version control
+  - [SQL Cheatsheet](/static/cheatsheets/sql-cheatsheet.html) - Common SQL queries and operations
+  - [Docker Cheatsheet](/static/cheatsheets/docker-cheatsheet.html) - Essential Docker commands
+  - [Regex Cheatsheet](/static/cheatsheets/regex-cheatsheet.html) - Common regular expressions
+  - [HTTP Status Codes](/static/cheatsheets/http-status-codes.html) - Quick reference for HTTP status codes
+
 ### Coming Soon
 
 - **Image Optimizer** - Compress and optimize images without uploading
@@ -40,7 +52,5 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **Unit Converter** - Convert between different units of measurement
 - **Cron Expression Parser** - Parse and understand cron expressions
 - **URL Encoder/Decoder** - Encode and decode URLs and URL components
-- **HTTP Status Code Reference** - Quick reference for HTTP status codes
-- **Git Cheatsheet** - Common Git commands and workflows
 
 These tools are designed to be lightweight, fast, and completely client-side. They use modern web technologies including HTML5, CSS3, and JavaScript ES6+ features. Some tools will leverage WebAssembly for more complex operations while maintaining client-side execution.

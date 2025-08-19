@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #a1c4fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #a1c4fd;
+        }
+        
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .cheatsheet-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .item-content {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .item-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .two-column {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .cheatsheet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .two-column {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Docker Cheatsheet</h1>
+            <p class="subtitle">Essential Docker commands for containerization</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Cheatsheets</a>
+        
+        <div class="section">
+            <h2 class="section-title">Images</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Pulling and Listing Images</div>
+                    <div class="item-content"># Pull an image
+docker pull nginx
+docker pull ubuntu:20.04
+
+# List images
+docker images
+docker image ls
+
+# Remove images
+docker rmi image_name
+docker image rm image_name
+docker rmi -f image_name  # Force remove
+
+# Remove unused images
+docker image prune
+docker image prune -a     # Remove all unused</div>
+                    <div class="item-description">Working with Docker images</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Building Images</div>
+                    <div class="item-content"># Build from Dockerfile
+docker build -t myapp:latest .
+
+# Build with specific Dockerfile
+docker build -f Dockerfile.prod -t myapp:prod .
+
+# Build with build arguments
+docker build --build-arg NODE_ENV=production -t myapp .
+
+# Tag an image
+docker tag myapp:latest myapp:v1.0
+docker tag myapp:latest registry/myapp:latest</div>
+                    <div class="item-description">Creating custom Docker images</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Containers</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Running Containers</div>
+                    <div class="item-content"># Run a container
+docker run nginx
+
+# Run with name and port mapping
+docker run -d --name web -p 8080:80 nginx
+
+# Run interactively
+docker run -it ubuntu /bin/bash
+
+# Run with environment variables
+docker run -e NODE_ENV=production myapp
+
+# Run with volume mounting
+docker run -v /host/path:/container/path myapp
+
+# Run with restart policy
+docker run --restart=always -d myapp</div>
+                    <div class="item-description">Starting and running containers</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Container Management</div>
+                    <div class="item-content"># List containers
+docker ps
+docker ps -a          # Include stopped
+
+# Stop/start containers
+docker stop container_name
+docker start container_name
+docker restart container_name
+
+# Remove containers
+docker rm container_name
+docker rm -f container_name   # Force remove
+
+# Execute commands in running container
+docker exec -it container_name /bin/bash
+docker exec container_name ls /app</div>
+                    <div class="item-description">Managing running containers</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Container Inspection</div>
+                    <div class="item-content"># View container logs
+docker logs container_name
+docker logs -f container_name  # Follow logs
+docker logs --since "1h" container_name
+
+# View container details
+docker inspect container_name
+
+# View resource usage
+docker stats
+docker stats container_name
+
+# View processes in container
+docker top container_name
+
+# Copy files
+docker cp container:/file/path ./local/path
+docker cp ./local/path container:/file/path</div>
+                    <div class="item-description">Monitoring and inspecting containers</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Docker Compose</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Basic Compose Commands</div>
+                    <div class="item-content"># Start services
+docker-compose up
+docker-compose up -d        # Detached mode
+
+# Start specific services
+docker-compose up service1 service2
+
+# Stop services
+docker-compose down
+docker-compose down --volumes  # Remove volumes
+
+# View status
+docker-compose ps
+docker-compose logs
+
+# Execute commands
+docker-compose exec service_name /bin/bash
+docker-compose run service_name command</div>
+                    <div class="item-description">Docker Compose basics</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Compose Management</div>
+                    <div class="item-content"># Build services
+docker-compose build
+docker-compose build service_name
+
+# Rebuild and start
+docker-compose up --build
+
+# Scale services
+docker-compose up --scale web=3
+
+# View processes
+docker-compose top
+
+# View logs
+docker-compose logs
+docker-compose logs service_name
+docker-compose logs -f        # Follow logs
+
+# Validate configuration
+docker-compose config</div>
+                    <div class="item-description">Advanced Compose operations</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Volumes and Networks</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Volume Management</div>
+                    <div class="item-content"># Create volumes
+docker volume create myvolume
+
+# List volumes
+docker volume ls
+
+# Inspect volumes
+docker volume inspect myvolume
+
+# Remove volumes
+docker volume rm myvolume
+docker volume prune          # Remove unused
+
+# Use named volumes
+docker run -v myvolume:/data myapp
+
+# Use bind mounts
+docker run -v /host/path:/container/path myapp
+
+# Use tmpfs
+docker run --tmpfs /tmp myapp</div>
+                    <div class="item-description">Persistent data storage</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Network Management</div>
+                    <div class="item-content"># List networks
+docker network ls
+
+# Create networks
+docker network create mynetwork
+docker network create --driver bridge mybridge
+
+# Inspect networks
+docker network inspect mynetwork
+
+# Remove networks
+docker network rm mynetwork
+docker network prune         # Remove unused
+
+# Connect containers to networks
+docker network connect mynetwork container_name
+docker network disconnect mynetwork container_name
+
+# Run container on specific network
+docker run --network mynetwork myapp</div>
+                    <div class="item-description">Container networking</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Advanced Docker</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Docker System</div>
+                    <div class="item-content"># View system information
+docker info
+
+# View disk usage
+docker system df
+
+# Clean up unused data
+docker system prune
+docker system prune -a       # Remove all unused
+
+# View daemon logs
+docker system events
+
+# View Docker version
+docker version
+
+# Login to registry
+docker login
+docker logout</div>
+                    <div class="item-description">System-level Docker commands</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Multi-stage Builds</div>
+                    <div class="item-content"># Example Dockerfile
+FROM node:14 AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine AS production
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]</div>
+                    <div class="item-description">Optimizing Docker images</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Dockerfile Best Practices</div>
+                    <div class="item-content"># Use specific tags
+FROM node:14-alpine
+
+# Leverage layer caching
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+
+# Use multi-stage builds
+# Run as non-root user
+USER node
+
+# Set working directory
+WORKDIR /app
+
+# Expose ports explicitly
+EXPOSE 3000
+
+# Use .dockerignore</div>
+                    <div class="item-description">Writing efficient Dockerfiles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

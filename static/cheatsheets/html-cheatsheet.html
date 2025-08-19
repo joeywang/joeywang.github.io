@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ff9a9e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff9a9e;
+        }
+        
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .cheatsheet-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .item-content {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .item-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .two-column {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .cheatsheet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .two-column {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HTML Cheatsheet</h1>
+            <p class="subtitle">Essential HTML tags and elements for web development</p>
+        </header>
+        
+        <a href="index.html" class="back-link">← Back to Cheatsheets</a>
+        
+        <div class="section">
+            <h2 class="section-title">Basic Structure</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">HTML5 Document Structure</div>
+                    <div class="item-content">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Page Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Content --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+                    <div class="item-description">Basic HTML5 document structure with essential elements</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Meta Tags</div>
+                    <div class="item-content">&lt;meta name="description" content="Page description"&gt;
+&lt;meta name="keywords" content="HTML, CSS, JavaScript"&gt;
+&lt;meta name="author" content="Author Name"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</div>
+                    <div class="item-description">Common meta tags for SEO and responsive design</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Text Formatting</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Headings</div>
+                    <div class="item-content">&lt;h1&gt;Heading 1&lt;/h1&gt;
+&lt;h2&gt;Heading 2&lt;/h2&gt;
+&lt;h3&gt;Heading 3&lt;/h3&gt;
+&lt;h4&gt;Heading 4&lt;/h4&gt;
+&lt;h5&gt;Heading 5&lt;/h5&gt;
+&lt;h6&gt;Heading 6&lt;/h6&gt;</div>
+                    <div class="item-description">Six levels of HTML headings</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Text Elements</div>
+                    <div class="item-content">&lt;p&gt;Paragraph&lt;/p&gt;
+&lt;strong&gt;Bold text&lt;/strong&gt;
+&lt;em&gt;Italic text&lt;/em&gt;
+&lt;u&gt;Underlined text&lt;/u&gt;
+&lt;small&gt;Small text&lt;/small&gt;
+&lt;mark&gt;Highlighted text&lt;/mark&gt;
+&lt;code&gt;Inline code&lt;/code&gt;</div>
+                    <div class="item-description">Common text formatting elements</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Lists</div>
+                    <div class="item-content">&lt;!-- Unordered List --&gt;
+&lt;ul&gt;
+  &lt;li&gt;Item 1&lt;/li&gt;
+  &lt;li&gt;Item 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Ordered List --&gt;
+&lt;ol&gt;
+  &lt;li&gt;First&lt;/li&gt;
+  &lt;li&gt;Second&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- Description List --&gt;
+&lt;dl&gt;
+  &lt;dt&gt;Term&lt;/dt&gt;
+  &lt;dd&gt;Description&lt;/dd&gt;
+&lt;/dl&gt;</div>
+                    <div class="item-description">Different types of HTML lists</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Links and Media</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Links</div>
+                    <div class="item-content">&lt;a href="https://example.com"&gt;Link&lt;/a&gt;
+&lt;a href="mailto:email@example.com"&gt;Email&lt;/a&gt;
+&lt;a href="tel:+1234567890"&gt;Phone&lt;/a&gt;
+&lt;a href="#section"&gt;Anchor Link&lt;/a&gt;
+&lt;a href="document.pdf" download&gt;Download&lt;/a&gt;</div>
+                    <div class="item-description">Various types of hyperlinks</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Images</div>
+                    <div class="item-content">&lt;img src="image.jpg" alt="Description"&gt;
+&lt;img src="image.jpg" alt="Description" width="300"&gt;
+&lt;figure&gt;
+  &lt;img src="image.jpg" alt="Description"&gt;
+  &lt;figcaption&gt;Image caption&lt;/figcaption&gt;
+&lt;/figure&gt;</div>
+                    <div class="item-description">Image elements with accessibility features</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Audio and Video</div>
+                    <div class="item-content">&lt;audio controls&gt;
+  &lt;source src="audio.mp3" type="audio/mpeg"&gt;
+  Your browser does not support audio.
+&lt;/audio&gt;
+
+&lt;video width="400" controls&gt;
+  &lt;source src="video.mp4" type="video/mp4"&gt;
+  Your browser does not support video.
+&lt;/video&gt;</div>
+                    <div class="item-description">Media elements with fallback content</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Forms</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item two-column">
+                    <div class="item-title">Form Elements</div>
+                    <div class="item-content">&lt;form action="/submit" method="post"&gt;
+  &lt;label for="name"&gt;Name:&lt;/label&gt;
+  &lt;input type="text" id="name" name="name" required&gt;
+
+  &lt;label for="email"&gt;Email:&lt;/label&gt;
+  &lt;input type="email" id="email" name="email"&gt;
+
+  &lt;label for="password"&gt;Password:&lt;/label&gt;
+  &lt;input type="password" id="password" name="password"&gt;
+
+  &lt;label for="message"&gt;Message:&lt;/label&gt;
+  &lt;textarea id="message" name="message"&gt;&lt;/textarea&gt;
+
+  &lt;label for="country"&gt;Country:&lt;/label&gt;
+  &lt;select id="country" name="country"&gt;
+    &lt;option value="us"&gt;United States&lt;/option&gt;
+    &lt;option value="ca"&gt;Canada&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;input type="checkbox" id="subscribe" name="subscribe"&gt;
+  &lt;label for="subscribe"&gt;Subscribe to newsletter&lt;/label&gt;
+
+  &lt;input type="radio" id="male" name="gender" value="male"&gt;
+  &lt;label for="male"&gt;Male&lt;/label&gt;
+  &lt;input type="radio" id="female" name="gender" value="female"&gt;
+  &lt;label for="female"&gt;Female&lt;/label&gt;
+
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</div>
+                    <div class="item-description">Complete form with various input types</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Semantic Elements</h2>
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-item">
+                    <div class="item-title">Layout Elements</div>
+                    <div class="item-content">&lt;header&gt;Header content&lt;/header&gt;
+&lt;nav&gt;Navigation&lt;/nav&gt;
+&lt;main&gt;
+  &lt;article&gt;Article content&lt;/article&gt;
+  &lt;aside&gt;Sidebar content&lt;/aside&gt;
+&lt;/main&gt;
+&lt;section&gt;Section content&lt;/section&gt;
+&lt;footer&gt;Footer content&lt;/footer&gt;</div>
+                    <div class="item-description">HTML5 semantic layout elements</div>
+                </div>
+                
+                <div class="cheatsheet-item">
+                    <div class="item-title">Other Semantic Elements</div>
+                    <div class="item-content">&lt;figure&gt;&lt;img&gt;&lt;figcaption&gt;
+&lt;details&gt;&lt;summary&gt;Expandable content&lt;/summary&gt;&lt;/details&gt;
+&lt;time datetime="2023-01-01"&gt;January 1, 2023&lt;/time&gt;
+&lt;mark&gt;Highlighted text&lt;/mark&gt;
+&lt;code&gt;Inline code&lt;/code&gt;
+&lt;pre&gt;Preformatted text&lt;/pre&gt;</div>
+                    <div class="item-description">Additional semantic HTML elements</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
