@@ -8,6 +8,8 @@ permalink: /static/
 
 All tools on this page run entirely in your browser - no data is sent to any server. Your privacy and security are guaranteed.
 
+**Available as a Progressive Web App (PWA)** - Install these tools on your device for offline access and native app-like experience!
+
 ### Security Tools
 
 - **[Password Generator](/static/password-generator/)** - Generate strong, secure passwords with customizable options
@@ -41,16 +43,5 @@ All tools on this page run entirely in your browser - no data is sent to any ser
   - [Docker Cheatsheet](/static/cheatsheets/docker-cheatsheet.html) - Essential Docker commands
   - [Regex Cheatsheet](/static/cheatsheets/regex-cheatsheet.html) - Common regular expressions
   - [HTTP Status Codes](/static/cheatsheets/http-status-codes.html) - Quick reference for HTTP status codes
-
-### Coming Soon
-
-- **Image Optimizer** - Compress and optimize images without uploading
-- **JWT Decoder** - Decode JSON Web Tokens to view their contents
-- **Color Converter** - Convert between different color formats (HEX, RGB, HSL)
-- **Lorem Ipsum Generator** - Generate placeholder text for design and development
-- **QR Code Generator** - Create QR codes from text or URLs
-- **Unit Converter** - Convert between different units of measurement
-- **Cron Expression Parser** - Parse and understand cron expressions
-- **URL Encoder/Decoder** - Encode and decode URLs and URL components
 
 These tools are designed to be lightweight, fast, and completely client-side. They use modern web technologies including HTML5, CSS3, and JavaScript ES6+ features. Some tools will leverage WebAssembly for more complex operations while maintaining client-side execution.
