@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #a1c4fd;
+            border-bottom: 3px solid #a1c4fd;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #a1c4fd;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .copy-btn {
+            background: #a1c4fd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #8bb4f9;
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            word-break: break-all;
+            position: relative;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+        
+        .examples {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .example-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .example-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .example-item:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        
+        .example-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #666;
+            word-break: break-all;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .example-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔢 Base64 Encoder/Decoder</h1>
+        <p class="subtitle">Encode and decode Base64 data instantly</p>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="encode">Encode to Base64</div>
+            <div class="tab" data-tab="decode">Decode from Base64</div>
+        </div>
+        
+        <div class="tab-content active" id="encode-tab">
+            <div class="input-group">
+                <div class="input-header">
+                    <label for="encode-input">Text to Encode</label>
+                </div>
+                <textarea id="encode-input" placeholder="Enter text to encode to Base64">Hello, World! This is a test message.</textarea>
+            </div>
+            
+            <div class="actions">
+                <button class="action-btn" id="encode-btn">Encode to Base64</button>
+            </div>
+            
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Encoded Result</label>
+                </div>
+                <div class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Base64 Encoded</div>
+                        <button class="copy-btn" id="copy-encode">Copy</button>
+                    </div>
+                    <div id="encode-result">SGVsbG8sIFdvcmxkISBUaGlzIGlzIGEgdGVzdCBtZXNzYWdlLg==</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="decode-tab">
+            <div class="input-group">
+                <div class="input-header">
+                    <label for="decode-input">Base64 to Decode</label>
+                </div>
+                <textarea id="decode-input" placeholder="Enter Base64 string to decode">SGVsbG8sIFdvcmxkISBUaGlzIGlzIGEgdGVzdCBtZXNzYWdlLg==</textarea>
+            </div>
+            
+            <div class="actions">
+                <button class="action-btn" id="decode-btn">Decode from Base64</button>
+            </div>
+            
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Decoded Result</label>
+                </div>
+                <div class="result-container">
+                    <div class="result-header">
+                        <div class="result-title">Decoded Text</div>
+                        <button class="copy-btn" id="copy-decode">Copy</button>
+                    </div>
+                    <div id="decode-result">Hello, World! This is a test message.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="examples">
+            <h3>Examples</h3>
+            <div class="example-grid">
+                <div class="example-item" data-type="encode" data-value="Hello, World!">
+                    <div class="example-title">Simple Text</div>
+                    <div class="example-content">Hello, World!</div>
+                </div>
+                <div class="example-item" data-type="encode" data-value="https://example.com/path?param=value">
+                    <div class="example-title">URL</div>
+                    <div class="example-content">https://example.com/path?param=value</div>
+                </div>
+                <div class="example-item" data-type="encode" data-value="user:password">
+                    <div class="example-title">Credentials</div>
+                    <div class="example-content">user:password</div>
+                </div>
+                <div class="example-item" data-type="decode" data-value="SGVsbG8sIFdvcmxkIQ==">
+                    <div class="example-title">Simple Text</div>
+                    <div class="example-content">SGVsbG8sIFdvcmxkIQ==</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Copied to clipboard!</div>
+    
+    <script>
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const encodeInput = document.getElementById('encode-input');
+        const decodeInput = document.getElementById('decode-input');
+        const encodeBtn = document.getElementById('encode-btn');
+        const decodeBtn = document.getElementById('decode-btn');
+        const encodeResult = document.getElementById('encode-result');
+        const decodeResult = document.getElementById('decode-result');
+        const copyEncodeBtn = document.getElementById('copy-encode');
+        const copyDecodeBtn = document.getElementById('copy-decode');
+        const errorDiv = document.getElementById('error');
+        const notification = document.getElementById('notification');
+        const exampleItems = document.querySelectorAll('.example-item');
+        
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Encode button event listener
+        encodeBtn.addEventListener('click', encodeToBase64);
+        
+        // Decode button event listener
+        decodeBtn.addEventListener('click', decodeFromBase64);
+        
+        // Copy encode result
+        copyEncodeBtn.addEventListener('click', () => {
+            copyToClipboard(encodeResult.textContent);
+        });
+        
+        // Copy decode result
+        copyDecodeBtn.addEventListener('click', () => {
+            copyToClipboard(decodeResult.textContent);
+        });
+        
+        // Example items
+        exampleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const type = item.getAttribute('data-type');
+                const value = item.getAttribute('data-value');
+                
+                if (type === 'encode') {
+                    encodeInput.value = value;
+                    encodeToBase64();
+                    // Switch to encode tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="encode"]').classList.add('active');
+                    document.getElementById('encode-tab').classList.add('active');
+                } else {
+                    decodeInput.value = value;
+                    decodeFromBase64();
+                    // Switch to decode tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab[data-tab="decode"]').classList.add('active');
+                    document.getElementById('decode-tab').classList.add('active');
+                }
+            });
+        });
+        
+        // Encode to Base64
+        function encodeToBase64() {
+            const input = encodeInput.value;
+            clearError();
+            
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                encodeResult.textContent = encoded;
+            } catch (e) {
+                showError(`Encoding error: ${e.message}`);
+            }
+        }
+        
+        // Decode from Base64
+        function decodeFromBase64() {
+            const input = decodeInput.value;
+            clearError();
+            
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                decodeResult.textContent = decoded;
+            } catch (e) {
+                showError(`Decoding error: Invalid Base64 string`);
+            }
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy', true);
+            });
+        }
+        
+        // Show error
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        // Clear error
+        function clearError() {
+            errorDiv.style.display = 'none';
+        }
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.style.background = isError ? '#dc3545' : '#28a745';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Initialize with encode
+        encodeToBase64();
+    </script>
+</body>
+</html>

@@ -23,12 +23,15 @@ All tools on this page run entirely in your browser - no data is sent to any ser
 - **[Jinja2 Template Tester](/static/jinjia2-test/)** - Test Jinja2 templates directly in your browser
 - **[GCSE Math Reference](/static/gcse-math/)** - Quick reference for GCSE mathematics formulas
 
+### Text Processing Tools
+
+- **[Regex Tester](/static/regex-tester/)** - Test regular expressions with real-time feedback
+- **[Base64 Encoder/Decoder](/static/base64-converter/)** - Encode and decode Base64 data
+
 ### Coming Soon
 
 - **HTML to PDF Converter** - Convert HTML pages to PDF using WebAssembly
 - **Image Optimizer** - Compress and optimize images without uploading
-- **Regex Tester** - Test regular expressions with real-time feedback
-- **Base64 Encoder/Decoder** - Encode and decode Base64 data
 - **JWT Decoder** - Decode JSON Web Tokens to view their contents
 - **Color Converter** - Convert between different color formats (HEX, RGB, HSL)
 - **Lorem Ipsum Generator** - Generate placeholder text for design and development
