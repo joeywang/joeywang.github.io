@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#d4fc79">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="stylesheet" href="/static/pwa.css">
     <title>Markdown to PDF Converter</title>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -790,5 +794,9 @@ MIT`;
             updatePreview();
         }
     </script>
+    
+    <button class="install-button" id="installBtn">+</button>
+    
+    <script src="/static/pwa.js"></script>
 </body>
 </html>

@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a1c4fd">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="stylesheet" href="/static/pwa.css">
     <title>Base64 Encoder/Decoder</title>
     <style>
         * {
@@ -491,5 +495,9 @@
         // Initialize with encode
         encodeToBase64();
     </script>
+    
+    <button class="install-button" id="installBtn">+</button>
+    
+    <script src="/static/pwa.js"></script>
 </body>
 </html>

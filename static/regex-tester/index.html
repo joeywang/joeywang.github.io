@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ff9a9e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="stylesheet" href="/static/pwa.css">
     <title>Regex Tester</title>
     <style>
         * {
@@ -495,5 +499,9 @@ Our office phone is (555) 123-4567 and fax is (555) 987-6543.</textarea>
             emptyState.style.display = 'none';
         }
     </script>
+    
+    <button class="install-button" id="installBtn">+</button>
+    
+    <script src="/static/pwa.js"></script>
 </body>
 </html>

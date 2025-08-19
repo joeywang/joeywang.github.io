@@ -1,0 +1,97 @@
+/* PWA Enhancements */
+.install-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.install-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Offline indicator */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ff9800;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  z-index: 1001;
+  display: none;
+}
+
+/* PWA installation dialog */
+.pwa-dialog {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  max-width: 300px;
+  display: none;
+  z-index: 1000;
+}
+
+.pwa-dialog h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.pwa-dialog p {
+  color: #666;
+  margin: 10px 0;
+}
+
+.pwa-dialog-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.pwa-dialog-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pwa-dialog-btn.primary {
+  background: #4CAF50;
+  color: white;
+}
+
+.pwa-dialog-btn.secondary {
+  background: #f1f1f1;
+  color: #333;
+}
+
+/* Responsive enhancements for mobile */
+@media (max-width: 768px) {
+  .pwa-dialog {
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+}
