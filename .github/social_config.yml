@@ -1,0 +1,116 @@
+# Social Media Post Configuration
+# This file provides configuration for the GitHub Action that generates social media posts
+
+# General settings
+settings:
+  # Whether to enable social media post generation
+  enabled: true
+  
+  # Blog URL configuration
+  blog_url: "https://joeywang.github.io"
+  
+  # Hashtags to include in all posts
+  default_hashtags: 
+    - "#RubyOnRails"
+    - "#Development"
+    - "#BackendEngineering"
+    - "#Tech"
+
+# Twitter settings
+twitter:
+  # Maximum length for Twitter posts
+  max_length: 280
+  
+  # Hashtags specific to Twitter
+  hashtags: 
+    - "#RubyOnRails"
+    - "#Performance"
+    - "#Tech"
+  
+  # Twitter handle to mention (optional)
+  handle: "@alazycoder2"
+
+# LinkedIn settings
+linkedin:
+  # Hashtags specific to LinkedIn  
+  hashtags:
+    - "#RubyOnRails"
+    - "#Performance"
+    - "#BackendEngineering"
+    - "#Development"
+    - "#Rails8"
+  
+  # LinkedIn summary style
+  style: "professional"
+
+# Content patterns for different types of posts
+patterns:
+  # Pattern for technical blog posts
+  technical:
+    template: |
+      🚀 Exciting new article just published on my blog: "{title}"
+      
+      {description}
+      
+      In this post, I explore {topic} and provide practical examples for implementing this approach in your applications.
+      
+      Key takeaways:
+      • {takeaway1}
+      • {takeaway2} 
+      • {takeaway3}
+      
+      Read the full article on my blog: {url}
+      
+      {hashtags}
+    
+    # Keywords that trigger this pattern
+    keywords:
+      - "Rails"
+      - "performance"
+      - "database"
+      - "optimization"
+      - "backend"
+      - "API"
+      - "scalability"
+
+  # Pattern for tutorial/blog posts  
+  tutorial:
+    template: |
+      📚 New tutorial available: "{title}"
+      
+      {description}
+      
+      This step-by-step guide covers:
+      1. {step1}
+      2. {step2}
+      3. {step3}
+      
+      Check it out on my blog: {url}
+      
+      {hashtags}
+    
+    keywords:
+      - "tutorial"
+      - "how to"
+      - "guide"
+      - "implementation"
+      - "setup"
+
+# Tag mapping - maps blog post tags to social media tags
+tag_mappings:
+  "Ruby on Rails": ["#RubyOnRails", "#Rails", "#Ruby"]
+  "Performance": ["#Performance", "#Optimization", "#Speed"]
+  "Database": ["#Database", "#PostgreSQL", "#MySQL"]
+  "DevOps": ["#DevOps", "#Docker", "#Kubernetes"]
+  "Testing": ["#Testing", "#RSpec", "#TDD"]
+
+# Post generation rules
+rules:
+  # Minimum length of description required to generate social post
+  min_description_length: 10
+  
+  # Whether to include the first code snippet in social posts (not recommended for Twitter)
+  include_code_snippet: false
+  
+  # Whether to create a shortened URL
+  shorten_url: false

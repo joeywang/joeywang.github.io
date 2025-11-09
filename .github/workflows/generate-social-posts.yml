@@ -1,0 +1,184 @@
+name: Generate Social Media Posts
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '_posts/**'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  generate-social-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for commit messages
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Identify new blog post
+        id: new_post
+        run: |
+          # Get the latest commit message to identify the new post
+          LATEST_COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          echo "Latest commit: $LATEST_COMMIT_MSG"
+          
+          # Find the latest blog post file added
+          NEWEST_POST=$(find _posts -name "*.markdown" -o -name "*.md" -type f -exec stat -c "%Y %n" {} \; | sort -nr | head -1 | cut -d" " -f2-)
+          echo "Newest post: $NEWEST_POST"
+          echo "NEWEST_POST=$NEWEST_POST" >> $GITHUB_ENV
+          
+          # Extract title from the post
+          POST_TITLE=$(grep -m 1 '^title:' "$NEWEST_POST" | sed 's/title: "\(.*\)"/\1/' | sed "s/title: '(.*)'/\1/")
+          POST_TITLE_CLEAN=${POST_TITLE#'"'}
+          POST_TITLE_CLEAN=${POST_TITLE_CLEAN%'"'}
+          echo "POST_TITLE=$POST_TITLE_CLEAN" >> $GITHUB_ENV
+          
+          # Extract description from the post
+          POST_DESC=$(grep -m 1 'description:' "$NEWEST_POST" | sed 's/description: "\(.*\)"/\1/' | sed "s/description: '(.*)'/\1/")
+          POST_DESC_CLEAN=${POST_DESC#'"'}
+          POST_DESC_CLEAN=${POST_DESC_CLEAN%'"'}
+          echo "POST_DESC=$POST_DESC_CLEAN" >> $GITHUB_ENV
+          
+          echo "TITLE=$POST_TITLE_CLEAN"
+          echo "DESC=$POST_DESC_CLEAN"
+
+      - name: Generate AI Social Media Content
+        id: ai_content
+        run: |
+          # Extract the first 200 characters of the post for AI context (or first paragraph)
+          POST_SNIPPET=$(head -n 20 "$NEWEST_POST" | grep -v '^---' | head -c 500)
+          
+          # Generate Twitter post (max 280 characters)
+          TWITTER_POST="🚀 Just published: $POST_TITLE
+          
+          $POST_DESC_CLEAN
+          
+          Read more: https://joeywang.github.io/posts/$(basename "$NEWEST_POST" | sed 's/^[0-9]*-[0-9]*-[0-9]*-//g' | sed 's/\.[^.]*$//g')
+          
+          #RubyOnRails #Performance #Tech"
+          
+          # Truncate if needed
+          if [ ${#TWITTER_POST} -gt 280 ]; then
+            TWITTER_POST_TRUNCATED="${TWITTER_POST:0:277}..."
+            TWITTER_POST="$TWITTER_POST_TRUNCATED"
+          fi
+          
+          echo "TWITTER_POST<<EOF" >> $GITHUB_ENV
+          echo "$TWITTER_POST" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          # Generate LinkedIn post
+          LINKEDIN_POST="🚀 Exciting new article just published on my blog: \"$POST_TITLE\"
+          
+          $POST_DESC_CLEAN
+          
+          In this post, I explore and provide practical examples for implementing this approach in your applications.
+          
+          Key takeaways:
+          • Main insight 1
+          • Main insight 2
+          • Main insight 3
+          
+          Read the full article on my blog: https://joeywang.github.io/posts/$(basename "$NEWEST_POST" | sed 's/^[0-9]*-[0-9]*-[0-9]*-//g' | sed 's/\.[^.]*$//g')
+          
+          #RubyOnRails #Performance #BackendEngineering #Development #Rails8"
+          
+          echo "LINKEDIN_POST<<EOF" >> $GITHUB_ENV
+          echo "$LINKEDIN_POST" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          echo "Twitter post generated (length: ${#TWITTER_POST})"
+          echo "LinkedIn post generated (length: ${#LINKEDIN_POST})"
+
+      - name: Print Generated Content
+        run: |
+          echo "Twitter Post:"
+          echo "$TWITTER_POST"
+          echo ""
+          echo "LinkedIn Post:"
+          echo "$LINKEDIN_POST"
+
+      # Optional: Send to Twitter (requires Twitter API credentials)
+      - name: Post to Twitter (Optional)
+        if: ${{ secrets.TWITTER_API_KEY != '' }}
+        uses: m1ner79/Github-Twitter-Integration@v2.1.0
+        with:
+          twitter_consumer_api_key: ${{ secrets.TWITTER_API_KEY }}
+          twitter_consumer_api_secret: ${{ secrets.TWITTER_API_SECRET }}
+          twitter_access_token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          twitter_status: ${{ env.TWITTER_POST }}
+
+      # Optional: Send to LinkedIn (requires LinkedIn API credentials)
+      - name: Post to LinkedIn (Optional)
+        if: ${{ secrets.LINKEDIN_ACCESS_TOKEN != '' }}
+        run: |
+          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
+          -H "Authorization: Bearer ${{ secrets.LINKEDIN_ACCESS_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -H "X-Restli-Protocol-Version: 2.0.0" \
+          --data-raw '{
+            "author": "urn:li:person:$(echo ${{ secrets.LINKEDIN_PERSON_URN }})",
+            "lifecycleState": "PUBLISHED",
+            "specificContent": {
+              "com.linkedin.ugc.ShareContent": {
+                "shareCommentary": {
+                  "text": "${{ env.LINKEDIN_POST }}"
+                },
+                "shareMediaCategory": "NONE"
+              }
+            },
+            "visibility": {
+              "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+            }
+          }'
+          
+      # Optional: Send to Mastodon (if you use it)
+      - name: Post to Mastodon (Optional)
+        if: ${{ secrets.MASTODON_ACCESS_TOKEN != '' }}
+        uses: dessant/mastodon-post@v2
+        with:
+          host: ${{ secrets.MASTODON_HOST || 'mastodon.social' }}
+          access-token: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          status: ${{ env.TWITTER_POST }}
+          language: en
+          visibility: public
+          
+      # Create a log of the generated post
+      - name: Log Social Media Posts
+        run: |
+          mkdir -p logs
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          cat > "logs/social_post_${TIMESTAMP}.txt" << EOF
+          Date: $TIMESTAMP
+          Post: $NEWEST_POST
+          Title: $POST_TITLE
+          
+          Twitter:
+          $TWITTER_POST
+          
+          LinkedIn:
+          $LINKEDIN_POST
+          EOF
+
+      - name: Commit and Push Log
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add logs/
+          git commit -m "Add social media post log for $NEWEST_POST" || echo "No changes to commit"
+          git push origin main || echo "No changes to push"
