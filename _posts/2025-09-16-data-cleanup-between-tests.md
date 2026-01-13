@@ -1,4 +1,4 @@
-```
+---
 layout: post
 title:  "The Ghost in the Test Suite: A Detective Story on Rails Cleanup"
 date:   2025-09-16
