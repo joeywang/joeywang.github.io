@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "name": "blog-post-created-reminder",
+        "filter": "Write(_posts/.*\\.md)",
+        "command": "echo '\n✅ Blog post created! Preview it locally with:\n   bundle exec jekyll serve\n   Then visit: http://localhost:4000'"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "name": "protect-github-workflows",
+        "filter": "Edit(.github/workflows/.*)",
+        "command": "echo '⚠️  WARNING: You are about to edit a GitHub Actions workflow file.' && echo 'These files control deployment and automation. Please confirm this is intentional.' && read -p 'Continue editing workflow? (y/n) ' confirm && [[ $confirm == 'y' ]]"
+      },
+      {
+        "name": "protect-config-files",
+        "filter": "Edit(_config\\.yml)",
+        "command": "echo '⚠️  WARNING: You are about to edit _config.yml (Jekyll main config).' && echo 'Changes here affect the entire site build.' && read -p 'Continue? (y/n) ' confirm && [[ $confirm == 'y' ]]"
+      }
+    ]
+  }
+}
