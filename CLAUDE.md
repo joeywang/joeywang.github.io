@@ -15,6 +15,27 @@ bundle exec jekyll serve
 JEKYLL_ENV=production bundle exec jekyll build
 ```
 
+## 🚀 Automated Blog Workflow
+
+**You focus on:** Topic, ideas, opinions (5 minutes)
+**System handles:** Writing, formatting, social media, publishing
+
+### Quick Workflow
+
+```bash
+# When you have an idea
+/blog-idea "Your topic and angle"
+
+# When ready to write
+/blog-workflow
+# Answer 6 questions (5 min)
+# System generates humanized post + social media
+```
+
+**Complete guide:** See [BLOG-WORKFLOW.md](BLOG-WORKFLOW.md)
+
+---
+
 ## Creating Blog Posts
 
 ```bash
