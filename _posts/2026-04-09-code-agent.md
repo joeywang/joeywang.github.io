@@ -53,27 +53,93 @@ My original code collected the streaming response and checked for tool calls, bu
 
 The fix was simple: accumulate the full stream, then parse. Don't act on partial data.
 
-## Five Things That Actually Matter
+## What the Model Exposes vs What the Agent Must Build
 
-### Separate the thinking channel from tool calls
+When you use something like Claude Code or Codex, the smooth experience comes from a tight integration between what the model exposes and what the agent runtime does with it. Here's a mapping of the main LLM features to what your agent needs to support.
 
-Gemma 4 can output reasoning tokens and tool calls in the same response. If your client doesn't handle both channels separately, they get mixed together and the model gets confused about which format to use. In practice, I found that enabling the thinking channel for simple tasks made the model more likely to *talk about* tool calls rather than make them. I now only enable reasoning for planning phases and debugging sessions.
+### Tool / Function Calling
 
-### Message history has to be exact
+**What the model does:** Outputs structured tool call objects with a name and arguments. It doesn't call the tool — it just signals intent. In the raw token stream, this often looks like a special marker followed by JSON:
 
-Each tool result needs to be appended as a proper `tool` role message with the right `tool_call_id`. If you get this wrong — say, you append it as an `assistant` message or forget the ID — Gemma 4 will notice. Smaller models might not care, but Gemma 4 expects the format to be correct. When it isn't, the model either ignores the result or breaks out of the tool loop entirely.
+```
+</think>
 
-### Streaming is not optional
+{"name": "run_shell", "arguments": {"command": "ls -la"}}
+```
 
-Don't execute on partial JSON. Don't execute on the first chunk that looks like a tool call. Buffer the full response, then parse it. I learned this the hard way when a tool call's JSON arguments got split across chunks and my parser choked on `{"city": "Bright` instead of `{"city": "Brighton"}`.
+**What the agent must build:** Parse the tool call from the stream, validate the JSON arguments, dispatch to the right function, capture stdout/stderr/exit code, and return the result as a structured `tool` role message. The model expects the result to come back with the same `tool_call_id` it used. If you lose that ID, the model has no way to know which tool call this result corresponds to — especially important when the model fires multiple tool calls in parallel.
 
-### The model doesn't execute anything
+### Thinking / Reasoning Channel
 
-This sounds obvious until you realize your agent is waiting for the model to "decide" whether a tool succeeded. The model decides *what* to call. Your code executes it. Your code appends the result. Your code calls the model again. The model has no awareness of whether the tool actually worked — it only sees the text you give it.
+**What the model does:** Emits reasoning tokens before the actual answer or tool call. These tokens represent the model's "chain of thought" — the step-by-step reasoning that leads to a decision. In some models, these tokens are hidden from the final output but still influence the model's behavior.
 
-### Gemma 4 is not OpenAI
+**What the agent must build:** Separate the thinking tokens from the actual output. You have two choices: show them to the user (for transparency, like Claude Code does) or hide them (for a cleaner UI). Critically, thinking tokens must *not* be treated as tool calls or as the final answer. They're an internal monologue. If your agent confuses them with real output, the user sees garbled text and the tool loop breaks.
 
-If you're passing messages through an OpenAI compatibility layer, you're probably losing information. Gemma 4 prefers user/model turns with flattened system instructions. The OpenAI format with separate `system`, `developer`, and `tool` roles needs an adapter to translate into something Gemma understands well. I found that simplifying the message format — fewer role types, clearer turn structure — made tool calling more reliable.
+I found that enabling the thinking channel for simple tasks actually made things worse. The model would reason out loud about what tool to call, then somehow convince itself the task was already done. Now I only enable reasoning for the planning phase — figuring out what steps to take — and disable it for the actual tool execution loop.
+
+### Streaming
+
+**What the model does:** Emits tokens one at a time (or in small batches). Tool call JSON often arrives across multiple chunks. Thinking tokens and answer tokens can interleave.
+
+**What the agent must build:** A streaming buffer that accumulates all chunks until the model signals completion. Only then should you parse the full response to decide what happened. If you act on partial data, you'll try to execute a tool call with truncated JSON, or display an incomplete answer to the user.
+
+This is the most common bug I see in custom agents. The stream arrives in chunks, the first chunk looks like a tool call, the agent fires off the tool, and the rest of the tool call data arrives too late. The model then gets confused because it never got a result for the *full* tool call it made.
+
+### Message Roles and Format
+
+**What the model does:** Expects messages in a specific format. Different models have different expectations. OpenAI models expect `system`, `user`, `assistant`, and `tool` roles. Gemma 4 works better with fewer role types — mainly `user` and `model` — with system instructions flattened into the conversation context.
+
+**What the agent must build:** A message format adapter that translates between your internal representation and what the model expects. If you're using Ollama's OpenAI-compatible endpoint, the adapter is built in. If you're talking to the model directly (llama.cpp, or Ollama's native API), you need to handle this yourself.
+
+The thing that tripped me up: I was appending tool results with a `tool` role, but my Ollama setup expected them as part of a `user` turn. The model received messages in a format it didn't recognize, and the tool loop silently broke — no error, just the model ignoring the result and generating something else.
+
+### Context Window Management
+
+**What the model does:** Has a fixed context window (e.g., 8K, 16K tokens). Everything in the message history — user prompts, model responses, tool results — consumes tokens. When you exceed the window, older tokens get truncated.
+
+**What the agent must build:** A strategy for managing context growth. Tool results can be large — a `grep -r` across a codebase might return thousands of lines. If you dump every tool result into the message history without thinking, you'll burn through your context window in three turns.
+
+Common approaches: summarize tool results before appending, truncate output that exceeds a threshold, or maintain a separate "memory" that the model can query instead of keeping everything in the active context. For coding tasks, I've had good luck truncating file contents to relevant sections and summarizing long shell output.
+
+### Parallel Tool Calls
+
+**What the model does:** Can emit multiple tool calls in a single response when it determines they're independent — for example, reading five files at once. The model expects these to be executed and the results returned in the same turn.
+
+**What the agent must build:** Logic to detect multiple tool calls, decide whether to run them in parallel or sequentially, and collect all results before feeding them back to the model. Running independent file reads in parallel is a nice optimization, but running dependent tool calls in parallel (read a file, then write to it) is a bug.
+
+### Stop Sequences and Completion Detection
+
+**What the model does:** Signals that it's done generating by hitting a stop sequence or a special end-of-turn token. The runtime (Ollama, llama.cpp) tells you when generation is complete.
+
+**What the agent must build:** Use the completion signal to decide the next step. If the response contains tool calls → execute and loop. If it's plain text → return it to the user. Without reliable completion detection, you can't reliably distinguish between "the model is still thinking" and "the model is done."
+
+## Putting It All Together
+
+Here's how these pieces interact in a working agent:
+
+```
+User sends request
+    ↓
+Agent builds message history (with context management)
+    ↓
+Agent calls LLM with tools schema
+    ↓
+LLM streams tokens (thinking + answer + possibly tool calls)
+    ↓
+Agent buffers the full stream
+    ↓
+Agent parses: thinking tokens → tool calls OR final answer
+    ↓
+If tool calls:
+    → Agent executes them (parallel if independent)
+    → Agent captures results
+    → Agent appends results to message history
+    → Agent loops back to LLM call
+If final answer:
+    → Agent returns to user
+```
+
+Every arrow in that diagram is a place where something can go wrong. The streaming buffer is where partial-data bugs live. The message history is where format mismatches cause silent failures. The tool executor is where you need to handle errors, timeouts, and large outputs.
 
 ## A Minimal Working Setup
 
