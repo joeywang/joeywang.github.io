@@ -7,94 +7,86 @@ categories: AI LLM Gemma Ollama coding-agent
 
 # Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma
 
-If you've tried running **Gemma 4 (especially the 26B variant)** locally with coding tools — Pi, OpenCode, or your own agent — you've probably noticed some frustrating behavior. Tool calls sometimes work and then stall. The model describes tool usage instead of actually calling it. Reasoning mode improves the first step but breaks on the second. OpenAI-style prompts behave inconsistently.
+Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: "find all the Ruby files in this directory and replace `before_filter` with `before_action`." The first tool call worked perfectly — the model correctly asked to run `find . -name '*.rb'`. But when I fed the file list back to it, instead of calling `sed` or a file editor, it started *explaining* what I should do next, as if I were asking it for advice rather than expecting it to act.
 
-This is not because Gemma 4 is bad. It's because **modern LLMs don't just need prompts — they need a runtime**. Models like Gemma 4 assume structured tool calling, multi-turn control loops, a separation of thinking versus acting, and correct message formatting. If your agent runtime doesn't support these properly, things break in exactly the ways described above.
+I bumped the temperature down. I rewrote the prompt three times. I tried adding explicit instructions like "you must call a tool." Nothing helped.
 
-## The Key Idea
+The problem wasn't Gemma 4. The problem was my agent. I was treating it like a chatbot with tool access, but what I actually needed was a state machine.
 
-To build something like Codex, Claude Code, Pi, or OpenCode, you need to implement the missing layer between the model and reality: **a deterministic agent runtime built as a state machine**. This is the core architecture that turns a language model from a chatbot into a working coding agent.
+## What's Missing from Most Local Agent Setups
 
-## What Ollama Gives You (and What It Doesn't)
+Ollama gives you model execution, streaming, and a tool call output format. It even supports a thinking channel now. But it doesn't give you an agent loop. It doesn't execute tools, manage state, or decide whether to call the model again. It just returns whatever the model outputs and leaves the rest to you.
 
-Ollama provides model execution, streaming, tool call output formatting, and optionally a thinking channel. What it does not give you is a full agent loop, tool execution, state management, or correct continuation logic. The same applies to `llama.cpp` — perhaps even more so, since it offers even fewer abstractions.
+`llama.cpp` is even more bare — you get raw model inference and nothing else. That's fine if you want to build everything from scratch. But it means you can't just drop in a tool schema and expect multi-step behavior to work.
 
-This gap is where most agent implementations fail. The model is only one piece; the runtime that orchestrates it is equally important.
+This gap is where things fall apart. The model knows how to request a tool call. But if your runtime doesn't execute that call, append the result to the message history, and feed it back into the model, the conversation stops dead. Or worse, the model improvises — which usually means it starts describing what *would* happen if someone ran the tool, instead of actually asking for it to run.
 
-## The Architecture You Actually Need
+## The Agent Loop Is the Whole Thing
 
-At its core, a minimal agent system follows this flow:
-
-```
-User → Planner (LLM) → Tool decision?
-  → YES → Tool Executor → Tool Result → back to LLM
-  → NO  → Final Answer
-```
-
-Most broken agents do this:
-
-```
-LLM → tool call → execute → DONE ❌
-```
-
-The correct loop looks like this:
+Here's the core loop, stripped down:
 
 ```python
+messages = initial_messages
+
 while True:
-    response = llm(messages)
+    response = llm(messages, tools=tools)
 
-    if response contains tool_call:
-        execute tool
-        append tool result to messages
-        continue
+    if response.tool_calls:
+        messages.append(response)
+        for call in response.tool_calls:
+            result = execute_tool(call)
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.id,
+                "content": json.dumps(result)
+            })
+        # loop back
     else:
-        return final answer
+        return response.content
 ```
 
-Gemma 4 makes missing control flow more obvious because it introduces a thinking/reasoning channel, a stricter function calling format, and an expectation of multi-step loops. Smaller, less capable models tend to "fake it" through pattern matching. Gemma 4 exposes the bug in your runtime.
+That's it. The `continue` back into the model after each tool execution is the part most people miss (or forget to implement correctly). Without it, you get one tool call and then nothing.
 
-## Critical Design Principles
+### What I Got Wrong First
 
-### 1. Separate Thinking from Acting
+My original code collected the streaming response and checked for tool calls, but I was only looking at the *first* response chunk. With Gemma 4's thinking channel enabled, the first chunk contained reasoning text, and the actual tool call came several chunks later. I was executing on incomplete output.
 
-Gemma 4 internally separates reasoning (hidden thinking), tool calls (structured actions), and the final answer (user-facing output). Your runtime must respect this boundary. Never mix thinking and execution logic. The thinking channel is for planning and reflection; the tool channel is for deterministic action.
+The fix was simple: accumulate the full stream, then parse. Don't act on partial data.
 
-### 2. The Agent Must Be a State Machine
+## Five Things That Actually Matter
 
-You are not building a chatbot. You are building a state machine with well-defined transitions:
+### Separate the thinking channel from tool calls
 
-```
-WAITING_FOR_MODEL → EXECUTING_TOOL → WAITING_FOR_NEXT_STEP → DONE
-```
+Gemma 4 can output reasoning tokens and tool calls in the same response. If your client doesn't handle both channels separately, they get mixed together and the model gets confused about which format to use. In practice, I found that enabling the thinking channel for simple tasks made the model more likely to *talk about* tool calls rather than make them. I now only enable reasoning for planning phases and debugging sessions.
 
-Without explicit state management, multi-step tasks will break at unpredictable points. Each state should have clear entry conditions, exit conditions, and error handling.
+### Message history has to be exact
 
-### 3. Streaming Must Be Accumulated
+Each tool result needs to be appended as a proper `tool` role message with the right `tool_call_id`. If you get this wrong — say, you append it as an `assistant` message or forget the ID — Gemma 4 will notice. Smaller models might not care, but Gemma 4 expects the format to be correct. When it isn't, the model either ignores the result or breaks out of the tool loop entirely.
 
-This is where many systems fail. Gemma and Ollama output partial tool calls, partial JSON, and partial reasoning tokens. If you execute on incomplete output, the agent breaks. You must collect the full stream before deciding what happened, then act on the complete result.
+### Streaming is not optional
 
-### 4. Tool Execution Is Not the Model's Job
+Don't execute on partial JSON. Don't execute on the first chunk that looks like a tool call. Buffer the full response, then parse it. I learned this the hard way when a tool call's JSON arguments got split across chunks and my parser choked on `{"city": "Bright` instead of `{"city": "Brighton"}`.
 
-The model's only responsibility is to decide which tool to call and with what arguments. Your system must execute the tool, return the result as a structured message, and call the model again. This separation keeps the model focused on reasoning while the runtime handles deterministic execution.
+### The model doesn't execute anything
 
-### 5. Prompt Format Must Match the Model
+This sounds obvious until you realize your agent is waiting for the model to "decide" whether a tool succeeded. The model decides *what* to call. Your code executes it. Your code appends the result. Your code calls the model again. The model has no awareness of whether the tool actually worked — it only sees the text you give it.
 
-Gemma 4 is not OpenAI-native. It prefers user/model turns with flattened system instructions. If your agent relies on OpenAI-style system, developer, and tool roles, you need a prompt adapter to translate between formats. Mismatched prompt formats are a common source of inconsistent tool calling behavior.
+### Gemma 4 is not OpenAI
 
-## Building a Codex/Claude-Style Agent
+If you're passing messages through an OpenAI compatibility layer, you're probably losing information. Gemma 4 prefers user/model turns with flattened system instructions. The OpenAI format with separate `system`, `developer`, and `tool` roles needs an adapter to translate into something Gemma understands well. I found that simplifying the message format — fewer role types, clearer turn structure — made tool calling more reliable.
 
-Now let's build something concrete.
+## A Minimal Working Setup
 
-**Step 1: Define your message format.** Start with a clean internal representation:
+The message type:
 
 ```typescript
 type Message =
   | { role: "user"; content: string }
   | { role: "assistant"; content?: string; tool_calls?: ToolCall[] }
-  | { role: "tool"; name: string; content: string }
+  | { role: "tool"; tool_call_id: string; content: string }
 ```
 
-**Step 2: Define your tool schema.** Keep it simple and explicit:
+A tool schema — nothing fancy:
 
 ```json
 {
@@ -110,7 +102,7 @@ type Message =
 }
 ```
 
-**Step 3: Implement the core loop.** Here is a complete implementation:
+The core loop:
 
 ```typescript
 async function runAgent(messages: Message[]): Promise<string> {
@@ -125,7 +117,7 @@ async function runAgent(messages: Message[]): Promise<string> {
 
         messages.push({
           role: "tool",
-          name: call.name,
+          tool_call_id: call.id,
           content: JSON.stringify(result)
         })
       }
@@ -138,34 +130,35 @@ async function runAgent(messages: Message[]): Promise<string> {
 }
 ```
 
-**Step 4: Add reasoning carefully.** Enable the thinking channel only for planning, complex coding tasks, and debugging. Disable it for tool follow-ups and simple Q&A. The reasoning tokens add latency and can interfere with the tool calling format if the model isn't in a reasoning-appropriate context.
+## Planner and Executor Split
 
-**Step 5: Consider a planner/executor split.** Instead of having one model do everything, use a planner that decides steps and may call tools, and an executor that synthesizes the final answer. This mirrors how Claude Code and Codex actually work internally, and it produces more reliable results with complex multi-step tasks.
+One thing I picked up from watching how Claude Code behaves: it doesn't use a single model call for everything. There's a planning phase (which may involve tool calls) and an execution phase (which produces the final answer). You can approximate this by using one pass of the model to decide on steps and call tools, then a second pass — sometimes even with temperature set to 0 — to synthesize the result.
+
+It's not strictly necessary for simple tasks, but once you're doing multi-step refactoring work, the split makes the agent more predictable. The planner can wander through tool calls without worrying about producing a clean final answer. The executor gets a complete set of tool results and just needs to summarize.
 
 ## Ollama vs llama.cpp
 
-Ollama offers easier setup, built-in tool support, and a thinking channel out of the box. The tradeoff is less control over behavior, hidden implementation details, and sometimes inconsistent parsing. It's the right choice for getting started quickly.
+Just use Ollama to start. You'll save days. The tool support works out of the box, the thinking channel is already wired in, and you can focus on building your agent loop instead of wrestling with low-level inference.
 
-`llama.cpp` gives you full control, predictable behavior, and is better suited for custom agents where you need to own every part of the loop. The tradeoff is that you must build everything yourself — there is no magic layer. It's the right choice once you understand the architecture and need to optimize it.
+Switch to `llama.cpp` only when you need control over something that Ollama hides from you. I haven't needed to yet, but when I do, it'll be because I want to optimize the prompt format or handle the thinking channel more precisely.
 
-You don't need to rebuild all of Ollama's features. Focus on the essentials: the tool loop, a streaming accumulator, a Gemma-specific prompt adapter, the state machine, and the tool executor. Skip the full Ollama API, complex session systems, and unnecessary abstractions.
+## What to Skip
 
-## Common Failure Modes
+You don't need a complex session system. You don't need the full Ollama API. You don't need abstractions around abstractions. You need:
 
-When your first tool call works but the next step fails, the cause is usually a tool result that wasn't appended correctly to the message history, or a stream that wasn't fully collected before execution.
+- A working tool loop
+- A streaming buffer
+- A prompt adapter for Gemma
+- A state machine with maybe four states
+- A tool executor that actually executes things
 
-When the model explains what it would do instead of actually calling the tool, the cause is usually prompt ambiguity, temperature that is too high, or a weak tool schema that doesn't make the calling format explicit.
+## My Setup on M1 Pro 32GB
 
-When reasoning mode breaks the tool loop, the cause is usually a client that doesn't handle the thinking channel properly or mixed message roles that confuse the model about which channel to use.
+- **Model:** `gemma4:26b`
+- **Runtime:** Ollama
+- **Context:** 8K (16K if the task needs it, but it burns memory fast)
+- **Temperature:** 0.1 for tool-heavy tasks, 0.3 for planning
 
-When the agent works in one framework but not another, the cause is typically different prompt formats or different tool-call parsing conventions between the runtimes.
+26B fits in unified memory alongside everything else I'm running, and the tool calling is reliable enough that I actually use it for real tasks now — not just experiments.
 
-## Recommended Setup for M1 Pro (32GB)
-
-For an M1 Pro with 32GB of unified memory, the recommended configuration is Gemma 4 at 26B, starting with Ollama and moving to `llama.cpp` for advanced use. Set the context window to 8K–16K and keep the temperature between 0.1 and 0.3 for deterministic tool calling behavior.
-
-The architecture follows a simple pattern: Gemma 4 acts as the planner, your agent runtime orchestrates the loop, tools handle web access, file operations, and shell commands, and the result loops back into Gemma for the next step.
-
-## Final Takeaway
-
-Good agents are not prompt engineering problems. They are control system problems. Gemma 4 is powerful, but only when your loop is correct, your state is consistent, and your tool flow is deterministic. Start with the minimal state machine, get the tool loop right, and everything else follows from there.
+The thing I keep coming back to is that the model quality barely matters once your loop is correct. A good agent loop makes a mediocre model feel capable. A broken agent loop makes a great model feel useless.
