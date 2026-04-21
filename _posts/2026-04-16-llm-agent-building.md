@@ -132,6 +132,18 @@ It also means a lot of agent bugs are not really model bugs. They are runtime bu
 
 I ran into exactly this kind of problem in my own local setup. The model looked flaky until I realized the harness was the flaky part.
 
+One subtle point here: the runtime is not just a dumb pipe. It defines the contract. It decides which tools exist, what arguments are allowed, how results are formatted, and what the model gets back when something fails, times out, or succeeds. The model can only operate inside that contract.
+
+## Message formatting is part of the system
+
+This sounds boring until it breaks.
+
+Different models and runtimes expect different message shapes, role names, and tool-call formats. Some want explicit `tool` messages with IDs. Some expect tool results folded back into a user turn. Some tolerate loose formatting. Some absolutely do not.
+
+If you get this wrong, the failure mode is annoying because it does not always look like a protocol error. It often just looks like the model got weird. It ignores a tool result. It repeats itself. It forgets what just happened. It starts narrating instead of acting.
+
+That is another reason I hesitate when people talk about agent quality as if it were just a model ranking problem. A surprising amount of the real work is in message plumbing.
+
 ## Step 4: execute, observe, loop
 
 This is the part many first-time agent builders miss.
@@ -167,6 +179,8 @@ After each tool result, the model needs another turn. That is how it moves from:
 5. adjusting the patch if the tests still fail
 
 Without that loop, you do not have much of an agent. You have a one-shot assistant that knows how to talk about tool syntax.
+
+The runtime also needs clear stopping conditions. A good agent should stop when the checks pass, when it is genuinely blocked and needs user input, or when another retry is just burning tokens without improving the result. Otherwise you get the other classic failure mode: the agent that keeps "working" long after it should have stopped.
 
 ## A tiny end-to-end example
 
@@ -211,6 +225,14 @@ assistant: Fixed. The token expiry check was comparing strings instead of timest
 
 That is the job. Not one huge leap of intelligence. A sequence of small moves, each grounded in feedback.
 
+## Parallel work helps, but only when the dependency graph is real
+
+A naive agent does everything in sequence. Better agents can overlap independent work.
+
+Reading three files at once is usually fine. Searching two directories in parallel is usually fine. Running a linter and a type check at the same time is often fine.
+
+But the runtime has to know where parallelism stops being safe. Reading a file and patching it at the same time is a bug. Running a test against code that another step is still modifying is a bug. Tool parallelism is useful, but only when the operations are actually independent.
+
 ## Step 5: make precise edits instead of rewriting everything
 
 When the agent decides to change code, the safest path is usually not "rewrite the whole file."
@@ -244,6 +266,8 @@ The model proposes a change. The runtime runs the relevant checks. The model the
 
 That is the difference between a flashy demo and a tool you might actually trust. The demo stops when the code looks plausible. The useful tool stops when the environment says the change holds up.
 
+This is also where models run into a hard limit. They are good at predicting plausible next steps. They are much worse at knowing, from their own internal confidence alone, whether those steps actually worked. That is why verification is not optional. The model's guess is not the ground truth.
+
 ## Where agents usually break
 
 When people say a coding agent "just kind of fell apart," the failure is often boring:
@@ -252,6 +276,8 @@ When people say a coding agent "just kind of fell apart," the failure is often b
 - the tool result got appended in the wrong format
 - the agent lost the thread after a long wall of shell output
 - the patch applied, but the model never saw the real post-patch state
+- the patch failed to apply cleanly and the retry logic made things worse
+- a command timed out and the runtime treated that like useful output
 - the system skipped verification and returned confident nonsense
 
 This is why I am suspicious of sweeping claims about model quality without any discussion of runtime quality. A fragile harness can make a good model look bad. A disciplined harness can make a merely decent model feel much better than expected.
@@ -271,6 +297,8 @@ So real agents need compaction strategies:
 - preserve durable instructions while discarding dead ends
 
 This is not the glamorous part of agent design, but it matters more than people think. A lot of agent failures are really context failures wearing a fake mustache.
+
+There is also a tradeoff here that people skip past too quickly: compaction is lossy. Summaries are useful, but sometimes the exact detail you threw away is the detail you needed three turns later. Long-running agents are always balancing recall against context budget.
 
 ## The model matters, but the harness matters more
 
@@ -307,6 +335,16 @@ You run into issues like:
 
 That does not make local agents pointless. I still like them. It just means the boring systems work matters even more. If your local agent feels unstable, it may not need a smarter model first. It may need a better loop, cleaner context, and stricter verification.
 
+## Permissions, sandboxing, and safety are part of the design
+
+Another missing piece in a lot of simplified agent diagrams is the operating envelope.
+
+Real coding agents usually do not have unlimited power. Some tools are read-only. Some filesystem paths are writable and others are not. Some commands require explicit approval. Network access may be blocked. Destructive operations may be denied or wrapped in extra checks.
+
+That is not an annoying implementation detail. It is part of how the system works. The runtime is not just giving the model hands. It is also deciding what the hands are allowed to touch.
+
+The same goes for observability. If the agent cannot show you what tool it called, what came back, what got truncated, and why it stopped, debugging turns into superstition.
+
 ## A better way to think about coding agents
 
 The mental model I keep settling on is this:
@@ -323,6 +361,21 @@ The runtime gives the model senses, memory, and hands:
 Once you see the system that way, a lot of confusing behavior stops being confusing. You stop asking, "Why didn't the model just do it?" and start asking the more useful question:
 
 > "What part of the agent loop failed?"
+
+## What I am leaving out on purpose
+
+There are more advanced pieces beyond the basic loop:
+
+- planner/executor splits
+- long-term memory systems
+- background agents
+- richer approval flows
+- evaluation harnesses
+- multi-agent coordination
+
+Those matter, but they come later.
+
+The first-order problem is still the same boring one: can the model ask for a tool, can the runtime execute it, can the result get fed back correctly, and can the system verify the change before stopping?
 
 ## Final takeaway
 
