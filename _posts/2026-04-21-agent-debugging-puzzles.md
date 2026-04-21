@@ -10,6 +10,17 @@ categories: [AI, Engineering]
 
 # Tiny Puzzles for Testing and Debugging AI Agents
 
+One of the smallest tests I use is also one of the dumbest:
+
+1. send `hello`
+2. send `hello again`
+
+I am not doing that because I think it is a meaningful intelligence test.
+
+I am doing it because I want to see whether the stack behaves differently on the second request. If I expect prompt caching or KV reuse, I want some sign of it in latency, logs, or runtime warnings. If nothing changes, or LM Studio logs complain about cache support, that already tells me something useful.
+
+That tiny test changed how I think about debugging agents.
+
 One thing I keep coming back to with local agents is this: if you only test them on real work, debugging takes forever.
 
 A big task fails and you do not know why.
@@ -24,13 +35,31 @@ When the task is large, every failure mode gets mixed together. That makes the w
 
 What helped me was building tiny puzzles.
 
-By "puzzle," I do not mean benchmark games or synthetic IQ tests. I mean small, repeatable probe tasks that isolate one capability at a time. A good puzzle gives you a yes-or-no answer about one layer of the stack.
+By "puzzle," I do not mean benchmark games or synthetic IQ tests. I mean small, repeatable probe tasks that isolate one capability at a time. A good probe gives you a yes-or-no answer about one layer of the stack.
 
 That is much more useful than asking a vague question and hoping the agent "feels smart."
 
-## What I actually want from a puzzle
+## Probe, not benchmark
 
-A good agent-debugging puzzle should be:
+This distinction matters.
+
+A benchmark tries to rank systems.
+
+A probe tries to isolate a failure.
+
+A benchmark asks:
+
+> Which model is better?
+
+A probe asks:
+
+> What broke?
+
+For debugging, I care much more about the second question.
+
+## What I actually want from a probe
+
+A good agent-debugging probe should be:
 
 - **small** enough to run in seconds
 - **repeatable** enough to compare across models or prompt changes
@@ -61,13 +90,23 @@ I would break agent testing into five buckets:
 
 You can think of this as a cheap local eval harness for yourself.
 
+Here is the compact version:
+
+| Probe | What it tests | Common failure |
+| --- | --- | --- |
+| single-tool sanity check | basic function calling | model answers without using the tool |
+| tool-loop continuation | post-tool reasoning | runtime stops after the tool result |
+| skill trigger check | skill awareness | skill never enters context or gets ignored |
+| buried instruction retention | prompt pressure | instruction gets lost in long context |
+| `hello` / `hello again` | cache or runtime behavior | no reuse signal, warning in logs |
+
 ## 1. Test function calling support first
 
 This is the first thing I test because if it is broken, everything above it becomes noise.
 
 The goal here is not "can the model describe tool use?" The goal is "can the model produce the exact structured action the runtime needs, and can the runtime round-trip the result correctly?"
 
-### The simplest puzzle
+### The simplest probe
 
 Give the agent one tool and one obvious task.
 
@@ -91,7 +130,7 @@ Possible outcomes:
 - it calls the wrong tool: tool selection issue
 - it calls the tool but ignores the result: loop or message formatting issue
 
-### Slightly better function-call puzzles
+### Slightly better function-call probes
 
 Once the trivial case passes, I like a short ladder:
 
@@ -124,7 +163,7 @@ If you use skills, rulesets, or task-specific system instructions, you should te
 
 The puzzle here is not "is the output good?" The puzzle is "did the agent notice the right behavior cue?"
 
-### A good skill-awareness puzzle
+### A good skill-awareness probe
 
 Create two nearly identical tasks where only one should trigger the skill.
 
@@ -211,7 +250,7 @@ This is where I often check LM Studio logs. I want to see:
 
 That tiny test is not sufficient, but it is cheap and surprisingly revealing.
 
-### Another prompt-length puzzle
+### Another prompt-length probe
 
 Ask the model to follow one simple instruction buried at the very end of a long prompt.
 
@@ -220,6 +259,21 @@ For example:
 > After reading everything above, answer with exactly: `CACHE_OK`
 
 If it misses that reliably only when the prompt gets large, you have learned something real about instruction retention under load.
+
+## Control one variable at a time
+
+This sounds obvious, but I have wasted plenty of time ignoring it.
+
+If you change the model, the prompt, the agent settings, and the runtime configuration all at once, a bad result tells you almost nothing.
+
+So when I run these probes, I try to be strict:
+
+- keep the model fixed when testing agent changes
+- keep the agent fixed when testing runtime changes
+- keep the task fixed when testing prompt length
+- keep the prompt fixed when testing cache behavior
+
+Half of debugging is refusing to create your own confusion.
 
 ## 4. Debug by layer: agent problem or model problem?
 
@@ -315,6 +369,26 @@ At minimum, I would want:
 - warnings from the model runtime
 
 That is the minimum useful set.
+
+Even a fake trace like this is better than nothing:
+
+```text
+request_id=42
+agent=opencode
+model=gemma-4
+prompt_tokens=4187
+completion_tokens=96
+ttft_ms=842
+total_latency_ms=2310
+tool_calls=1
+tool_parse_ok=true
+tool_roundtrip_ok=true
+cache_reuse=false
+stop_reason=tool_call
+warning="RotatingKVCache Quantization NYI"
+```
+
+If I can capture something shaped like that for each probe, I can usually stop guessing and start comparing.
 
 ### The most useful derived metrics
 
@@ -413,6 +487,36 @@ This sounds silly, but it exercises the real sequence:
 - continue
 
 That makes it more valuable than a pure text-generation test.
+
+## Do not over-trust a passing probe
+
+This is the other trap.
+
+A probe can pass while the real workflow is still broken.
+
+Examples:
+
+- the single-tool test passes, but tool use collapses under long prompts
+- the skill trigger works alone, but disappears once the tool manifest gets large
+- the cache smoke test looks fine on tiny prompts, but session reuse breaks on real workloads
+
+So I do not use probes to declare victory. I use them to narrow the search space.
+
+## Keep a failure diary
+
+I would also keep a tiny log for myself.
+
+Nothing fancy. Just enough to compare runs without relying on memory:
+
+- probe name
+- model
+- agent or harness
+- prompt size
+- result
+- runtime warnings
+- note about what changed since the last run
+
+This matters because agent debugging gets fuzzy very quickly. A failure diary turns "I think it got worse after that config change" into something you can actually verify.
 
 ## What makes a puzzle good?
 
