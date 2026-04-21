@@ -57,157 +57,20 @@ The agent still has to do the hard part:
 
 If that loop is weak, a good local model still feels unreliable. If the loop is solid, even an imperfect local model becomes surprisingly usable.
 
-## Runbook: getting it running end to end
+## If you want the setup guide, read the runbook
 
-This is the part I always want in articles like this, so here is the practical runbook.
+The setup details ended up being long enough that I split them into a separate post:
 
-The goal is simple:
+[LM Studio local agent runbook: Pi and OpenCode step by step]({% post_url 2026-04-21-lm-studio-local-agent-runbook %})
 
-1. Run the model in LM Studio.
-2. Expose it on LM Studio's local OpenAI-compatible endpoint.
-3. Point your agent client at `http://127.0.0.1:1234/v1`.
-4. Verify that the client can see and use the model.
+That runbook covers:
 
-I am including the exact config shapes I use because this is where most of the friction usually is.
-
-### Step 1: load the model in LM Studio
-
-Open LM Studio, download the model you want to use, then load it in the local server.
-
-For the workflows in this post, the important part is not just "chat with the model." You want LM Studio serving it through the local API endpoint.
-
-In practice, my flow looks like this:
-
-1. Open LM Studio.
-2. Download or select the model you want.
-3. Go to the Developer or Local Server section.
-4. Start the server.
-5. Confirm the endpoint is available at `http://127.0.0.1:1234/v1`.
-
-If you want to sanity-check the server before touching any agent config, you can do a quick request like this:
-
-```bash
-curl http://127.0.0.1:1234/v1/models
-```
-
-If that returns a model list, the server side is at least alive.
-
-### Step 2: configure LM Studio for fewer surprises
-
-Before wiring in an agent, I would change these settings first:
-
-- disable Unified KV Cache
-- set context length manually instead of using auto
-- add stop tokens if you are seeing leaked reasoning tags
-
-Those are the changes that made the setup noticeably less flaky for me.
-
-### Step 3: wire it into `~/.pi/agents/models.json`
-
-If you are using Pi-style agents, the provider config can point directly at LM Studio's local endpoint.
-
-Example:
-
-```json
-{
-  "providers": {
-    "lm-studio": {
-      "id": "local-lm-studio",
-      "name": "LM Studio",
-      "api": "openai-completions",
-      "compatibility": "legacy-system-role",
-      "apiKey": "ollama",
-      "baseUrl": "http://127.0.0.1:1234/v1",
-      "models": [
-        {
-          "id": "qwen3.5-9b-sushi-coder-rl-mlx",
-          "_launch": true,
-          "name": "qwen 3.5 sushi coder",
-          "contextWindow": 84000,
-          "input": ["text"],
-          "reasoning": true
-        },
-        {
-          "id": "gemma-4-e4b-it-mlx",
-          "_launch": true,
-          "name": "Gemma 4 E4B",
-          "contextWindow": 84000,
-          "input": ["text"],
-          "reasoning": true
-        }
-      ]
-    }
-  }
-}
-```
-
-A few practical notes here:
-
-- `baseUrl` points at LM Studio's local server
-- `apiKey` is often just a placeholder for local servers
-- `compatibility` matters if your client is sensitive about role formatting
-- `reasoning: true` is useful only if your harness actually knows what to do with reasoning output
-
-That last point is easy to miss. Just because the model supports reasoning does not mean your agent loop is ready for it.
-
-### Step 4: wire it into OpenCode
-
-If you are using OpenCode, the provider config is a little cleaner.
-
-Example:
-
-```json
-{
-  "lm-studio": {
-    "models": {
-      "gemma-4-26b-a4b-it-mlx": {
-        "_launch": true,
-        "name": "Gemma 4 26B A4B IT MLX"
-      }
-    },
-    "name": "LM Studio",
-    "npm": "@ai-sdk/openai-compatible",
-    "options": {
-      "baseURL": "http://127.0.0.1:1234/v1"
-    }
-  }
-}
-```
-
-The important detail is that OpenCode is not doing anything magical here. It is just treating LM Studio as an OpenAI-compatible backend.
-
-That is why this setup is so handy for experimentation. If your agent framework already knows how to talk to an OpenAI-style API, LM Studio can often slot in with very little ceremony.
-
-### Step 5: do a cheap verification pass
-
-Before you try a full coding task, do three smaller checks:
-
-1. Ask the client to list or identify the configured model.
-2. Send a single short prompt and confirm the response comes back cleanly.
-3. Try one tiny agent task, like summarizing a short file or reviewing a tiny diff.
-
-Do not start with a huge repo-wide task. That is the fastest way to confuse yourself about whether the problem is:
-
-- LM Studio
-- model choice
-- context size
-- reasoning output
-- your agent harness
-
-Start cheap. Then scale up.
-
-### Step 6: know the likely failure points
-
-If the setup does not work, I would check these in order:
-
-1. Is LM Studio actually serving on `127.0.0.1:1234`?
-2. Does `curl http://127.0.0.1:1234/v1/models` return the model list?
-3. Does the configured model ID exactly match what LM Studio exposes?
-4. Is the client expecting Chat Completions behavior while the provider is configured as legacy completions?
-5. Is reasoning output leaking into a parser that expects clean plain text?
-6. Are you overloading the model immediately with a huge task?
-
-That list has saved me a lot of pointless debugging.
+- starting the LM Studio server
+- checking the local endpoint
+- wiring the model into `~/.pi/agents/models.json`
+- wiring the same endpoint into OpenCode
+- doing a cheap verification pass before larger agent tasks
+- the runtime and cache-related failures I would check first
 
 ## Why I ended up preferring GGUF here
 
