@@ -16,7 +16,7 @@ It wasn't.
 
 The model looked flaky because my agent loop was flaky.
 
-One of the first tasks I gave it was boring on purpose: find a file, make a small code change, then run the relevant test. The model did the first part correctly. It asked for the file. It asked for the test. Then it drifted. Instead of taking the next tool step, it started explaining what should happen next like a consultant writing a checklist.
+One of the first tasks I gave it was boring on purpose: find a file, make a small code change, then run the relevant test. The model did the first part correctly. It asked for the file. It asked for the test. Then it drifted. Instead of taking the next tool step, it started explaining what should happen next like a consultant with a checklist.
 
 At first glance that looked like a model failure. It wasn't. I was parsing the response stream too early and mishandling the turn after the tool result. The model never really got a clean chance to continue.
 
@@ -24,11 +24,11 @@ That changed how I think about coding agents.
 
 A coding agent is not just a model with a bigger prompt. It is a small software system wrapped around a model. The model does the reasoning. The runtime does the state management, tool execution, file edits, and validation.
 
-That distinction matters because people blame or praise "the model" for things the surrounding harness is actually doing.
+That distinction matters because people blame or praise "the model" for behavior the surrounding harness is actually causing.
 
 After spending time with Gemma and OpenCode-style local workflows, I keep coming back to the same conclusion: the model is only one part of the system. The loop around it is what turns text generation into software work.
 
-If I had to reduce the whole article to one line, it would be this:
+If I had to reduce the whole thing to one line, it would be this:
 
 > Most of what feels magical in a coding agent is just a model sitting inside a well-built loop.
 
@@ -58,7 +58,7 @@ User request
   -> final answer
 ```
 
-That diagram is not glamorous, but it explains more of the experience than model marketing ever will.
+Not glamorous, but more useful than model marketing.
 
 ## Step 1: build the working context
 
@@ -73,7 +73,7 @@ That usually includes:
 - repository structure or symbol summaries
 - relevant file contents or search results
 
-This part gets hand-waved a lot. The agent is not dumping an entire repository into the model. It is trying to assemble a useful working set.
+This part gets hand-waved a lot. The agent is not dumping an entire repository into the model. It is assembling a useful working set.
 
 In practice, good agents do some combination of:
 
@@ -95,7 +95,7 @@ For a coding task such as "fix the failing login flow," the model is not suppose
 - read the relevant test
 - run the test suite or a narrowed test target
 
-This is where reasoning helps, but reasoning on its own is not enough. If the runtime does not support tools and iteration, the model can only describe a plan. It cannot carry it out.
+Reasoning helps, but reasoning on its own is not enough. If the runtime does not support tools and iteration, the model can only describe a plan. It cannot carry it out.
 
 That is the gap between:
 
@@ -116,11 +116,11 @@ Depending on the runtime, that may look like a function call, JSON object, or to
 >
 > "Apply this patch."
 
-This is one of the most useful mental models in agent design:
+This is one of the most useful mental models in the whole setup:
 
 > **The model does not execute tools. The runtime executes tools.**
 
-That separation is what makes the system manageable. The runtime can validate arguments, reject unsafe actions, log everything, and feed the results back into the conversation.
+That separation is what makes the system manageable. The runtime can validate arguments, reject unsafe actions, log what happened, and feed the results back into the conversation.
 
 It also means a lot of agent bugs are not really model bugs. They are runtime bugs:
 
@@ -130,7 +130,7 @@ It also means a lot of agent bugs are not really model bugs. They are runtime bu
 - message roles mismatched for the target model
 - missing loop after a tool result
 
-I ran into exactly this kind of problem in my own local setup. The model looked flaky until I realized the harness was the flaky part.
+I ran into exactly this in my own local setup. The model looked flaky until I realized the harness was the flaky part.
 
 One subtle point here: the runtime is not just a dumb pipe. It defines the contract. It decides which tools exist, what arguments are allowed, how results are formatted, and what the model gets back when something fails, times out, or succeeds. The model can only operate inside that contract.
 
@@ -140,9 +140,9 @@ This sounds boring until it breaks.
 
 Different models and runtimes expect different message shapes, role names, and tool-call formats. Some want explicit `tool` messages with IDs. Some expect tool results folded back into a user turn. Some tolerate loose formatting. Some absolutely do not.
 
-If you get this wrong, the failure mode is annoying because it does not always look like a protocol error. It often just looks like the model got weird. It ignores a tool result. It repeats itself. It forgets what just happened. It starts narrating instead of acting.
+If you get this wrong, the failure mode is annoying because it does not always look like a protocol error. It just looks like the model got weird. It ignores a tool result. It repeats itself. It forgets what just happened. It starts narrating instead of acting.
 
-That is another reason I hesitate when people talk about agent quality as if it were just a model ranking problem. A surprising amount of the real work is in message plumbing.
+That is another reason I hesitate when people talk about agent quality as if it were just a model ranking problem. A surprising amount of the real work is message plumbing.
 
 ## Step 4: execute, observe, loop
 
@@ -180,7 +180,7 @@ After each tool result, the model needs another turn. That is how it moves from:
 
 Without that loop, you do not have much of an agent. You have a one-shot assistant that knows how to talk about tool syntax.
 
-The runtime also needs clear stopping conditions. A good agent should stop when the checks pass, when it is genuinely blocked and needs user input, or when another retry is just burning tokens without improving the result. Otherwise you get the other classic failure mode: the agent that keeps "working" long after it should have stopped.
+The runtime also needs clear stopping conditions. A good agent should stop when the checks pass, when it is genuinely blocked and needs user input, or when another retry is just burning tokens without improving anything. Otherwise you get the other classic failure mode: the agent that keeps "working" long after it should have stopped.
 
 ## A tiny end-to-end example
 
@@ -223,7 +223,7 @@ tool -> assistant: 1 example, 0 failures
 assistant: Fixed. The token expiry check was comparing strings instead of timestamps.
 ```
 
-That is the job. Not one huge leap of intelligence. A sequence of small moves, each grounded in feedback.
+That is the job. Not one huge leap of intelligence. A sequence of small moves grounded in feedback.
 
 ## Parallel work helps, but only when the dependency graph is real
 
@@ -231,7 +231,7 @@ A naive agent does everything in sequence. Better agents can overlap independent
 
 Reading three files at once is usually fine. Searching two directories in parallel is usually fine. Running a linter and a type check at the same time is often fine.
 
-But the runtime has to know where parallelism stops being safe. Reading a file and patching it at the same time is a bug. Running a test against code that another step is still modifying is a bug. Tool parallelism is useful, but only when the operations are actually independent.
+But the runtime has to know where parallelism stops being safe. Reading a file and patching it at the same time is a bug. Running a test against code that another step is still modifying is a bug. Parallelism is useful, but only when the operations are actually independent.
 
 ## Step 5: make precise edits instead of rewriting everything
 
@@ -248,7 +248,7 @@ That approach helps for two reasons:
 1. It reduces accidental damage to unrelated code.
 2. It gives the model a more stable editing primitive for iterative fixes.
 
-This is one reason patch-based workflows feel noticeably more reliable than naive "rewrite the whole file" approaches.
+This is one reason patch-based workflows feel noticeably more reliable than naive full-file rewrites.
 
 ## Step 6: check the work against reality
 
@@ -322,7 +322,7 @@ That is why two products using similarly capable models can feel wildly differen
 
 This point matters even more for local agents.
 
-Cloud coding products usually have polished runtimes, mature prompt formatting, and enough infrastructure around the model that a lot of rough edges are hidden from the user. Local setups are less forgiving.
+Cloud coding products usually have polished runtimes, mature prompt formatting, and enough infrastructure around the model to hide a lot of rough edges. Local setups are less forgiving.
 
 You run into issues like:
 
@@ -375,7 +375,7 @@ There are more advanced pieces beyond the basic loop:
 
 Those matter, but they come later.
 
-The first-order problem is still the same boring one: can the model ask for a tool, can the runtime execute it, can the result get fed back correctly, and can the system verify the change before stopping?
+The first-order problem is still the same boring one: can the model ask for a tool, can the runtime execute it, can the result get fed back correctly, and can the system verify the change before it stops?
 
 ## Final takeaway
 
