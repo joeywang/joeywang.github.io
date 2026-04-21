@@ -8,25 +8,25 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-After reading the first two articles, you understand what LLMs are and how they generalize. But you still face the daily question:
+At some point the theory stops being the bottleneck and you run into the real question:
 
 > **"Should I use an LLM for this task?"**
 
-The industry hype says "AI everything." The skeptics say "LLMs are unreliable." Both are wrong.
+The industry hype says "AI everything." The skeptics say "LLMs are unreliable." Neither answer is very helpful.
 
-The truth is nuanced: **LLMs excel at some tasks and fail catastrophically at others**. The key is knowing which is which.
+The useful answer is messier: **LLMs are great at some tasks and awful at others**. The hard part is knowing which bucket your problem falls into before you build the wrong thing.
 
-In this article, we'll build a practical framework for evaluating when to use LLMs in your systems. This isn't theoretical—it's a decision matrix you can apply today.
+That is what this article is for. Not abstract debate. A practical way to think about where LLMs help, where they fail, and when they need tools around them.
 
 ---
 
 ## The Core Insight: LLMs as Reasoning Engines, Not Calculators
 
-Let's start with a fundamental principle:
+The most useful rule I keep coming back to is this:
 
 > **LLMs are excellent for probabilistic reasoning. They are terrible at deterministic computation.**
 
-This single insight explains 80% of LLM behavior.
+It explains a surprising amount of LLM behavior.
 
 ### Example: The Same Task, Different Approaches
 

@@ -7,7 +7,13 @@ categories: rails deadlock queue jobs
 
 # Debugging Transaction Deadlocks in Rails Tests: A Case Study
 
-In this article, we walk through a subtle and frustrating issue that can occur when running Rails tests involving ActiveJob and ActiveStorage. We'll explain how certain job queue modes can result in deadlocks, why it happens, how we diagnosed it, and best practices to avoid these pitfalls in the future.
+This was one of those Rails test failures that wastes hours because it does not fail in a satisfying way.
+
+The suite would hang. A single test might pass on its own. Then the full run would stall somewhere inside a transaction and leave behind just enough logging to be irritating.
+
+The actual problem was the interaction between Rails test transactions, ActiveJob, and ActiveStorage.
+
+Here is what the failure looked like, how I tracked it down, and the fix that made the suite boring again.
 
 ## The Symptom: Tests Get Stuck or Timeout
 
@@ -23,11 +29,11 @@ TRANSACTION (0.5ms)  RELEASE SAVEPOINT active_record_1
 TRANSACTION (0.5ms)  ROLLBACK
 ```
 
-Sometimes the transaction would stall right after beginning. We knew something was blocking—but what?
+Sometimes the transaction would stall right after beginning. So something was blocking. The question was where.
 
 ## Reproducing the Issue
 
-This issue consistently occurred in tests that triggered background jobs, such as:
+This issue kept showing up in tests that triggered background jobs, for example:
 
 ```ruby
 test 'email attachments are processed' do
@@ -36,17 +42,17 @@ test 'email attachments are processed' do
 end
 ```
 
-When run individually, the test passed. When run in a suite, it would hang.
+Run by itself, the test passed. Run in the suite, it could hang.
 
 ## Investigating Further
 
-We enabled full database logging and saw a pattern:
+Once I turned on full database logging, a pattern showed up:
 
 - The test starts a DB transaction (`BEGIN`)
 - A job is enqueued that reads or updates the same records
 - The job stalls, likely waiting on a lock held by the test
 
-We wanted to know **where** the blocking was happening in Ruby code, so we added this helper:
+At that point I wanted to know **where** the blocking was happening in Ruby code, so I added this helper:
 
 ```ruby
 ActiveSupport::Notifications.subscribe('sql.active_record') do |_, _, _, _, payload|
@@ -54,31 +60,31 @@ ActiveSupport::Notifications.subscribe('sql.active_record') do |_, _, _, _, payl
 end
 ```
 
-This gave us a Ruby stack trace for each transaction, confirming that the blocking occurred inside background jobs.
+That gave me a Ruby stack trace for each transaction and confirmed that the blocking was happening inside background jobs.
 
 ## The Root Cause: Background Jobs + Transactions
 
-By default, Rails uses `use_transactional_tests = true`, meaning each test runs inside a transaction. This is great for test speed and isolation.
+By default, Rails uses `use_transactional_tests = true`, so each test runs inside a transaction. That is great for speed and isolation.
 
-However, job workers like `:async`, Sidekiq, or custom queues run in separate threads or processes. They can't see the data inside the test transaction since it's not committed.
+The catch is that job workers like `:async`, Sidekiq, or custom queues run in separate threads or processes. They cannot see the data inside the test transaction because it is not committed yet.
 
 So if your job tries to:
 
 - Read the test-created record
 - Update the same row
 
-...it can **block waiting for a lock** or fail entirely. Worse, if both sides hold locks, you can hit a **deadlock**.
+...it can **block waiting for a lock** or fail outright. And if both sides hold locks, you can get a real **deadlock**.
 
 ## The Fix: Use `:inline` Job Queue in Tests
 
-We resolved the issue by configuring the test suite to run jobs synchronously:
+The fix was simple once the cause was clear: run jobs synchronously in tests.
 
 ```ruby
 # test/test_helper.rb
 Rails.application.config.active_job.queue_adapter = :inline
 ```
 
-This ensures:
+That gives you a few useful things:
 
 - Jobs run immediately, in the same thread
 - They share the same DB transaction context
@@ -98,9 +104,9 @@ end
 
 ## Bonus Pitfall: ActiveStorage + Transactions
 
-ActiveStorage uses polymorphic associations and triggers internal transactions. If you're creating or attaching files inside a transaction, you may also run into locks or deadlocks.
+ActiveStorage adds its own fun here because attachments can trigger extra internal transactions. If you are creating or attaching files inside a transaction, you can end up with even more chances to block.
 
-Keep your jobs simple and defer heavy DB writes until after the transaction is committed, or ensure all side effects happen inline during tests.
+The practical rule is simple: keep jobs simple, defer heavy DB writes until after commit when you can, or make the side effects happen inline in tests.
 
 ## Best Practices
 
@@ -111,7 +117,6 @@ Keep your jobs simple and defer heavy DB writes until after the transaction is c
 
 ## Conclusion
 
-Deadlocks and blocking in Rails tests can be tricky to debug. Understanding how transactions interact with job processing helps you design more predictable and stable test suites. When in doubt, keep your test jobs `:inline`, use logs, and track down those silent savepoints!
+Rails deadlocks in tests are annoying because they often look random until you notice the transaction boundary.
 
-Happy debugging!
-
+If a test touches background jobs and database state at the same time, I now assume queue mode is part of the problem until proven otherwise. In practice, `:inline` is usually the boring fix, and boring is exactly what you want from a test suite.

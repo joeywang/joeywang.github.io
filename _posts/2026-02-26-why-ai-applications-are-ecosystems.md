@@ -8,20 +8,22 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You launch your AI customer support assistant. It works perfectly in testing. But after a week in production, something strange happens:
+You launch an AI customer support assistant. In testing it looks great. A week later it starts behaving in ways that feel harder to describe:
 
 - Users are asking questions you never anticipated
 - The assistant is developing "personality quirks" based on frequent interactions
 - Certain edge cases are becoming common, not rare
 - User behavior is changing based on how the assistant responds
 
-You built software. But what you're observing looks more like... biology?
+You built software. But what you are observing does not feel purely mechanical anymore.
 
-This is the revelation that catches most AI teams off guard:
+This is the part that catches a lot of teams off guard:
 
 > **Traditional software is mechanical. AI applications are ecological.**
 
-In this article, we'll explore why AI applications behave more like ecosystems than programs, and what this means for how you design, build, and evolve your systems.
+I am not trying to make AI sound mystical here. Quite the opposite. I think "ecosystem" is useful because it explains feedback loops, adaptation, and weird emergent behavior more clearly than the old software metaphors do.
+
+That is what this article is really about.
 
 ---
 
@@ -83,7 +85,7 @@ In this article, we'll explore why AI applications behave more like ecosystems t
 
 > **In traditional software, users interact with a fixed system. In AI applications, users shape an evolving system.**
 
-This single difference changes everything about how you design, monitor, and maintain your applications.
+That one difference changes a lot about how you design, monitor, and maintain the system.
 
 ---
 

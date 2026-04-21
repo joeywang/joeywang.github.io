@@ -8,21 +8,25 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You've built a chatbot. It works great for simple questions. But when users ask about your product's specific features, it hallucinates. When they want to perform actions (check order status, update settings), it can't help. When they return the next day, it has no memory of previous conversations.
+You build a chatbot. It works fine for simple questions. Then real users show up.
+
+They ask about product details the model does not really know. They want it to check an order, update a setting, or remember what happened yesterday. That is where the cracks show.
 
 You've hit the wall that every AI developer encounters:
 
 > **An LLM alone is not an application. It's a component.**
 
-This is where most AI projects fail. Teams treat the LLM as the solution, not as one piece of a larger system. They build prompts, not architectures.
+This is where a lot of AI projects go sideways. Teams treat the LLM as the solution, not as one piece of a larger system. They build prompts when they really need architecture.
 
-In this article, we'll explore the anatomy of production AI applications. You'll learn the core components, how they interact, and the architectural patterns that separate working systems from demos.
+This article is about that larger system.
+
+If you want an AI application that survives contact with actual users, the model is only the start.
 
 ---
 
 ## The Core Architecture: Beyond the LLM
 
-Here's the fundamental insight:
+The underlying idea is simple:
 
 > **LLM is the brain. But a brain without senses, memory, and hands can't accomplish much.**
 
@@ -55,7 +59,7 @@ A complete AI application has five core components:
 └─────────────────────────────────────────────────────────┘
 ```
 
-Let's examine each component.
+That is the stack I want to walk through.
 
 ---
 

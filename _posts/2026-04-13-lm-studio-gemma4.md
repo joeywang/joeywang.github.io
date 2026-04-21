@@ -16,7 +16,7 @@ What I wanted was much more specific: a local model endpoint I could plug into a
 
 That turned out to be possible. It was also a lot less smooth than the demo videos make it look.
 
-The core setup that worked best for me was LM Studio plus a GGUF build of Gemma 4 26B. Once I got the settings under control, it became a usable local engine for agent clients. Not perfect. Not something I would trust blindly. But good enough that I would actually use it for real work.
+The core setup that worked best for me was LM Studio plus a GGUF build of Gemma 4 26B. Once I got the settings under control, it became a usable local engine for agent clients. Not perfect. Not something I would trust blindly. But good enough that I would actually use it.
 
 This post is the version I wish I had found before I started.
 
@@ -30,7 +30,7 @@ Second, cost. Agent loops are noisy. They read files, retry, summarize, call too
 
 Third, iteration speed. I wanted to try weird things: change prompts, swap harnesses, feed in local notes, break the loop, fix the loop, try again. Local models are slower in raw quality terms, but they are very forgiving for this kind of experimentation.
 
-And fourth, I wanted to understand the boundary between "local model" and "local agent." Those are not the same thing, and a lot of confusion in this area comes from treating them as if they are.
+And fourth, I wanted to understand the boundary between "local model" and "local agent." Those are not the same thing, and a lot of the confusion here comes from treating them as if they are.
 
 ## The stack I settled on
 
@@ -41,7 +41,7 @@ After trying a few variations, this is the shape that felt the most practical:
 - LM Studio's OpenAI-compatible local endpoint
 - An agent client on top, such as OpenCode, OpenHands, or a custom harness
 
-That last bullet matters more than people think.
+That last bullet matters.
 
 LM Studio gives you model hosting, local inference, and a familiar API surface. That is useful. But it is not the agent. It is the model backend.
 
@@ -55,7 +55,7 @@ The agent still has to do the hard part:
 - sanitize weird model output
 - know when the task is actually done
 
-If that loop is weak, a good local model still feels unreliable. If the loop is solid, even an imperfect local model becomes surprisingly usable.
+If that loop is weak, a good local model still feels unreliable. If the loop is solid, even an imperfect local model becomes usable much faster than you would expect.
 
 ## If you want the setup guide, read the runbook
 
@@ -80,7 +80,7 @@ I am not making a universal claim that GGUF is always better than every other fo
 
 The key word there is stable.
 
-I care less about benchmark bragging rights than about whether the model can survive long prompts, diffs, and repeated turns without drifting into nonsense or getting stuck in some half-broken internal state. GGUF plus LM Studio gave me a workflow I could keep using. That was enough.
+I care less about benchmark bragging rights than about whether the model can survive long prompts, diffs, and repeated turns without drifting into nonsense or getting stuck in some half-broken internal state. GGUF plus LM Studio gave me a workflow I could keep using. That was enough for me.
 
 ## What broke first
 
@@ -94,7 +94,7 @@ I would send a large diff or a code-heavy prompt and LM Studio would sit there l
 
 The fix that helped most was turning off Unified KV Cache and setting the context length manually instead of leaving it on auto.
 
-That was the first clue that local agent work is often about runtime stability, not just model selection.
+That was my first clue that local agent work is often about runtime stability, not just model selection.
 
 ### 2. Reasoning tag leakage
 
@@ -108,7 +108,7 @@ Adding stop tokens helped. Tightening the system prompt helped. But the deeper l
 
 A local coding model can look fine on a short task and then fall apart the moment you give it a real repository diff, a stack trace, and a few tool results in the same conversation.
 
-This is where local setups stop feeling like "cheap cloud replacements" and start feeling like engineering systems with actual constraints. Context is not just a number on the model card. It is a budget, and agent loops spend that budget aggressively.
+This is where local setups stop feeling like "cheap cloud replacements" and start feeling like engineering systems with real constraints. Context is not just a number on the model card. It is a budget, and agent loops spend that budget aggressively.
 
 ### 4. Good answers are easier than reliable behavior
 
@@ -134,7 +134,7 @@ On paper, a larger local model always sounds attractive. In practice, once I pus
 
 That pushed me toward setups that were slightly smaller but much easier to keep alive for repeated agent turns.
 
-This is one reason I think local agent work should be evaluated as a system, not just a model preference. A model that looks stronger in theory is not useful if it keeps falling over in the workflow you actually want.
+This is one reason I think local agent work should be judged as a system, not just a model preference. A model that looks stronger in theory is not useful if it keeps falling over in the workflow you actually want.
 
 ### KV cache support on LM Studio + MLX was not fully there for me
 
@@ -142,7 +142,7 @@ This was another source of confusion.
 
 I expected KV cache behavior to be a straightforward performance win. In this setup, it was not. My experience was that KV caching on the MLX path inside LM Studio was not something I could treat as fully reliable for agent-style workloads.
 
-That matters because agent sessions are exactly the kind of workload where you want caching to help. Long turns, repeated context, retries, and follow-up prompts should benefit from it. But if that layer is unstable, it stops being an optimization and starts becoming a source of weird failures.
+That matters because agent sessions are exactly the kind of workload where you want caching to help. Long turns, repeated context, retries, and follow-up prompts should benefit from it. But if that layer is unstable, it stops being an optimization and turns into a source of weird failures.
 
 One example I hit looked like this:
 
@@ -180,7 +180,7 @@ If I hit this again, my default response would be:
 3. disable Unified KV Cache
 4. retry with a smaller prompt to confirm the model is healthy again
 
-That sequence saved time because it avoided debugging the wrong layer.
+That sequence saved me time because it kept me from debugging the wrong layer.
 
 Another important lesson here: the prompt is often innocent.
 
@@ -206,7 +206,7 @@ What helped me:
 - avoid mixing too many formatting rules into one prompt
 - sanitize model output in the harness instead of assuming the model will cleanly separate reasoning every time
 
-I would treat this as a normal engineering concern when using Gemma for agents, not as a weird one-off edge case.
+I would treat this as a normal engineering concern when using Gemma for agents, not as a weird edge case.
 
 ### Simplifying Pi prompts matters more than I expected
 
@@ -247,7 +247,7 @@ If I were setting this up from scratch and it started failing, this is the order
 7. Strip down the Pi or agent system prompt so the model gets more room for the real task.
 8. If Gemma output is leaking think tags, fix that in both prompt design and output sanitation.
 
-That sequence is not elegant, but it is the one I trust more now.
+That sequence is not elegant, but it is the one I trust now.
 
 ## The settings that made it usable
 
@@ -300,9 +300,7 @@ To get agent behavior, something above that server has to implement a loop like 
 That sounds obvious when written out. It is also where a lot of local setups quietly fail.
 
 If the harness does not execute the tool correctly, the model looks dumb.
-
 If the harness appends tool results in a format the model does not handle well, the model looks confused.
-
 If the harness keeps dumping huge command output back into context, the model looks forgetful.
 
 The local endpoint is only one piece of the system.
@@ -337,7 +335,7 @@ Here is where I think it makes sense.
 
 This is one of the better use cases because the task is bounded and the output format is easy to evaluate.
 
-The model can read a diff, point out obvious risk, summarize a change, and flag suspicious sections. You still need judgment. You still need tests. But it is useful.
+The model can read a diff, point out obvious risk, summarize a change, and flag suspicious sections. You still need judgment. You still need tests. But it is useful enough to be worth keeping around.
 
 ### Repo Q&A
 

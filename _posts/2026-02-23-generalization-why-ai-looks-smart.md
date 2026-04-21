@@ -8,17 +8,17 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You ask an LLM to write a function in a programming language it's never explicitly been taught. It does it flawlessly.
+This is the part that makes people either overrate LLMs or get spooked by them.
 
-You present it with a math problem phrased in a way it couldn't have seen in training. It solves it.
+You ask a model to write code in a style you did not explicitly teach it. It does a decent job.
 
-You describe a business scenario it's never encountered. It gives surprisingly relevant advice.
+You give it a problem phrased in a way it probably never saw word-for-word in training. It still produces something useful.
 
-This feels like intelligence. It feels like the model is **thinking** and **learning** in real-time.
+That feels like intelligence. Or at least it feels close enough that people start talking as if the model is thinking in the human sense.
 
-But what's actually happening? The answer lies in one of the most important concepts in both machine learning and cognitive science: **generalization**.
+What is really happening is less magical and more interesting: **generalization**.
 
-In this article, we'll explore what generalization means, how AI generalization differs from human generalization, and why this distinction matters for building software systems.
+That is what this article is about, and why I think it matters so much for engineering with these systems.
 
 ---
 
@@ -34,7 +34,7 @@ Novel: You encounter a dog breed you've never seen
 Result: You still recognize it as a dog
 ```
 
-This is the essence of intelligence—both human and artificial. Without generalization, every new situation would require learning from scratch.
+Without generalization, every new situation would require learning from scratch. Nothing would transfer.
 
 ### Why Generalization Matters
 
@@ -51,7 +51,7 @@ def calculate_discount(price, discount_percent):
 
 The function doesn't adapt. It doesn't learn. It executes the same logic regardless of context.
 
-LLMs are fundamentally different. They **generalize from patterns** in their training data to handle inputs they've never seen.
+LLMs are fundamentally different. They **generalize from patterns** in their training data to handle inputs they have never seen.
 
 ---
 
@@ -89,7 +89,7 @@ So it generates:
 their fox-like appearance, spirited personality, and loyalty to their owners..."
 ```
 
-This **looks like understanding**, but it's actually **pattern completion**.
+This **looks like understanding**, but what you are mostly seeing is **pattern completion** at scale.
 
 ### The Key Insight
 

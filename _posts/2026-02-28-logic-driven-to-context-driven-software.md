@@ -8,25 +8,27 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You're a senior engineer with 15 years of experience. You've mastered:
+If you have been an engineer for long enough, you probably built your instincts around things like:
 
 - Decomposing problems into algorithms
 - Writing clean, maintainable code
 - Designing scalable architectures
 - Debugging complex systems
 
-Then AI comes along, and suddenly...
+Then AI shows up and starts messing with those instincts:
 
 - Your code generates itself (mostly)
 - Your tests pass, but you're not sure why
 - Your system works, but behaves differently each time
 - Your debugging skills don't apply to probabilistic failures
 
-You're experiencing the paradigm shift:
+That is the shift a lot of people are feeling:
 
 > **We're moving from logic-driven software to context-driven software.**
 
-This isn't an incremental change. It's a fundamental shift in how we think about building systems. In this article, we'll explore what this means for you as an engineer.
+I do not think this means logic-driven software disappears. But I do think a second mode of building has arrived, and it changes what good engineering work looks like.
+
+That is what I want to get at in this article.
 
 ---
 
@@ -142,6 +144,8 @@ Context-Driven Mindset:
 ```
 
 ---
+
+That shift is easy to say and harder to feel. The difference becomes clearer in examples.
 
 ## Concrete Examples: Before and After
 

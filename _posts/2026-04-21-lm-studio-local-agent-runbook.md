@@ -12,7 +12,7 @@ categories: [AI, Engineering]
 
 This is the setup guide I wanted while I was trying to make LM Studio work as a local engine for coding agents.
 
-The goal here is not theory. The goal is to get a model running locally, expose it through LM Studio's OpenAI-compatible endpoint, wire it into Pi or OpenCode, and verify that the whole stack is alive before you waste time debugging the wrong thing.
+This post is not about theory. It is about getting a model running locally, exposing it through LM Studio's OpenAI-compatible endpoint, wiring it into Pi or OpenCode, and checking that the stack is alive before you waste time debugging the wrong thing.
 
 If you want the broader context on why I was doing this and where the setup still falls short, read the companion article:
 
@@ -27,7 +27,7 @@ The target architecture is simple:
 3. Pi agents or OpenCode point at that endpoint.
 4. Your agent harness uses LM Studio as if it were an OpenAI-compatible backend.
 
-That does not give you a perfect local agent. It gives you a local model backend that your agent can talk to.
+That does not give you a perfect local agent. It gives you a local model backend your agent can talk to.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ Before you start, make sure you have:
 - a model that actually fits your machine
 - Pi or OpenCode available locally if you want to test integration immediately
 
-One practical warning up front: model selection is constrained by memory much faster than people expect.
+One warning up front: model selection is constrained by memory much faster than people expect.
 
 For example, I hit memory trouble when pushing into Qwen 35B-class MLX setups. Bigger is not automatically better if the runtime becomes unstable or dies during actual agent work.
 
@@ -129,7 +129,7 @@ If you are using Pi-style agents, this is the general shape:
 }
 ```
 
-Things worth paying attention to:
+What matters here:
 
 - `baseUrl` should point at the LM Studio endpoint
 - `apiKey` is usually just a placeholder for local use
@@ -193,7 +193,7 @@ You are not trying to make the agent less capable. You are trying to stop wastin
 
 ## Step 8: know the problems you are likely to hit
 
-This is the part that usually gets skipped. It should not be skipped.
+This is the part people usually skip. They should not.
 
 ### Problem: Qwen 35B on MLX runs out of memory
 
@@ -209,7 +209,7 @@ I would not assume KV-related optimizations are fully reliable just because they
 
 ### Problem: broken KV cache state causes 0% prompt stalls
 
-If the prompt sits at 0%, I would treat runtime cache state as suspicious immediately.
+If the prompt sits at 0%, treat runtime cache state as suspicious immediately.
 
 My default response is:
 

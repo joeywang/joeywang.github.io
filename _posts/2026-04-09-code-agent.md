@@ -7,7 +7,7 @@ categories: AI LLM Gemma Ollama coding-agent
 
 # Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma
 
-Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: "find all the Ruby files in this directory and replace `before_filter` with `before_action`." The first tool call worked perfectly — the model correctly asked to run `find . -name '*.rb'`. But when I fed the file list back to it, instead of calling `sed` or a file editor, it started *explaining* what I should do next, as if I were asking it for advice rather than expecting it to act.
+Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: "find all the Ruby files in this directory and replace `before_filter` with `before_action`." The first tool call worked perfectly. The model correctly asked to run `find . -name '*.rb'`. But when I fed the file list back to it, instead of calling `sed` or a file editor, it started *explaining* what I should do next, as if I were asking for advice rather than expecting it to act.
 
 I bumped the temperature down. I rewrote the prompt three times. I tried adding explicit instructions like "you must call a tool." Nothing helped.
 
@@ -17,9 +17,9 @@ The problem wasn't Gemma 4. The problem was my agent. I was treating it like a c
 
 Ollama gives you model execution, streaming, and a tool call output format. It even supports a thinking channel now. But it doesn't give you an agent loop. It doesn't execute tools, manage state, or decide whether to call the model again. It just returns whatever the model outputs and leaves the rest to you.
 
-`llama.cpp` is even more bare — you get raw model inference and nothing else. That's fine if you want to build everything from scratch. But it means you can't just drop in a tool schema and expect multi-step behavior to work.
+`llama.cpp` is even more bare. You get raw model inference and nothing else. That's fine if you want to build everything from scratch. But it means you can't just drop in a tool schema and expect multi-step behavior to work.
 
-This gap is where things fall apart. The model knows how to request a tool call. But if your runtime doesn't execute that call, append the result to the message history, and feed it back into the model, the conversation stops dead. Or worse, the model improvises — which usually means it starts describing what *would* happen if someone ran the tool, instead of actually asking for it to run.
+This gap is where things fall apart. The model knows how to request a tool call. But if your runtime doesn't execute that call, append the result to the message history, and feed it back into the model, the conversation stops dead. Or worse, the model improvises. That usually means it starts describing what *would* happen if someone ran the tool, instead of actually asking for it to run.
 
 ## The Agent Loop Is the Whole Thing
 
@@ -45,7 +45,7 @@ while True:
         return response.content
 ```
 
-That's it. The `continue` back into the model after each tool execution is the part most people miss (or forget to implement correctly). Without it, you get one tool call and then nothing.
+That's it. The `continue` back into the model after each tool execution is the part most people miss, or implement badly. Without it, you get one tool call and then nothing.
 
 ### What I Got Wrong First
 
@@ -59,7 +59,7 @@ When you use something like Claude Code or Codex, the smooth experience comes fr
 
 ### Tool / Function Calling
 
-**What the model does:** Outputs structured tool call objects with a name and arguments. It doesn't call the tool — it just signals intent. In the raw token stream, this often looks like a special marker followed by JSON:
+**What the model does:** Outputs structured tool call objects with a name and arguments. It doesn't call the tool. It just signals intent. In the raw token stream, this often looks like a special marker followed by JSON:
 
 ```
 </think>
@@ -67,15 +67,15 @@ When you use something like Claude Code or Codex, the smooth experience comes fr
 {"name": "run_shell", "arguments": {"command": "ls -la"}}
 ```
 
-**What the agent must build:** Parse the tool call from the stream, validate the JSON arguments, dispatch to the right function, capture stdout/stderr/exit code, and return the result as a structured `tool` role message. The model expects the result to come back with the same `tool_call_id` it used. If you lose that ID, the model has no way to know which tool call this result corresponds to — especially important when the model fires multiple tool calls in parallel.
+**What the agent must build:** Parse the tool call from the stream, validate the JSON arguments, dispatch to the right function, capture stdout/stderr/exit code, and return the result as a structured `tool` role message. The model expects the result to come back with the same `tool_call_id` it used. If you lose that ID, the model has no way to know which tool call this result corresponds to. That matters even more when the model fires multiple tool calls in parallel.
 
 ### Thinking / Reasoning Channel
 
-**What the model does:** Emits reasoning tokens before the actual answer or tool call. These tokens represent the model's "chain of thought" — the step-by-step reasoning that leads to a decision. In some models, these tokens are hidden from the final output but still influence the model's behavior.
+**What the model does:** Emits reasoning tokens before the actual answer or tool call. These tokens represent the model's "chain of thought," the step-by-step reasoning that leads to a decision. In some models, these tokens are hidden from the final output but still influence the model's behavior.
 
 **What the agent must build:** Separate the thinking tokens from the actual output. You have two choices: show them to the user (for transparency, like Claude Code does) or hide them (for a cleaner UI). Critically, thinking tokens must *not* be treated as tool calls or as the final answer. They're an internal monologue. If your agent confuses them with real output, the user sees garbled text and the tool loop breaks.
 
-I found that enabling the thinking channel for simple tasks actually made things worse. The model would reason out loud about what tool to call, then somehow convince itself the task was already done. Now I only enable reasoning for the planning phase — figuring out what steps to take — and disable it for the actual tool execution loop.
+I found that enabling the thinking channel for simple tasks actually made things worse. The model would reason out loud about what tool to call, then somehow convince itself the task was already done. Now I only enable reasoning for the planning phase, figuring out what steps to take, and disable it for the actual tool execution loop.
 
 ### Streaming
 
@@ -83,7 +83,7 @@ I found that enabling the thinking channel for simple tasks actually made things
 
 **What the agent must build:** A streaming buffer that accumulates all chunks until the model signals completion. Only then should you parse the full response to decide what happened. If you act on partial data, you'll try to execute a tool call with truncated JSON, or display an incomplete answer to the user.
 
-This is the most common bug I see in custom agents. The stream arrives in chunks, the first chunk looks like a tool call, the agent fires off the tool, and the rest of the tool call data arrives too late. The model then gets confused because it never got a result for the *full* tool call it made.
+This is the most common bug I see in custom agents. The stream arrives in chunks, the first chunk looks like a tool call, the agent fires off the tool, and the rest of the tool call data arrives too late. Then the model gets confused because it never got a result for the *full* tool call it made.
 
 ### Message Roles and Format
 
@@ -204,7 +204,7 @@ It's not strictly necessary for simple tasks, but once you're doing multi-step r
 
 ## Ollama vs llama.cpp
 
-Just use Ollama to start. You'll save days. The tool support works out of the box, the thinking channel is already wired in, and you can focus on building your agent loop instead of wrestling with low-level inference.
+Just use Ollama to start. You'll save yourself days. The tool support works out of the box, the thinking channel is already wired in, and you can focus on building your agent loop instead of wrestling with low-level inference.
 
 Switch to `llama.cpp` only when you need control over something that Ollama hides from you. I haven't needed to yet, but when I do, it'll be because I want to optimize the prompt format or handle the thinking channel more precisely.
 
@@ -227,4 +227,4 @@ You don't need a complex session system. You don't need the full Ollama API. You
 
 26B fits in unified memory alongside everything else I'm running, and the tool calling is reliable enough that I actually use it for real tasks now — not just experiments.
 
-The thing I keep coming back to is that the model quality barely matters once your loop is correct. A good agent loop makes a mediocre model feel capable. A broken agent loop makes a great model feel useless.
+The thing I keep coming back to is that model quality matters less than people think once your loop is correct. A good agent loop makes a mediocre model feel capable. A broken agent loop makes a great model feel useless.

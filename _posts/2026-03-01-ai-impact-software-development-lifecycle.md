@@ -8,15 +8,15 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You've been developing software for years. You know the drill:
+If you have been building software for a while, the basic loop is familiar:
 
 ```
 Requirements → Design → Code → Test → Deploy → Maintain
 ```
 
-Each phase has its rituals, tools, and best practices. You've mastered them.
+Each phase has its own rituals, tools, and politics. Most experienced teams know where the pain usually shows up.
 
-Then AI arrives. Suddenly:
+Then AI arrives and starts poking at every phase at once:
 
 - Requirements write themselves (sort of)
 - Design documents generate from prompts
@@ -25,11 +25,15 @@ Then AI arrives. Suddenly:
 - Deployment scripts draft themselves
 - Maintenance becomes... conversation?
 
-You're experiencing what every team is experiencing:
+This is where a lot of teams are now:
 
 > **AI isn't just changing how we code. It's changing every phase of software development.**
 
-In this article, we'll walk through each stage of the software development lifecycle (SDLC) and examine how AI transforms it—what improves, what breaks, and what stays the same.
+I do not think AI erases the software development lifecycle. I think it puts pressure on every step of it.
+
+Some parts get faster. Some get sloppier. Some barely change at all.
+
+That is the frame for this article.
 
 ---
 

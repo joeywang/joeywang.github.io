@@ -8,25 +8,29 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You've been a developer for years. You pride yourself on:
+If you have been a developer for a while, part of your identity probably came from being good at things like:
 
 - Writing clean, efficient code
 - Knowing your frameworks inside out
 - Debugging complex issues
 - Architecting scalable systems
 
-Then AI coding assistants arrive. Suddenly:
+Then AI coding assistants show up and start messing with that identity:
 
 - Your code generates from prompts
 - Your knowledge of APIs matters less
 - Your debugging skills face probabilistic failures
 - Your architecture role... evolves?
 
-You're facing the question every developer faces:
+That pushes you toward a question a lot of developers are quietly circling:
 
 > **What is my role when AI can code?**
 
-In this article, we'll explore how the developer role is transforming, what skills matter now, and how to position yourself for the AI era.
+I do not think the answer is "developers disappear." I also do not think the answer is "nothing important changes."
+
+The role is moving. The interesting part is where it is moving to.
+
+That is what I want to unpack here.
 
 ---
 
@@ -94,6 +98,8 @@ In this article, we'll explore how the developer role is transforming, what skil
 
 > **From: "How do I implement this?"**  
 > **To: "What system solves this problem?"**
+
+That shift sounds subtle on paper. In practice it changes what feels valuable, what gets automated first, and what kind of judgment becomes harder to replace.
 
 ---
 

@@ -11,9 +11,15 @@ description: "A practical guide to using OpenHands for autonomous software work:
 
 Most teams trying AI-assisted development hit the same wall: the assistant is good at snippets, but weak at end-to-end execution.
 
-OpenHands is built for that gap. Instead of only suggesting code, it can work like an autonomous developer inside a sandbox: edit files, run commands, and iterate on tasks.
+That is the gap OpenHands is trying to close.
 
-This article is a practical playbook for using OpenHands in real development workflows.
+Instead of only suggesting code, it can work like an autonomous developer inside a sandbox: edit files, run commands, and iterate on tasks.
+
+That sounds impressive in a demo. In real use, the interesting question is simpler: does it save time once the novelty wears off?
+
+Sometimes yes. Sometimes very much no.
+
+This article is the practical version of that answer.
 
 As of March 4, 2026, the `OpenHands/OpenHands` repository shows release `1.4.0` (published February 2026), and the docs cover CLI, local GUI, headless mode, and GitHub Action-based automation.
 
@@ -59,7 +65,7 @@ Why local first:
 
 ## Step 2: Treat repository onboarding as mandatory
 
-OpenHands supports repository-level customization with a `.openhands` directory. This is not optional if you want reliable autonomous behavior.
+OpenHands supports repository-level customization with a `.openhands` directory. I would not treat this as optional if you want reliable autonomous behavior.
 
 Use it to define setup and quality gates.
 
@@ -88,7 +94,7 @@ This gives the agent a consistent boot path and prevents low-value commits that 
 
 ## Step 3: Prompt for execution, not vibes
 
-OpenHands docs are very clear here: better prompts are concrete, location-specific, and scoped.
+OpenHands docs are right about one thing that matters a lot in practice: better prompts are concrete, location-specific, and scoped.
 
 Bad:
 
@@ -106,7 +112,7 @@ Add tests in tests/auth.test.ts for success, bad password, and missing user.
 Success criteria: npm test passes and /api/auth/login returns token for valid credentials.
 ```
 
-A simple rule that works in practice:
+The simple rule that works for me:
 
 1. Name files.
 2. Define expected behavior.
@@ -160,11 +166,11 @@ OpenHands docs describe an automation flow using GitHub Action triggers:
 3. Let the resolver attempt a fix and open/update a PR.
 4. Review and iterate by commenting.
 
-This is where "auto AI agent" starts feeling production-useful. You can turn backlog items into runnable attempts without manually starting each session.
+This is where "auto AI agent" starts feeling useful instead of just interesting. You can turn backlog items into runnable attempts without manually starting each session.
 
 ## A workflow that works for small teams
 
-Here is a lightweight operating model:
+Here is a lightweight operating model that I think small teams can actually live with:
 
 1. Triage issue into a small, testable unit.
 2. Add acceptance criteria and exact file context.
@@ -222,7 +228,9 @@ If you want to "develop with auto AI agents," the trick is not just installing O
 4. automated issue-to-PR loops,
 5. strict review gates.
 
-Do that, and OpenHands becomes a practical multiplier instead of a novelty.
+Do that, and OpenHands can become a practical multiplier instead of a novelty.
+
+Skip it, and you mostly get a very fast way to create plausible-looking messes.
 
 ## References
 

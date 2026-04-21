@@ -34,13 +34,13 @@ If you spend enough time around AI coding tools, you start hearing the same word
 - memory
 - context
 
-At first they sound like overlapping jargon. In practice, they are not the same thing at all. They solve different problems at different layers.
+At first they sound like overlapping jargon. They are not. They solve different problems at different layers.
 
 That distinction matters because a lot of AI systems feel messy for one simple reason: teams mix up the layers. They use prompts where they need policy. They use agents where a tool call would do. They push workflow logic into the model when it should live in hooks or system code.
 
-This article is a companion map for that stack.
+This article is my attempt at a map for that stack.
 
-The goal is not to make the stack sound more impressive. The goal is to make it easier to reason about what belongs where.
+I am not trying to make the stack sound more impressive than it is. I just want it to be easier to reason about what belongs where.
 
 ---
 
@@ -78,7 +78,7 @@ flowchart TD
 
 This diagram is deliberately simple.
 
-The point is not that the agent "contains" everything in a literal implementation sense. The point is that the agent is the place where all these pieces meet.
+I am not saying the agent literally "contains" everything. I am saying the agent is where all these pieces meet.
 
 ---
 
@@ -127,7 +127,7 @@ If your system only takes one prompt and returns one answer, you may have an AI 
 
 ## What MCP is actually for
 
-MCP usually gets described too vaguely. A cleaner definition is this:
+MCP usually gets described too vaguely. The cleaner definition I keep coming back to is this:
 
 > **MCP is the connection layer that lets models and agents use external capabilities in a structured way.**
 
@@ -204,7 +204,7 @@ Tool   = "what the system can do"
 Skill  = "how the system should approach doing it"
 ```
 
-That distinction clears up a lot of design confusion.
+That distinction clears up a surprising amount of design confusion.
 
 If your AI agent knows how to open files, run tests, and inspect Git history, those are tools.
 

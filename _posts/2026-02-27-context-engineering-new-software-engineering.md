@@ -8,17 +8,23 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You've built an AI application. The LLM is capable. Your architecture is sound. But the outputs are inconsistent. Sometimes brilliant, sometimes baffling.
+You build an AI application. The model is good. The architecture is fine. And still the outputs wobble all over the place.
 
-You tweak the prompt. It gets better, then worse. You add examples. It helps for some cases, breaks others. You adjust the system instructions. Now it's too verbose. Too cautious. Too something.
+Sometimes the answer is sharp and exactly on target. Sometimes it is weirdly cautious. Sometimes it sounds confident and misses the point entirely.
 
-You're doing what most engineers do when they start with LLMs: **prompt engineering**.
+So you do what everybody does at first. You tweak the prompt. Then you tweak it again. You add examples. You tighten the system message. You make it more specific. Then less specific. Now it is better on one case and worse on three others.
 
-But here's what the best teams have learned:
+That phase has a name: **prompt engineering**.
+
+Useful name. Too small for the actual job.
+
+What the better teams seem to have figured out is this:
 
 > **Prompt engineering is tactical. Context engineering is strategic.**
 
-In this article, we'll explore why context has become the primary programming interface for AI systems, and how to engineer it systematically.
+If you want reliable behavior, you are not really writing prompts anymore. You are designing context.
+
+That is what this article is about.
 
 ---
 
@@ -80,7 +86,9 @@ Skill: Architecture, information design, system thinking
 
 > **Context is the new code.**
 
-In traditional programming, you write logic. In AI programming, you design context that shapes behavior.
+That line can sound a little dramatic, but I think it is directionally right.
+
+In traditional programming, you write logic. In AI programming, a lot of the real work shifts toward designing the information environment that shapes behavior.
 
 ---
 

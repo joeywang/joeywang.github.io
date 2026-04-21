@@ -8,13 +8,15 @@ series: "Software Engineering in the LLM Era"
 
 ## The Problem
 
-You've been using ChatGPT, Claude, or Cursor daily. You've written prompts, built RAG pipelines, maybe even deployed an AI agent. But when someone asks you **"What exactly is a large language model?"**, do you find yourself giving vague answers like "it's like a super-autocomplete" or "it's an AI that understands language"?
+You can use ChatGPT, Claude, or Cursor every day and still give a fuzzy answer when someone asks, **"What exactly is a large language model?"**
 
-Here's the uncomfortable truth: **most developers using LLMs don't actually understand what they are**. We treat them as magical black boxes—powerful, but mysterious.
+That fuzziness matters more than people admit.
 
-This is dangerous. When you don't understand the tool's nature, you misuse it. You expect it to do things it fundamentally cannot do. You build systems on flawed assumptions.
+If your mental model is basically "super-autocomplete, but somehow intelligent," you will keep expecting the wrong things from it. You will trust it in the wrong places. You will build systems on top of half-true metaphors.
 
-In this first article of the **"Software Engineering in the LLM Era"** series, we'll strip away the hype and understand LLMs from first principles. Not as users, but as engineers.
+I think that is where a lot of confusion starts.
+
+So this article is not about hype or product vibes. It is about getting the underlying mental model straight enough that the later engineering decisions stop feeling mystical.
 
 ---
 
@@ -22,7 +24,7 @@ In this first article of the **"Software Engineering in the LLM Era"** series, w
 
 ### Tokens: The Atomic Unit of Language
 
-Let's start with the basics. LLMs don't process text the way you and I do. They don't see words, sentences, or paragraphs. They see **tokens**.
+Start with the boring part, because the boring part is the real part. LLMs do not process text the way you and I do. They do not see words, sentences, or paragraphs. They see **tokens**.
 
 A token is roughly a word or subword unit. For example:
 
@@ -31,13 +33,13 @@ A token is roughly a word or subword unit. For example:
 "unbelievable" → ["un", "believ", "able"]
 ```
 
-Why does this matter? Because **tokens are what the model predicts**. Everything an LLM does—reasoning, coding, analyzing—reduces to predicting the next token in a sequence.
+Why does this matter? Because **tokens are what the model predicts**. Everything an LLM does, reasoning, coding, analysis, all of it, reduces to predicting the next token in a sequence.
 
 Think of it like this: if you were reading this sentence one token at a time, constantly guessing what comes next, you'd be doing what an LLM does.
 
 ### Probability: The Engine Under the Hood
 
-Here's the fundamental mechanism:
+The underlying mechanism is simple:
 
 ```
 Given: "The cat sat on the"
@@ -51,7 +53,7 @@ LLM predicts:
 
 The model doesn't "know" anything in the traditional sense. It has learned **statistical patterns** from its training data. When it generates text, it's sampling from a probability distribution over tokens.
 
-This is critical: **LLMs are probabilistic inference engines, not databases or deterministic programs**.
+This is the part worth getting lodged in your head: **LLMs are probabilistic inference engines, not databases or deterministic programs**.
 
 ### Next-Token Prediction: Simple Mechanism, Emergent Behavior
 
