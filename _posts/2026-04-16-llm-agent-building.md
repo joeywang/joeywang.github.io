@@ -10,15 +10,27 @@ categories: [AI, Engineering]
 
 # How an LLM Coding Agent Actually Builds Software
 
-The first time you use a coding agent, it is tempting to describe it as "ChatGPT, but it can edit files."
+The first time I tried to wire a local coding agent around Gemma, I thought the hard part would be the model.
 
-Close enough for dinner conversation, wrong enough to cause confusion the moment you try to build one yourself.
+It wasn't.
+
+The model looked flaky because my agent loop was flaky.
+
+One of the first tasks I gave it was boring on purpose: find a file, make a small code change, then run the relevant test. The model did the first part correctly. It asked for the file. It asked for the test. Then it drifted. Instead of taking the next tool step, it started explaining what should happen next like a consultant writing a checklist.
+
+At first glance that looked like a model failure. It wasn't. I was parsing the response stream too early and mishandling the turn after the tool result. The model never really got a clean chance to continue.
+
+That changed how I think about coding agents.
 
 A coding agent is not just a model with a bigger prompt. It is a small software system wrapped around a model. The model does the reasoning. The runtime does the state management, tool execution, file edits, and validation.
 
 That distinction matters because people blame or praise "the model" for things the surrounding harness is actually doing.
 
 After spending time with Gemma and OpenCode-style local workflows, I keep coming back to the same conclusion: the model is only one part of the system. The loop around it is what turns text generation into software work.
+
+If I had to reduce the whole article to one line, it would be this:
+
+> Most of what feels magical in a coding agent is just a model sitting inside a well-built loop.
 
 ## What the system actually is
 
@@ -32,7 +44,21 @@ At a high level, a coding agent has five moving parts:
 
 A normal chatbot answers once. An agent reads, acts, checks what happened, then goes again.
 
----
+Here is the simplest version of the flow:
+
+```text
+User request
+  -> context builder
+  -> model
+  -> tool call
+  -> runtime executes tool
+  -> tool result goes back to model
+  -> patch / command / follow-up tool call
+  -> tests or lint
+  -> final answer
+```
+
+That diagram is not glamorous, but it explains more of the experience than model marketing ever will.
 
 ## Step 1: build the working context
 
@@ -142,7 +168,48 @@ After each tool result, the model needs another turn. That is how it moves from:
 
 Without that loop, you do not have much of an agent. You have a one-shot assistant that knows how to talk about tool syntax.
 
----
+## A tiny end-to-end example
+
+This is what a healthy loop looks like in practice.
+
+Imagine the user asks:
+
+> "Fix the failing login test."
+
+What happens next is usually something like this:
+
+1. The agent searches for the failing test or runs a narrowed test command.
+2. The runtime sends the failure output back to the model.
+3. The model asks to read `auth.rb` and the matching test file.
+4. The runtime returns both file contents.
+5. The model proposes a small patch.
+6. The runtime applies the patch.
+7. The model asks to rerun the test.
+8. The runtime returns either a pass or a new failure.
+9. If it still fails, the loop continues.
+
+In rough pseudo-transcript form:
+
+```text
+user: Fix the failing login test.
+
+assistant -> tool: run_test("bundle exec rspec spec/requests/login_spec.rb")
+tool -> assistant: failure in "returns 401 for expired token"
+
+assistant -> tool: read_file("app/services/auth.rb")
+assistant -> tool: read_file("spec/requests/login_spec.rb")
+tool -> assistant: [file contents]
+
+assistant -> tool: apply_patch(...)
+tool -> assistant: patch applied
+
+assistant -> tool: run_test("bundle exec rspec spec/requests/login_spec.rb")
+tool -> assistant: 1 example, 0 failures
+
+assistant: Fixed. The token expiry check was comparing strings instead of timestamps.
+```
+
+That is the job. Not one huge leap of intelligence. A sequence of small moves, each grounded in feedback.
 
 ## Step 5: make precise edits instead of rewriting everything
 
@@ -177,7 +244,17 @@ The model proposes a change. The runtime runs the relevant checks. The model the
 
 That is the difference between a flashy demo and a tool you might actually trust. The demo stops when the code looks plausible. The useful tool stops when the environment says the change holds up.
 
----
+## Where agents usually break
+
+When people say a coding agent "just kind of fell apart," the failure is often boring:
+
+- the model emitted a tool call across multiple stream chunks and the runtime acted too early
+- the tool result got appended in the wrong format
+- the agent lost the thread after a long wall of shell output
+- the patch applied, but the model never saw the real post-patch state
+- the system skipped verification and returned confident nonsense
+
+This is why I am suspicious of sweeping claims about model quality without any discussion of runtime quality. A fragile harness can make a good model look bad. A disciplined harness can make a merely decent model feel much better than expected.
 
 ## Context management is where things quietly break
 
@@ -213,6 +290,23 @@ The harness determines whether the model can:
 
 That is why two products using similarly capable models can feel wildly different in practice.
 
+## Why this gets harder locally
+
+This point matters even more for local agents.
+
+Cloud coding products usually have polished runtimes, mature prompt formatting, and enough infrastructure around the model that a lot of rough edges are hidden from the user. Local setups are less forgiving.
+
+You run into issues like:
+
+- tighter memory limits
+- smaller practical context windows
+- worse latency when you overfeed the model
+- more brittle tool calling
+- more prompt-format sensitivity
+- less guardrail infrastructure around long sessions
+
+That does not make local agents pointless. I still like them. It just means the boring systems work matters even more. If your local agent feels unstable, it may not need a smarter model first. It may need a better loop, cleaner context, and stricter verification.
+
 ## A better way to think about coding agents
 
 The mental model I keep settling on is this:
@@ -230,8 +324,6 @@ Once you see the system that way, a lot of confusing behavior stops being confus
 
 > "What part of the agent loop failed?"
 
----
-
 ## Final takeaway
 
 An LLM coding agent does not build software by generating one brilliant answer.
@@ -245,4 +337,4 @@ It builds software by repeatedly doing four things well:
 
 If you want to build a better local agent, spend less time imagining a magical autonomous coder and more time improving those four steps.
 
-That is the real work.
+What looks like intelligence is often just good plumbing.
