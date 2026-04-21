@@ -57,6 +57,158 @@ The agent still has to do the hard part:
 
 If that loop is weak, a good local model still feels unreliable. If the loop is solid, even an imperfect local model becomes surprisingly usable.
 
+## Runbook: getting it running end to end
+
+This is the part I always want in articles like this, so here is the practical runbook.
+
+The goal is simple:
+
+1. Run the model in LM Studio.
+2. Expose it on LM Studio's local OpenAI-compatible endpoint.
+3. Point your agent client at `http://127.0.0.1:1234/v1`.
+4. Verify that the client can see and use the model.
+
+I am including the exact config shapes I use because this is where most of the friction usually is.
+
+### Step 1: load the model in LM Studio
+
+Open LM Studio, download the model you want to use, then load it in the local server.
+
+For the workflows in this post, the important part is not just "chat with the model." You want LM Studio serving it through the local API endpoint.
+
+In practice, my flow looks like this:
+
+1. Open LM Studio.
+2. Download or select the model you want.
+3. Go to the Developer or Local Server section.
+4. Start the server.
+5. Confirm the endpoint is available at `http://127.0.0.1:1234/v1`.
+
+If you want to sanity-check the server before touching any agent config, you can do a quick request like this:
+
+```bash
+curl http://127.0.0.1:1234/v1/models
+```
+
+If that returns a model list, the server side is at least alive.
+
+### Step 2: configure LM Studio for fewer surprises
+
+Before wiring in an agent, I would change these settings first:
+
+- disable Unified KV Cache
+- set context length manually instead of using auto
+- add stop tokens if you are seeing leaked reasoning tags
+
+Those are the changes that made the setup noticeably less flaky for me.
+
+### Step 3: wire it into `~/.pi/agents/models.json`
+
+If you are using Pi-style agents, the provider config can point directly at LM Studio's local endpoint.
+
+Example:
+
+```json
+{
+  "providers": {
+    "lm-studio": {
+      "id": "local-lm-studio",
+      "name": "LM Studio",
+      "api": "openai-completions",
+      "compatibility": "legacy-system-role",
+      "apiKey": "ollama",
+      "baseUrl": "http://127.0.0.1:1234/v1",
+      "models": [
+        {
+          "id": "qwen3.5-9b-sushi-coder-rl-mlx",
+          "_launch": true,
+          "name": "qwen 3.5 sushi coder",
+          "contextWindow": 84000,
+          "input": ["text"],
+          "reasoning": true
+        },
+        {
+          "id": "gemma-4-e4b-it-mlx",
+          "_launch": true,
+          "name": "Gemma 4 E4B",
+          "contextWindow": 84000,
+          "input": ["text"],
+          "reasoning": true
+        }
+      ]
+    }
+  }
+}
+```
+
+A few practical notes here:
+
+- `baseUrl` points at LM Studio's local server
+- `apiKey` is often just a placeholder for local servers
+- `compatibility` matters if your client is sensitive about role formatting
+- `reasoning: true` is useful only if your harness actually knows what to do with reasoning output
+
+That last point is easy to miss. Just because the model supports reasoning does not mean your agent loop is ready for it.
+
+### Step 4: wire it into OpenCode
+
+If you are using OpenCode, the provider config is a little cleaner.
+
+Example:
+
+```json
+{
+  "lm-studio": {
+    "models": {
+      "gemma-4-26b-a4b-it-mlx": {
+        "_launch": true,
+        "name": "Gemma 4 26B A4B IT MLX"
+      }
+    },
+    "name": "LM Studio",
+    "npm": "@ai-sdk/openai-compatible",
+    "options": {
+      "baseURL": "http://127.0.0.1:1234/v1"
+    }
+  }
+}
+```
+
+The important detail is that OpenCode is not doing anything magical here. It is just treating LM Studio as an OpenAI-compatible backend.
+
+That is why this setup is so handy for experimentation. If your agent framework already knows how to talk to an OpenAI-style API, LM Studio can often slot in with very little ceremony.
+
+### Step 5: do a cheap verification pass
+
+Before you try a full coding task, do three smaller checks:
+
+1. Ask the client to list or identify the configured model.
+2. Send a single short prompt and confirm the response comes back cleanly.
+3. Try one tiny agent task, like summarizing a short file or reviewing a tiny diff.
+
+Do not start with a huge repo-wide task. That is the fastest way to confuse yourself about whether the problem is:
+
+- LM Studio
+- model choice
+- context size
+- reasoning output
+- your agent harness
+
+Start cheap. Then scale up.
+
+### Step 6: know the likely failure points
+
+If the setup does not work, I would check these in order:
+
+1. Is LM Studio actually serving on `127.0.0.1:1234`?
+2. Does `curl http://127.0.0.1:1234/v1/models` return the model list?
+3. Does the configured model ID exactly match what LM Studio exposes?
+4. Is the client expecting Chat Completions behavior while the provider is configured as legacy completions?
+5. Is reasoning output leaking into a parser that expects clean plain text?
+6. Are you overloading the model immediately with a huge task?
+
+That list has saved me a lot of pointless debugging.
+
 ## Why I ended up preferring GGUF here
 
 For this specific setup, GGUF was the path of least resistance.
@@ -102,6 +254,137 @@ This one took me a while to admit.
 On a single prompt, Gemma could often produce a respectable answer about code. That made me optimistic. But agent workloads are harsher than single prompts. They require consistency across turns, clean tool-use behavior, and enough formatting discipline that the harness can keep going.
 
 A model that gives one good answer is not automatically a good agent backend.
+
+## Troubleshooting notes from my own setup
+
+These are the problems I actually ran into while trying to make this usable for agents.
+
+One thing I wish more local-LLM writeups did: include the ugly error text.
+
+When you are debugging this stack, vague advice is not that helpful. Concrete failure signatures are.
+
+### Qwen 35B on MLX ran out of memory
+
+This was one of the first practical limits I hit.
+
+On paper, a larger local model always sounds attractive. In practice, once I pushed into Qwen 35B-class MLX setups, memory pressure became the story. The model might load partway, fail during inference, or behave badly once context and KV usage started climbing.
+
+That pushed me toward setups that were slightly smaller but much easier to keep alive for repeated agent turns.
+
+This is one reason I think local agent work should be evaluated as a system, not just a model preference. A model that looks stronger in theory is not useful if it keeps falling over in the workflow you actually want.
+
+### KV cache support on LM Studio + MLX was not fully there for me
+
+This was another source of confusion.
+
+I expected KV cache behavior to be a straightforward performance win. In this setup, it was not. My experience was that KV caching on the MLX path inside LM Studio was not something I could treat as fully reliable for agent-style workloads.
+
+That matters because agent sessions are exactly the kind of workload where you want caching to help. Long turns, repeated context, retries, and follow-up prompts should benefit from it. But if that layer is unstable, it stops being an optimization and starts becoming a source of weird failures.
+
+One example I hit looked like this:
+
+```text
+Error: Error in iterating prediction stream:
+NotImplementedError: RotatingKVCache Quantization NYI
+```
+
+If you run into that kind of error, I would treat it as a runtime capability gap first, not something you are supposed to fix with prompting.
+
+In plain English: the stack is telling you that the KV/cache path you are trying to use is not fully implemented for that configuration yet.
+
+### Shared KV support for Gemma was not there in LM Studio runtime
+
+This deserves to be called out separately because it wasted a lot of time for me.
+
+Gemma plus shared KV sounded like exactly the kind of optimization that should help agent loops. In practice, in LM Studio runtime, I had to treat shared KV as not supported for the setup I was using.
+
+That matters because if you assume shared KV is working, you can end up chasing fake explanations for behavior that is really coming from unsupported runtime features.
+
+My rule here became simple: if Gemma is behaving strangely and shared KV is part of the configuration, remove that variable first.
+
+### 0% prompt stalls were tied to bad KV cache state
+
+This was the most visible symptom.
+
+When I saw LM Studio sit at 0% on a prompt that should have started normally, the issue often traced back to invalid or broken KV caching state. Turning off Unified KV Cache and resetting the session usually helped more than trying to tweak the prompt itself.
+
+That is why I would treat 0% prompt stalls as a runtime problem first, not a prompting problem first.
+
+If I hit this again, my default response would be:
+
+1. stop the current run
+2. clear or avoid the problematic cache path
+3. disable Unified KV Cache
+4. retry with a smaller prompt to confirm the model is healthy again
+
+That sequence saved time because it avoided debugging the wrong layer.
+
+Another important lesson here: the prompt is often innocent.
+
+If the runtime state is broken, rewriting the prompt five times is just a way to waste an afternoon.
+
+### Gemma think-tag leakage is real
+
+This one showed up often enough that I think it belongs in the troubleshooting section, not just the general setup notes.
+
+Gemma can leak internal reasoning or think-tag markers into visible output. Depending on the client, this may show up as raw reasoning blocks, partial channel markers, or output that looks like it forgot to separate internal thought from the final answer.
+
+That is annoying in a chat window. In an agent loop, it is worse because it can:
+
+- break parsing
+- contaminate structured output
+- confuse downstream tool-call handling
+- waste context on junk you never wanted to keep
+
+What helped me:
+
+- add stop tokens for the leaked markers
+- keep the output format expectations simple
+- avoid mixing too many formatting rules into one prompt
+- sanitize model output in the harness instead of assuming the model will cleanly separate reasoning every time
+
+I would treat this as a normal engineering concern when using Gemma for agents, not as a weird one-off edge case.
+
+### Simplifying Pi prompts matters more than I expected
+
+Another lesson from the agent side: the prompt budget disappears fast.
+
+If Pi is carrying a huge system prompt, a long skill catalog, MCP server descriptions, tool instructions, and model-specific behavior rules, you can burn a surprising amount of context before the real task even starts.
+
+For local models, that overhead hurts more.
+
+The practical fix was to simplify the Pi prompt aggressively:
+
+- trim skills that are not needed for the current workflow
+- avoid loading MCP/tool descriptions that the task will not use
+- keep the system prompt direct and task-specific
+- prefer short operational rules over a giant "do everything" instruction block
+
+The goal is not to make the agent dumb. The goal is to stop spending half the context window on scaffolding.
+
+For local coding models in particular, I think this matters a lot. Smaller prompt overhead usually means:
+
+- less wasted context
+- fewer formatting mistakes
+- less chance of the model getting distracted by meta-instructions
+- more room for the actual code, diff, logs, and tool results
+
+If the model is struggling, one of the highest-leverage fixes is often not "find a smarter model." It is "stop stuffing the prompt with framework overhead the model does not need."
+
+### A short troubleshooting checklist I would use again
+
+If I were setting this up from scratch and it started failing, this is the order I would check things:
+
+1. Confirm LM Studio is actually serving the model you think it is serving.
+2. Check whether the exact model ID in the client matches the runtime.
+3. Remove shared KV assumptions from the setup.
+4. Disable Unified KV Cache.
+5. Treat MLX KV/cache errors as runtime limitations first.
+6. Retry with a much smaller prompt.
+7. Strip down the Pi or agent system prompt so the model gets more room for the real task.
+8. If Gemma output is leaking think tags, fix that in both prompt design and output sanitation.
+
+That sequence is not elegant, but it is the one I trust more now.
 
 ## The settings that made it usable
 
