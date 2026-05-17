@@ -135,8 +135,8 @@ Comprehensive review across technical accuracy, engagement, style consistency, a
 
 ### Input
 
-- Automatically detects most recent post in `_posts/`, or
-- `/blog-review _posts/2026-05-17-specific-post.md` to review a specific post
+- **No argument:** Automatically detects most recent post in `_posts/` (by filename date, YYYY-MM-DD prefix)
+- **With path:** `/blog-review _posts/2026-05-17-specific-post.md` to review a specific post
 
 ### Review Dimensions
 
