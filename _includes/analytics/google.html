@@ -1,0 +1,111 @@
+<!-- Google Analytics (gtag.js) + Custom Event Tracking -->
+<script defer src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.google.id }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', '{{ site.analytics.google.id }}');
+
+    const isPost = !!document.querySelector('article');
+    const pageTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content') || document.title;
+    const pageCategory = document.querySelector('meta[property="article:section"]')?.getAttribute('content') || '';
+    const pageTags = [...document.querySelectorAll('meta[property="article:tag"]')].map(m => m.getAttribute('content'));
+
+    // 1. Enhanced post view
+    if (isPost) {
+      const text = document.querySelector('article')?.textContent || '';
+      const wordCount = text.match(/\b\w+\b/g)?.length || 0;
+      gtag('event', 'post_view', {
+        post_title: pageTitle,
+        post_category: pageCategory,
+        post_tags: pageTags.join(', '),
+        word_count: wordCount
+      });
+    }
+
+    // 2. Scroll depth (posts only)
+    if (isPost) {
+      const docHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight
+      ) - (window.innerHeight || document.documentElement.clientHeight);
+      if (docHeight <= 0) { /* no scroll tracking needed */ } else {
+      const firedDepths = new Set();
+      let ticking = false;
+
+      const trackScroll = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const pct = Math.round((scrollTop / docHeight) * 100);
+        [25, 50, 75, 100].forEach(d => {
+          if (pct >= d && !firedDepths.has(d)) {
+            firedDepths.add(d);
+            gtag('event', 'scroll_depth', { scroll_depth: d });
+          }
+        });
+      };
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => { trackScroll(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+      }
+    }
+
+    // 3. Outbound link clicks
+    document.addEventListener('click', e => {
+      const link = e.target.closest('a');
+      if (!link) return;
+      const url = link.href;
+      if (!url || !url.startsWith('http')) return;
+      try {
+        if (new URL(url).hostname === location.hostname) return;
+      } catch { return; }
+      gtag('event', 'outbound_click', {
+        link_url: url,
+        link_text: (link.textContent || '').trim().slice(0, 100)
+      });
+    });
+
+    // 4. Copy code
+    document.addEventListener('copy', () => {
+      const sel = window.getSelection();
+      if (!sel || !sel.toString()) return;
+      let node = sel.anchorNode;
+      while (node && node !== document.body) {
+        if (node.nodeName === 'CODE' || node.nodeName === 'PRE') {
+          gtag('event', 'copy_code', { code_length: sel.toString().length });
+          break;
+        }
+        node = node.parentNode;
+      }
+    });
+
+    // 5. Search queries
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.addEventListener('search', e => {
+        if (e.target.value) {
+          gtag('event', 'search', { search_term: e.target.value });
+        }
+      });
+    }
+
+    // 6. Share button clicks
+    document.querySelectorAll('.share-icons a').forEach(link => {
+      link.addEventListener('click', () => {
+        gtag('event', 'share', {
+          platform: link.getAttribute('aria-label') || link.href
+        });
+      });
+    });
+    const copyLink = document.getElementById('copy-link');
+    if (copyLink) {
+      copyLink.addEventListener('click', () => {
+        gtag('event', 'share', { platform: 'copy_link' });
+      });
+    }
+  });
+</script>
