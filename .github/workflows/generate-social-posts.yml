@@ -18,17 +18,6 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for commit messages
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
-
       - name: Identify new blog post
         id: new_post
         run: |
@@ -56,53 +45,105 @@ jobs:
           echo "TITLE=$POST_TITLE_CLEAN"
           echo "DESC=$POST_DESC_CLEAN"
 
-      - name: Generate AI Social Media Content
+      - name: Generate AI Social Media Content via GitHub Models
         id: ai_content
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN || secrets.GH_MODELS_TOKEN }}
         run: |
-          # Extract the first 200 characters of the post for AI context (or first paragraph)
-          POST_SNIPPET=$(head -n 20 "$NEWEST_POST" | grep -v '^---' | head -c 500)
+          # Extract post content for AI context
+          POST_SNIPPET=$(grep -v '^---' "$NEWEST_POST" | head -n 60 | head -c 3000)
           
-          # Generate Twitter post (max 280 characters)
-          TWITTER_POST="🚀 Just published: $POST_TITLE
+          # Generate slug from filename
+          SLUG=$(basename "$NEWEST_POST" | sed 's/^[0-9]*-[0-9]*-[0-9]*-//g' | sed 's/\.[^.]*$//g')
+          POST_URL="https://joeywang.github.io/posts/$SLUG"
           
-          $POST_DESC_CLEAN
+          # Extract tags from frontmatter
+          POST_TAGS=$(grep -A 20 '^tags:' "$NEWEST_POST" | grep '^\s*\-' | sed 's/^\s*-\s*//' | tr '\n' ', ' | sed 's/, $//')
           
-          Read more: https://joeywang.github.io/posts/$(basename "$NEWEST_POST" | sed 's/^[0-9]*-[0-9]*-[0-9]*-//g' | sed 's/\.[^.]*$//g')
+          # Build prompt for GitHub Models
+          PROMPT="You are a social media manager for a Ruby on Rails engineering blog. Generate Twitter and LinkedIn posts for a new article.
+
+          Article Details:
+          - Title: $POST_TITLE
+          - Description: $POST_DESC
+          - Tags: $POST_TAGS
+          - URL: $POST_URL
+
+          Article Content Snippet:
+          $POST_SNIPPET
+
+          Generate the following in JSON format:
+          1. \"twitter\": A compelling Twitter post under 280 chars. Include the URL and 2-3 relevant hashtags.
+          2. \"linkedin\": A professional LinkedIn post (200-400 chars) with a hook, key takeaways from the actual content, and 4-6 relevant hashtags. End with a question or call-to-action.
+
+          Return ONLY valid JSON: {\"twitter\": \"...\", \"linkedin\": \"...\"}"
           
+          # Call GitHub Models API
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://models.inference.ai.azure.com/chat/completions" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -d "$(cat << ENDJSON
+          {
+            "model": "gpt-4o-mini",
+            "messages": [
+              {"role": "system", "content": "You output only valid JSON, no markdown."},
+              {"role": "user", "content": $(echo "$PROMPT" | jq -Rs .)}
+            ],
+            "temperature": 0.7,
+            "max_tokens": 600
+          }
+          ENDJSON
+          )")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          use_fallback() {
+            TWITTER_FALLBACK="🚀 Just published: $POST_TITLE
+
+          $POST_DESC
+
+          Read more: $POST_URL
+
           #RubyOnRails #Performance #Tech"
+            [ ${#TWITTER_FALLBACK} -gt 280 ] && TWITTER_FALLBACK="${TWITTER_FALLBACK:0:277}..."
+            LINKEDIN_FALLBACK="🚀 New article: \"$POST_TITLE\"
+
+          $POST_DESC
+
+          Read the full article: $POST_URL
+
+          #RubyOnRails #Performance #BackendEngineering #Development #Tech"
+            echo "TWITTER_POST<<EOF" >> $GITHUB_ENV
+            echo "$TWITTER_FALLBACK" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+            echo "LINKEDIN_POST<<EOF" >> $GITHUB_ENV
+            echo "$LINKEDIN_FALLBACK" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          }
           
-          # Truncate if needed
-          if [ ${#TWITTER_POST} -gt 280 ]; then
-            TWITTER_POST_TRUNCATED="${TWITTER_POST:0:277}..."
-            TWITTER_POST="$TWITTER_POST_TRUNCATED"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "GitHub Models API error (HTTP $HTTP_CODE): $BODY"
+            echo "Falling back to template-based generation..."
+            use_fallback
+          else
+            CONTENT=$(echo "$BODY" | jq -r '.choices[0].message.content // ""')
+            if [ -z "$CONTENT" ] || [ "$CONTENT" = "null" ]; then
+              echo "Empty response from model, using fallback"
+              use_fallback
+            else
+              TWITTER_GEN=$(echo "$CONTENT" | jq -r '.twitter // ""')
+              LINKEDIN_GEN=$(echo "$CONTENT" | jq -r '.linkedin // ""')
+              echo "TWITTER_POST<<EOF" >> $GITHUB_ENV
+              echo "$TWITTER_GEN" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+              echo "LINKEDIN_POST<<EOF" >> $GITHUB_ENV
+              echo "$LINKEDIN_GEN" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+            fi
           fi
           
-          echo "TWITTER_POST<<EOF" >> $GITHUB_ENV
-          echo "$TWITTER_POST" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          # Generate LinkedIn post
-          LINKEDIN_POST="🚀 Exciting new article just published on my blog: \"$POST_TITLE\"
-          
-          $POST_DESC_CLEAN
-          
-          In this post, I explore and provide practical examples for implementing this approach in your applications.
-          
-          Key takeaways:
-          • Main insight 1
-          • Main insight 2
-          • Main insight 3
-          
-          Read the full article on my blog: https://joeywang.github.io/posts/$(basename "$NEWEST_POST" | sed 's/^[0-9]*-[0-9]*-[0-9]*-//g' | sed 's/\.[^.]*$//g')
-          
-          #RubyOnRails #Performance #BackendEngineering #Development #Rails8"
-          
-          echo "LINKEDIN_POST<<EOF" >> $GITHUB_ENV
-          echo "$LINKEDIN_POST" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          echo "Twitter post generated (length: ${#TWITTER_POST})"
-          echo "LinkedIn post generated (length: ${#LINKEDIN_POST})"
+          echo "Posts generated. Twitter length: ${#TWITTER_POST:-0}, LinkedIn length: ${#LINKEDIN_POST:-0}"
 
       - name: Print Generated Content
         run: |
@@ -112,51 +153,40 @@ jobs:
           echo "LinkedIn Post:"
           echo "$LINKEDIN_POST"
 
-      # Optional: Send to Twitter (requires Twitter API credentials)
-      - name: Post to Twitter (Optional)
-        if: ${{ secrets.TWITTER_API_KEY != '' }}
-        uses: m1ner79/Github-Twitter-Integration@v2.1.0
-        with:
-          twitter_consumer_api_key: ${{ secrets.TWITTER_API_KEY }}
-          twitter_consumer_api_secret: ${{ secrets.TWITTER_API_SECRET }}
-          twitter_access_token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-          twitter_status: ${{ env.TWITTER_POST }}
-
-      # Optional: Send to LinkedIn (requires LinkedIn API credentials)
-      - name: Post to LinkedIn (Optional)
-        if: ${{ secrets.LINKEDIN_ACCESS_TOKEN != '' }}
+      # Optional: Post to Buffer (Twitter + LinkedIn)
+      - name: Post to Buffer
+        if: ${{ secrets.BUFFER_ACCESS_TOKEN != '' }}
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          TWITTER_PROFILE_ID: ${{ secrets.BUFFER_TWITTER_PROFILE_ID }}
+          LINKEDIN_PROFILE_ID: ${{ secrets.BUFFER_LINKEDIN_PROFILE_ID }}
         run: |
-          curl -X POST "https://api.linkedin.com/v2/ugcPosts" \
-          -H "Authorization: Bearer ${{ secrets.LINKEDIN_ACCESS_TOKEN }}" \
-          -H "Content-Type: application/json" \
-          -H "X-Restli-Protocol-Version: 2.0.0" \
-          --data-raw '{
-            "author": "urn:li:person:$(echo ${{ secrets.LINKEDIN_PERSON_URN }})",
-            "lifecycleState": "PUBLISHED",
-            "specificContent": {
-              "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {
-                  "text": "${{ env.LINKEDIN_POST }}"
-                },
-                "shareMediaCategory": "NONE"
-              }
-            },
-            "visibility": {
-              "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
-            }
-          }'
+          buffer_post() {
+            local text="$1"
+            local profile_id="$2"
+            local label="$3"
+            
+            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+              "https://api.buffer.com/1/updates/create.json" \
+              -H "Authorization: Bearer $BUFFER_ACCESS_TOKEN" \
+              --data-urlencode "text=$text" \
+              --data-urlencode "profile_ids[]=$profile_id" \
+              --data-urlencode "now=true")
+            
+            if [ "$STATUS_CODE" = "201" ] || [ "$STATUS_CODE" = "200" ]; then
+              echo "  ✓ Posted to $label"
+            else
+              echo "  ✗ $label failed (HTTP $STATUS_CODE)"
+              return 1
+            fi
+          }
           
-      # Optional: Send to Mastodon (if you use it)
-      - name: Post to Mastodon (Optional)
-        if: ${{ secrets.MASTODON_ACCESS_TOKEN != '' }}
-        uses: dessant/mastodon-post@v2
-        with:
-          host: ${{ secrets.MASTODON_HOST || 'mastodon.social' }}
-          access-token: ${{ secrets.MASTODON_ACCESS_TOKEN }}
-          status: ${{ env.TWITTER_POST }}
-          language: en
-          visibility: public
+          echo "Posting to Buffer..."
+          FAILED=0
+          [ -n "$TWITTER_PROFILE_ID" ] && buffer_post "$TWITTER_POST" "$TWITTER_PROFILE_ID" "Twitter" || FAILED=1
+          [ -n "$LINKEDIN_PROFILE_ID" ] && buffer_post "$LINKEDIN_POST" "$LINKEDIN_PROFILE_ID" "LinkedIn" || FAILED=1
+          [ "$FAILED" = "1" ] && exit 1
+          echo "All Buffer posts sent successfully"
           
       # Create a log of the generated post
       - name: Log Social Media Posts
