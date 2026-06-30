@@ -155,12 +155,15 @@ jobs:
 
       # Optional: Post to Buffer (Twitter + LinkedIn)
       - name: Post to Buffer
-        if: ${{ secrets.BUFFER_ACCESS_TOKEN != '' }}
         env:
           BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
           TWITTER_PROFILE_ID: ${{ secrets.BUFFER_TWITTER_PROFILE_ID }}
           LINKEDIN_PROFILE_ID: ${{ secrets.BUFFER_LINKEDIN_PROFILE_ID }}
         run: |
+          if [ -z "$BUFFER_ACCESS_TOKEN" ]; then
+            echo "BUFFER_ACCESS_TOKEN not set, skipping"
+            exit 0
+          fi
           buffer_post() {
             local text="$1"
             local profile_id="$2"
