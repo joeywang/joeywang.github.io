@@ -12,7 +12,7 @@
     const pageCategory = document.querySelector('meta[property="article:section"]')?.getAttribute('content') || '';
     const pageTags = [...document.querySelectorAll('meta[property="article:tag"]')].map(m => m.getAttribute('content'));
 
-    // 1. Enhanced post view
+    /* 1. Enhanced post view */
     if (isPost) {
       const text = document.querySelector('article')?.textContent || '';
       const wordCount = text.match(/\b\w+\b/g)?.length || 0;
@@ -24,7 +24,7 @@
       });
     }
 
-    // 2. Scroll depth (posts only)
+    /* 2. Scroll depth (posts only) */
     if (isPost) {
       const docHeight = Math.max(
         document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -54,7 +54,7 @@
       }
     }
 
-    // 3. Outbound link clicks
+    /* 3. Outbound link clicks */
     document.addEventListener('click', e => {
       const link = e.target.closest('a');
       if (!link) return;
@@ -69,7 +69,7 @@
       });
     });
 
-    // 4. Copy code
+    /* 4. Copy code */
     document.addEventListener('copy', () => {
       const sel = window.getSelection();
       if (!sel || !sel.toString()) return;
@@ -83,7 +83,7 @@
       }
     });
 
-    // 5. Search queries
+    /* 5. Search queries */
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
       searchInput.addEventListener('search', e => {
@@ -93,7 +93,7 @@
       });
     }
 
-    // 6. Share button clicks
+    /* 6. Share button clicks */
     document.querySelectorAll('.share-icons a').forEach(link => {
       link.addEventListener('click', () => {
         gtag('event', 'share', {
