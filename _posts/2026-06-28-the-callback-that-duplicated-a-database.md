@@ -117,12 +117,52 @@ a session that already has a long history:
 5. `Event.insert_all` then takes *all* of those rows, strips their `id`
    and timestamps, and inserts them again as brand-new rows.
 
+Laid out as a sequence, step 3 and step 4 are where it goes wrong: an
+`empty?` check that's correct in isolation, followed by an enumeration that
+silently turns into a full table scan because nothing upstream of it ever
+loaded the association on purpose.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as API endpoint
+    participant Handler as "deactivate" handler
+    participant Session as UserSession instance
+    participant Callback as autosave_associated_records_for_events
+    participant DB as Database
+
+    Client->>API: POST "deactivate" event
+    API->>Handler: after_save
+    Handler->>Session: deactivate.save!
+    Session->>Callback: fires on every save (Rails-wired)
+    Callback->>Callback: events.empty?
+    Note over Callback,DB: session already has rows,<br/>so this reliably returns false
+    Callback->>DB: events.map forces a full load:<br/>SELECT * FROM events WHERE user_session_id = ?
+    DB-->>Callback: all 300,000 existing rows
+    Callback->>DB: Event.insert_all(all 300,000 + 1 new,<br/>id/timestamps stripped)
+    DB-->>Session: 300,001 new duplicate rows inserted
+    Note over DB: session now has 600,001 events
+```
+
 Every single "deactivate" event on an existing session was quietly copying
 that session's *entire* history and reinserting it as duplicates. Not
 updating anything. Not deduplicating anything. Just doubling it.
 
 Do that once and a 50-row session becomes 100. Do it on every subsequent
-deactivate/reactivate cycle and the growth compounds: 100, 200, 400, 800.
+deactivate/reactivate cycle and the growth compounds:
+
+```
+cycle  1:      50 →     100
+cycle  2:     100 →     200
+cycle  3:     200 →     400
+cycle  4:     400 →     800
+   ...
+cycle 10:  12,800 →  25,600
+   ...
+cycle 14: 204,800 → 409,600
+cycle 15: 409,600 → 819,200   ← comfortably past the 600,000 we found
+```
+
 It takes surprisingly few cycles of ordinary, entirely legitimate user
 behavior to walk a session from a normal size to 600,000 rows. Exponential
 growth is deceptive that way: it looks like nothing is wrong for a long
@@ -176,6 +216,32 @@ never loaded, and never duplicated. The original use case, a new session
 created with a batch of nested events, still works exactly as before,
 because those events are all new records sitting in memory. Nothing else
 changes.
+
+The same sequence as before, with the one-line fix in place. The database
+never sees the existing 300,000 rows at all:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as API endpoint
+    participant Handler as "deactivate" handler
+    participant Session as UserSession instance
+    participant Callback as autosave_associated_records_for_events (fixed)
+    participant DB as Database
+
+    Client->>API: POST "deactivate" event
+    API->>Handler: after_save
+    Handler->>Session: deactivate.save!
+    Session->>Callback: fires on every save
+    Callback->>Callback: association(:events).target.select(&:new_record?)
+    Note over Callback: reads only in-memory,<br/>unsaved records - no query at all
+    alt no new, unsaved events in memory
+        Callback-->>Session: return, nothing to do
+    else new events were built
+        Callback->>DB: Event.insert_all(only the new events)
+    end
+    Note over DB: existing 300,000 rows: never queried,<br/>never touched, never duplicated
+```
 
 We also added a hard cap on events per session as a second layer of
 protection: even with the root cause fixed, unbounded growth from some
