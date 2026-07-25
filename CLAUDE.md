@@ -69,7 +69,7 @@ tags: [Ruby on Rails, Performance, ...]
 ## GitHub Actions
 
 - **jekyll.yml**: Builds and deploys to GitHub Pages on push to main
-- **generate-social-posts.yml**: Auto-generates social media posts (logs only, manual posting)
+- Social posting is handled manually/outside GitHub Actions. Do not add automated social-post generation back to the repo.
 
 ## Theme: Chirpy
 
