@@ -10,6 +10,14 @@ categories: [AI Engineering]
 
 # The hard part of AI PR review is not reading the diff
 
+<div class="audio-summary">
+  <p><strong>Audio summary:</strong> a short spoken version of this post.</p>
+  <audio controls preload="metadata">
+    <source src="/assets/audio/2026-07-25-ai-pr-review-open-code-review-summary.ogg" type="audio/ogg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
+
 AI code review sounds like an obvious win.
 
 A pull request is text. LLMs read text. The bot can comment before a human even opens the page. It can catch repeated mistakes, missing checks, suspicious conditionals, forgotten tests, and obvious security smells without getting tired.
