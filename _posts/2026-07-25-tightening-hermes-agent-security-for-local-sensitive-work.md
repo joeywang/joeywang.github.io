@@ -10,6 +10,10 @@ categories: [AI, Security]
 
 # Tightening Hermes Agent security for local sensitive work
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-25-tightening-hermes-agent-security-for-local-sensitive-work-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I recently added a local model path to my Hermes setup.
 
 The motivation was simple: some agent work should not go to a cloud model by default. If the task touches PII, credentials, local configuration, or private code that I only want inspected on the machine, a local model is a better default than sending the whole prompt to an external API.
