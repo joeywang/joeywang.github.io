@@ -7,6 +7,11 @@ tags: [Ruby]
 ---
 # Building Your Own Speech-to-Text Service with Whisper
 
+<audio controls preload="metadata" src="/assets/audio/building-your-own-speech-to-text-service-with-whisper-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 In the realm of English language learning, transcribing audio files is a crucial yet time-consuming task. Manual transcription is not only laborious but also prone to errors. This article explores how to streamline this process by leveraging Speech-to-Text (STT) technology, specifically focusing on building a service using the open-source Whisper model.

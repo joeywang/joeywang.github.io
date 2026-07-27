@@ -7,6 +7,10 @@ tags: [ai, codex, agents, engineering, productivity, code-review]
 categories: [ai, engineering]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/subagents-in-codex-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## What Subagents Are Actually Good For in Codex
 
 I did not start out as a subagent enthusiast.

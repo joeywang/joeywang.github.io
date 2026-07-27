@@ -7,6 +7,11 @@ categories: PostgreSQL
 
 # PostgreSQL Setup on Ubuntu: Installation, User Setup, and Real‑World Debugging
 
+<audio controls preload="metadata" src="/assets/audio/postgresql-setup-on-ubuntu-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 This article walks through **installing the latest PostgreSQL on Ubuntu**, **setting up users correctly for development**, and **debugging common authentication failures**, using a real Rails + PostgreSQL example.
 
 It’s written for developers who want to understand *why* things fail, not just copy commands.

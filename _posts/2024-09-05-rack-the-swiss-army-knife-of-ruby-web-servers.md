@@ -8,6 +8,11 @@ tags: [rack, web]
 
 # Rack: The Swiss Army Knife of Ruby Web Servers
 
+<audio controls preload="metadata" src="/assets/audio/rack-the-swiss-army-knife-of-ruby-web-servers-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## What is Rack?
 
 Rack provides a minimal, modular, and adaptable interface for developing web applications in Ruby. It serves as a standard interface between web servers and web applications, allowing developers to use different web servers and frameworks seamlessly.

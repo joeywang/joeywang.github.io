@@ -8,6 +8,11 @@ tags: [container, security]
 
 # Container Security with Fine-Grained Permission Control
 
+<audio controls preload="metadata" src="/assets/audio/container-security-with-fine-grained-permission-control-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the modern landscape of software development, containerization has become a pivotal technology for deploying and managing applications. Containers provide a lightweight, consistent environment for applications, but they also introduce new security challenges. One of the key aspects of container security is controlling permissions to ensure that only authorized users and processes can access the necessary resources. In this article, we will explore how to implement fine-grained permission control in containers, using Kubernetes as an example.
 
 ## Understanding Permission Symbols

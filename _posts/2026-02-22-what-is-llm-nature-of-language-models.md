@@ -201,6 +201,11 @@ Never assume an LLM will give you the same answer twice. Always design systems t
 
 ```python
 # ❌ Bad: Assume deterministic output
+
+<audio controls preload="metadata" src="/assets/audio/what-is-llm-nature-of-language-models-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 result = llm.generate(prompt)
 process(result)
 

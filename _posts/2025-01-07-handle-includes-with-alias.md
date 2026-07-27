@@ -6,6 +6,11 @@ categories: includes eager-loading rails activerecord
 ---
 # Handling Ordering in Rails with includes and Aliased Joins
 
+<audio controls preload="metadata" src="/assets/audio/handle-includes-with-alias-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When working with ActiveRecord in Rails, it's common to use `includes` to eager-load associations and prevent N+1 queries. However, issues arise when ordering by an associated table's column—especially if Rails aliases the table name in SQL.
 
 In this article, we’ll explore different approaches to ordering records without breaking eager loading and causing unexpected errors.

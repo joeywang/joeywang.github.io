@@ -6,6 +6,10 @@ pin: true
 categories: Ruby
 ---
 
+<audio controls preload="metadata" src="/assets/audio/gvl-parallel-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### Conquering Concurrency in Ruby: A Deep Dive into the GVL and Ractor
 
 Ruby's ability to handle multiple tasks simultaneously is a cornerstone of its power and flexibility. However, understanding the nuances of how Ruby achieves this is crucial for writing efficient and performant code. This article will take you on a journey through two key concepts in Ruby's concurrency model: the Global VM Lock (GVL) and Ractor. We'll explore what they are, why they exist, and how to leverage them effectively in your Ruby applications.

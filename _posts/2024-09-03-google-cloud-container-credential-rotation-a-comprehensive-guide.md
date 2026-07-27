@@ -7,6 +7,11 @@ tags: [gcp, kubernetes, credential]
 ---
 # Google Cloud Container Credential Rotation: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/google-cloud-container-credential-rotation-a-comprehensive-guide-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the dynamic world of cloud security, regularly managing and rotating credentials is crucial for maintaining the integrity and security of your Kubernetes clusters. Google Cloud Platform (GCP) offers a robust mechanism for credential rotation in its Kubernetes Engine, a feature that is indispensable for upholding the security of your cloud infrastructure.
 
 ## Why Rotate Credentials?

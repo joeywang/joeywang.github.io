@@ -4,6 +4,10 @@ title: "Redis Sentinel Mode Overview"
 date:   2024-07-10 14:41:26 +0100
 categories: Redis
 ---
+<audio controls preload="metadata" src="/assets/audio/redis-sentinel-mode-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 <img alt="course" src="assets/img/re/redis-sentinel.png"/>
 
 

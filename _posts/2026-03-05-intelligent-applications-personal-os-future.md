@@ -6,6 +6,10 @@ categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"
 ---
 
+<audio controls preload="metadata" src="/assets/audio/intelligent-applications-personal-os-future-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Problem
 
 You've used software for decades. It all works the same way:

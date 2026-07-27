@@ -6,6 +6,10 @@ categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"
 ---
 
+<audio controls preload="metadata" src="/assets/audio/one-person-company-ai-force-multiplier-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Problem
 
 For decades, building a software company required a team:

@@ -7,6 +7,11 @@ tags: [ruby rails rdbg]
 
 # Deep Dive into Ruby Internals: From Rails Caching to C-Level Object IDs
 
+<audio controls preload="metadata" src="/assets/audio/deep-dive-into-ruby-internals-from-rails-caching-to-c-level-object-ids-2024-10-27-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When debugging Rails applications, sometimes we stumble upon fascinating aspects of Ruby's internal workings. This article shares a journey that started with a simple Rails caching issue and led us deep into Ruby's object model and memory management system.
 
 ## The Starting Point: Rails Caching and Kaminari

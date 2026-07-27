@@ -18,6 +18,10 @@ tags:
   - zmv
 ---
 
+<audio controls preload="metadata" src="/assets/audio/make-bash-work-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## Level Up Your Terminal Fu: Mastering Command-Line Editing in Zsh
 
 The command line is an indispensable tool for developers, system administrators, and power users. While many are familiar with basic command entry and execution, truly mastering command-line *editing* can transform your productivity, turning tedious retyping and error correction into a swift, efficient process. If you're a Zsh (Z Shell) user, you're in luck – Zsh offers a particularly rich set of features to make your terminal experience smoother and more powerful.

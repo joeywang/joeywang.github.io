@@ -99,6 +99,11 @@ Save as `~/scripts/zero_trust_blocklist.txt`:
 
 ```txt
 # Zero Trust Block Rules START
+
+<audio controls preload="metadata" src="/assets/audio/zero-trust-monitor-disconnect-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 127.0.0.1 api.corp.example
 127.0.0.1 sso.example.com
 127.0.0.1 warp.cloudflareclient.com

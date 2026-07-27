@@ -10,6 +10,11 @@ categories: [AI, Engineering]
 
 # Using LM Studio and Gemma as a Local Engine for Coding Agents
 
+<audio controls preload="metadata" src="/assets/audio/lm-studio-gemma4-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 I did not start this experiment because I wanted a nicer chatbot on my laptop.
 
 What I wanted was much more specific: a local model endpoint I could plug into agent-style workflows for code review, repo questions, bounded refactors, and private documentation-heavy tasks. Something that felt close enough to the OpenAI-compatible APIs many tools already expect, but without sending every prompt, diff, and internal doc set to the cloud.

@@ -7,6 +7,11 @@ categories: ["Alpine Linux", "Docker", "Postgres"]
 
 # When Time Zones Vanish: Solving the Asia/Rangoon Postgres Error in Alpine Linux
 
+<audio controls preload="metadata" src="/assets/audio/timezone-patch-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 If you recently updated your Docker images and were greeted by a `PG::InvalidParameterValue: ERROR: time zone "Asia/Rangoon" not recognized`, you aren't alone. It’s a classic case of infrastructure evolving faster than application data.
 
 ## The Root Cause: Why did it break?

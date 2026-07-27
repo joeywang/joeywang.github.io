@@ -6,6 +6,10 @@ categories: Bash
 tags: script
 ---
 
+<audio controls preload="metadata" src="/assets/audio/count-size-for-lessons-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ```bash
 set -o nounset                              # Treat unset variables as an error
 

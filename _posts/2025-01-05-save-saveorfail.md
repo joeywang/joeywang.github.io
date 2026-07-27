@@ -6,6 +6,11 @@ categories: php model validation
 ---
 # Laravel Model: Understanding `save()` vs. `saveOrFail()`
 
+<audio controls preload="metadata" src="/assets/audio/save-saveorfail-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When working with Laravel Eloquent models, you often need to persist data into the database. Laravel provides two commonly used methods for this: `save()` and `saveOrFail()`. While they may seem similar, they have crucial differences that affect error handling and data integrity. This article explains when to use each method and how to ensure robust error handling.
 
 ## Understanding `save()`

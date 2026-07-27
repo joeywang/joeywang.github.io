@@ -6,6 +6,11 @@ tags: [Redis, Kubernetes, Sentinel, Split-Brain]
 ---
 # Redis Sentinel Split-Brain: A Midnight Nightmare
 
+<audio controls preload="metadata" src="/assets/audio/redis-split-brain-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Redis is a powerful in-memory data structure store, often used as a
 database, cache, and message broker. However, when it comes to high
 availability with Redis Sentinel, things can get a bit tricky. In this

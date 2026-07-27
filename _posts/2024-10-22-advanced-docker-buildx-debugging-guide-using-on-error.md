@@ -7,6 +7,11 @@ tags: [docker, buildx, on-error]
 ---
 # Advanced Docker Buildx Debugging Guide: Using --on-error
 
+<audio controls preload="metadata" src="/assets/audio/advanced-docker-buildx-debugging-guide-using-on-error-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction to Buildx --on-error
 
 The `--on-error` flag in Docker Buildx is a powerful debugging feature that allows you to inspect the build container's state when a build step fails. This is particularly useful for:

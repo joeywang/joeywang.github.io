@@ -7,6 +7,11 @@ tags: [debugging, react, frontend]
 ---
 # How to Debug React Applications
 
+<audio controls preload="metadata" src="/assets/audio/how-to-debug-react-applications-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Debugging React applications can be a complex task, but with the right tools and techniques, you can streamline the process and quickly identify and fix issues. In this article, we'll explore various methods to debug both React web and React Native applications.
 
 ## Debugging with React Developer Tools

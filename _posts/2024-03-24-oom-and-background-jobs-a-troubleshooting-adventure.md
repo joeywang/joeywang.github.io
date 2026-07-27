@@ -7,6 +7,11 @@ tags: [oom, troubleshooting]
 ---
 # OOM and Background Jobs: A Troubleshooting Adventure
 
+<audio controls preload="metadata" src="/assets/audio/oom-and-background-jobs-a-troubleshooting-adventure-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## The Mystery Unfolds
 
 A few months ago, we received an urgent complaint from a customer: a notification email had failed to reach him on time. As the assigned detective of the digital realm, I embarked on a mission to unravel the mystery.

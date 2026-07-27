@@ -3,6 +3,10 @@ layout: post
 title: How to Extract the Second Page From Multiple PDFs and Combine Them on macOS
 date: 2025-01-02 21:34 +0000
 ---
+<audio controls preload="metadata" src="/assets/audio/how-to-extract-the-second-page-from-multiple-pdfs-and-combine-them-on-macos-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 How to Extract the Second Page From Multiple PDFs and Combine Them on macOS
 Managing PDFs on the command line may seem daunting at first, but it can be incredibly efficient for batch operations. Suppose you have dozens (or even hundreds) of PDF files and you want to do something very specific—like extracting the second page of every PDF and merging them into one consolidated file.
 

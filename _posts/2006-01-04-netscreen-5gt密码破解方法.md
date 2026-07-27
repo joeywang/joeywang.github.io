@@ -8,6 +8,11 @@ date: 2006-01-04 00:00 +0000
 ---
 # [原创]NETSCREEN 5GT密码破解方法
 
+<audio controls preload="metadata" src="/assets/audio/netscreen-5gt密码破解方法-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## 引言
 本文将分享个人经验，介绍NETSCREEN 5GT密码的破解方法。请注意，以下方法将设备恢复至出厂设置，原有配置将被删除。
 

@@ -6,6 +6,11 @@ tags: [development, ci]
 ---
 # From CI Nightmares to Reliable Builds: A Developer's Guide to Retry Mechanisms
 
+<audio controls preload="metadata" src="/assets/audio/from-ci-nightmares-to-reliable-builds-a-developers-guide-to-retry-mechanisms-2024-11-05-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## The 3 AM Build Failure
 
 It was 3 AM when Sarah's phone buzzed with a notification: "CI Pipeline Failed". Again. The production hotfix that needed to go out first thing in the morning was stuck because the build couldn't download dependencies. A flaky network connection had caused `curl` to timeout while pulling a package. The entire 45-minute build would need to be restarted from scratch, pushing their critical fix dangerously close to the morning deadline.

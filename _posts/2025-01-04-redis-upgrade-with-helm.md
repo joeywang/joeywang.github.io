@@ -7,6 +7,11 @@ categories: [devops, redis, helm]
 
 # A DevOps Journey: Smoothly Upgrading Bitnami Redis Helm Charts
 
+<audio controls preload="metadata" src="/assets/audio/redis-upgrade-with-helm-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## The 3 AM Incident
 
 It was 3 AM when Sarah's phone buzzed with alerts. The Redis cluster had crashed during what should have been a routine upgrade. As the team's DevOps engineer, she spent the next four hours restoring service and recovering data. "Never again," she promised herself.

@@ -8,6 +8,11 @@ tags: [GitHub, Actions]
 
 # Building and Deploying PGPool Images with GitHub Actions
 
+<audio controls preload="metadata" src="/assets/audio/building-and-deploying-pgpool-images-with-github-actions-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 In the ever-evolving landscape of DevOps and CI/CD pipelines, containerization has become a pivotal component for deploying applications. One such application, PGPool, a connection pooler for PostgreSQL, is widely used to enhance the performance and scalability of database clusters. However, maintaining up-to-date and customized images for such applications can be challenging. This article will guide you through setting up a GitHub Action to build and deploy PGPool images to GitHub Container Registry.

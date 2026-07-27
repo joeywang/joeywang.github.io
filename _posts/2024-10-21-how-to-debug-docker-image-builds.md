@@ -7,6 +7,11 @@ tags: [debug, docker, image, build]
 
 # How to Debug Docker Image Builds
 
+<audio controls preload="metadata" src="/assets/audio/how-to-debug-docker-image-builds-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 This guide covers various techniques to debug Docker image builds, from basic to advanced approaches.
 
 ## Common Debugging Scenarios

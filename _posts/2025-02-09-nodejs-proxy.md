@@ -5,6 +5,10 @@ date: "2025-02-09"
 categories: nodejs react proxy
 ---
 
+<audio controls preload="metadata" src="/assets/audio/nodejs-proxy-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## Taming the Cross-Origin Beast: Mastering Proxy Options in Your React App
 
 In the modern web development landscape, it's common for your React frontend to communicate with a backend API running on a different domain or port. While this separation of concerns offers numerous benefits, it often introduces a notorious hurdle: **Cross-Origin Resource Sharing (CORS)**. Browsers, for security reasons, restrict web pages from making requests to a different origin than the one that served the application.

@@ -183,6 +183,11 @@ def route_support_ticket(ticket):
 
 
 # Problems:
+
+<audio controls preload="metadata" src="/assets/audio/logic-driven-to-context-driven-software-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 # - Misses novel phrasings
 # - Requires constant rule updates
 # - Brittle to language variations

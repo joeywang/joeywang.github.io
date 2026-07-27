@@ -8,6 +8,11 @@ tags: [container, supervisord]
 
 # Mastering Process Management with Supervisord: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/mastering-process-management-with-supervisord-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 **Introduction**
 
 In the dynamic world of system administration, ensuring that your services are running smoothly and reliably is paramount. `supervisord` is a powerful tool designed for this purpose, offering a robust solution for managing UNIX processes. This article will guide you through setting up and configuring `supervisord` to monitor and control your services, ensuring they run as intended without manual intervention.

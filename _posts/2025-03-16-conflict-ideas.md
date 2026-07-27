@@ -8,6 +8,11 @@ categories: ruby
 
 # 编程方法论中的“矛盾”：权衡的艺术 (Ruby 示例)
 
+<audio controls preload="metadata" src="/assets/audio/conflict-ideas-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 在软件开发的旅程中，我们经常会遇到各种设计原则和方法论，它们如同灯塔般指引我们构建出优雅、健壮且易于维护的系统。然而，细心观察便会发现，一些原则之间似乎存在着内在的“矛盾”。例如，我们被教导要“不要重复自己”（DRY），但有时又会听到“避免仓促抽象”（AHA）的忠告。本文将探讨几对常见的看似冲突的编程思想，并通过 Ruby 代码示例来阐释它们各自的理念及如何在实践中进行权衡。
 
 ## 1\. DRY (Don't Repeat Yourself) vs. WET (Write Everything Twice) / AHA (Avoid Hasty Abstractions)

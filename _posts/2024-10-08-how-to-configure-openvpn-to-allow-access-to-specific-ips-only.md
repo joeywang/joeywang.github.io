@@ -7,6 +7,11 @@ tags: [openvpn, devops, firewall]
 ---
 # How to Configure OpenVPN to Allow Access to Specific IPs Only
 
+<audio controls preload="metadata" src="/assets/audio/how-to-configure-openvpn-to-allow-access-to-specific-ips-only-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 OpenVPN is a popular open-source VPN solution that provides secure point-to-point or site-to-site connections. While it's often used to provide full network access, there are scenarios where you might want to restrict VPN users to accessing only specific IP addresses. This article will guide you through the process of configuring OpenVPN to allow connections to a limited set of IP addresses and provide additional advanced configurations.
 

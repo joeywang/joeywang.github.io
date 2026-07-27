@@ -7,6 +7,10 @@ element, jQuery Foundation Interchange]
 categories: [web development, responsive design]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/image-sizes-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 In today's multi-device world, delivering a great user experience means ensuring your website looks and performs flawlessly on everything from a tiny smartphone to a high-resolution desktop monitor. Images, often the heaviest components of a web page, play a critical role in this. Serving unnecessarily large images to small screens wastes bandwidth and slows down loading, while small images on large, high-resolution displays appear blurry and pixelated.
 
 This article explores two prominent approaches to displaying different image sizes on different layouts: the JavaScript-based solution exemplified by **jQuery Foundation's Interchange** and the modern, native HTML attributes **`srcset` and `<picture>`**. We'll provide examples and dissect their pros and cons to help you choose the best strategy for your projects.

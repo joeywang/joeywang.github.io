@@ -5,6 +5,10 @@ date:   2024-08-10 14:41:26 +0100
 categories: Rails
 ---
 
+<audio controls preload="metadata" src="/assets/audio/upgrade-rails-to-7.2-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 1. Remove deprecated support to set Rails.application.config.action_dispatch.show_exceptions to true and false.
 
 Exception won't be raised in specs

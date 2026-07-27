@@ -10,6 +10,11 @@ categories: [AI, Engineering]
 
 # How an LLM Coding Agent Actually Builds Software
 
+<audio controls preload="metadata" src="/assets/audio/llm-agent-building-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 The first time I tried to wire a local coding agent around Gemma, I thought the hard part would be the model.
 
 It wasn't.

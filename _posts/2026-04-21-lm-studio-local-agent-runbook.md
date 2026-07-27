@@ -10,6 +10,11 @@ categories: [AI, Engineering]
 
 # LM Studio Local Agent Runbook: Pi and OpenCode Step by Step
 
+<audio controls preload="metadata" src="/assets/audio/lm-studio-local-agent-runbook-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 This is the setup guide I wanted while I was trying to make LM Studio work as a local engine for coding agents.
 
 This post is not about theory. It is about getting a model running locally, exposing it through LM Studio's OpenAI-compatible endpoint, wiring it into Pi or OpenCode, and checking that the stack is alive before you waste time debugging the wrong thing.

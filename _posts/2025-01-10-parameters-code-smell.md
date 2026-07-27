@@ -5,6 +5,10 @@ date: "2025-01-10"
 categories: code smell refactoring
 ---
 
+<audio controls preload="metadata" src="/assets/audio/parameters-code-smell-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## 🚫 **5 Parameter-Related Code Smells and How to Refactor Them**
 
 In software development, the way you design and pass parameters can significantly impact code readability, maintainability, and robustness. Poor parameter design often leads to **code smells**—subtle indicators of deeper issues that can make your code harder to understand, test, and modify.

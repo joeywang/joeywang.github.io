@@ -5,6 +5,10 @@ date:   2025-07-01 14:41:26 +0100
 categories: Rails
 ---
 
+<audio controls preload="metadata" src="/assets/audio/local-https-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Developing and debugging web applications often requires mirroring production environments as closely as possible. A crucial aspect of this parity is using **HTTPS (Hypertext Transfer Protocol Secure)**, even in local development. While HTTP might suffice for basic local testing, many modern browser features, APIs, and security considerations mandate a secure context. This article explores various tools and methods to set up local HTTPS, including Nginx, Caddy, Puma-dev, and even a local Kubernetes environment with Cert-Manager.
 
 -----

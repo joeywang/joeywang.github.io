@@ -7,6 +7,11 @@ tags: [token, efficiency, context, tax]
 ---
 
 # The 2026 Developer’s Guide to Token Efficiency
+
+<audio controls preload="metadata" src="/assets/audio/token-saving-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### Mastering the "Context Tax" in the Era of AI Agents
 
 In 2026, the bottleneck for AI coding isn't model intelligence—it's the **Context Tax**. As agents like Claude Code (CC) and Codex become more autonomous, they tend to "over-read" your codebase, leading to massive input bills and hit-rate limits. 

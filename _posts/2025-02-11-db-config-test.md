@@ -7,6 +7,11 @@ categories: test microservice DB configuration
 
 # Testing Beyond Business Logic: Catching Hidden Configuration Failures in Microservices
 
+<audio controls preload="metadata" src="/assets/audio/db-config-test-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In microservice architectures, it's easy to assume that two services sharing a database are inherently working together correctly. But that assumption can quietly break down due to one critical blind spot: **configuration drift**.
 
 In this article, we’ll explore how services that *seem* to be working independently can fail silently when their **shared database configuration diverges**—even when all unit and integration tests pass. We'll also look at testing strategies to catch these issues before they hit production.

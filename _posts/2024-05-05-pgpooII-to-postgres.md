@@ -8,6 +8,11 @@ tags: [postgres, devops]
 
 # Too many connectioins: Managing PostgreSQL Connections with Pgpool-II
 
+<audio controls preload="metadata" src="/assets/audio/pgpooII-to-postgres-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 PostgreSQL is my favorite database, and I have experience with Oracle, SQL Server, MySQL, and MongoDB. However, due to performance issues with MongoDB, especially on join searches, we decided to stick with PostgreSQL. Over the years, we've upgraded from PostgreSQL 8.3 to the latest version, 14, achieving "Zero" downtime migration from version 11 to 13.
 
 ## PostgreSQL Connection Limitations

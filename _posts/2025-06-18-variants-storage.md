@@ -51,6 +51,11 @@ First, ensure your `Course` model has `has_many_attached :course_logos`:
 
 ```ruby
 # app/models/course.rb
+
+<audio controls preload="metadata" src="/assets/audio/variants-storage-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 class Course < ApplicationRecord
   has_many_attached :course_logos
 

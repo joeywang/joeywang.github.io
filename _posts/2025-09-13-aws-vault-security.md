@@ -8,6 +8,11 @@ tags: [aws, security, aws-vault, 1Password]
 
 # Mastering AWS Access: Securely Managing Credentials with `aws-vault` and 1Password
 
+<audio controls preload="metadata" src="/assets/audio/aws-vault-security-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction: The Challenge of AWS Credential Management
 
 In the world of cloud computing, security is paramount. For developers and operations teams working with Amazon Web Services (AWS), managing access credentials is a critical, yet often overlooked, security challenge. Storing long-lived access keys directly in configuration files (`~/.aws/credentials`) is a common anti-pattern that significantly increases the risk of credential compromise.

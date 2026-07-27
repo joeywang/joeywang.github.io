@@ -5,6 +5,10 @@ date: 2025-05-03T00:00:00-07:00
 
 ---
 
+<audio controls preload="metadata" src="/assets/audio/db-design-jsonb-columns-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### Title: The Fork in the Road: Modeling Data Relationships with PostgreSQL JSONB vs. Traditional Tables
 
 **Meta Description:** Dive deep into a practical database design challenge. We compare using PostgreSQL's flexible `jsonb` type against traditional linking tables for modeling a "study journey," exploring the critical trade-offs between data integrity and developer flexibility.

@@ -5,6 +5,11 @@ date: 2025-01-03 14:58 +0000
 ---
 # Debugging Font Support Issues with Prawn and PDF::Inspector in Ruby
 
+<audio controls preload="metadata" src="/assets/audio/font-support-with-prawn-and-test-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When working with PDF generation in Ruby using Prawn and testing with PDF::Inspector, developers often encounter challenges with non-ASCII character support, particularly when dealing with Unicode characters like Cyrillic, Chinese, or Arabic. This article explores common issues, debugging techniques, and practical solutions for handling font support in PDF generation and testing.
 
 ## The Challenge with Non-ASCII Characters

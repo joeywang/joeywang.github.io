@@ -10,6 +10,10 @@ categories: [AI, Engineering]
 
 # Building an AI English Conversation Practice App
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-18-ai-english-conversation-practice-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I have been thinking about an AI English conversation practice app.
 
 Not another chatbot with a microphone button. I mean something closer to a patient speaking partner: it talks with the learner about a topic, keeps the conversation moving, corrects gently, and helps the speaker build confidence in oral English.

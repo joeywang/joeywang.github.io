@@ -7,6 +7,10 @@ tags: [docker, performance, development, macOS, Windows]
 
 ---
 
+<audio controls preload="metadata" src="/assets/audio/docker-sync-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Docker makes it easy to develop in isolated environments, but **file syncing between host and container can introduce painful slowness** — especially on **macOS** and **Windows**. This issue becomes critical for large projects like Node.js apps, where frequent file access (like `node_modules`) and rebuilds can drastically degrade performance.
 
 In this article, we'll explore:

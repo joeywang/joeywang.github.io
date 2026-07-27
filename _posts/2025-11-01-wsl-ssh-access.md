@@ -7,6 +7,11 @@ tags: [wsl, ssh, openssh, windows10, remote-access]
 ---
 # Setting Up OpenSSH on WSL and Enabling Remote Access (Windows 10)
 
+<audio controls preload="metadata" src="/assets/audio/wsl-ssh-access-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Running an SSH server inside WSL is a clean way to manage your Linux environment from Windows or other machines on your network. The main work is:
 
 1. Install and configure `openssh-server` in your WSL distro.

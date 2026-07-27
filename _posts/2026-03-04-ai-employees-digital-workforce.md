@@ -168,6 +168,11 @@ class AIEmployeeRole:
 
 
 # Example: AI Support Agent
+
+<audio controls preload="metadata" src="/assets/audio/ai-employees-digital-workforce-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 support_agent = AIEmployeeRole(
     name="Customer Support Agent",
     

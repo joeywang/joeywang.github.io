@@ -10,6 +10,10 @@ categories: [AI, GCP]
 
 # Using Cloud Run as a Gemini Proxy When Your Region Is Not Supported
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-18-cloud-run-gemini-proxy-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 This is one of those boring infrastructure problems that becomes interesting only after it blocks you.
 
 I wanted to use Gemini from a client running in Hong Kong. For normal web APIs, that would not be a story. Call the endpoint, pass the API key, get a response.

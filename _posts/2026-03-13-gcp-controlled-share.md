@@ -7,6 +7,11 @@ layout: post
 
 # Stop Hiding, Start Securing: Moving from Hashed Paths to Identity-Aware GCS
 
+<audio controls preload="metadata" src="/assets/audio/gcp-controlled-share-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In my twenty years of moving data—from physical tapes to local SANs and now the cloud—I’ve seen one "security" shortcut pop up more than any other: **The Secret URL.**
 
 We’ve all done it. You have a file you want to share with a specific group, so you hash the path: `my-bucket/a87f2-bc91-0012-ff32/report.pdf`. You send it out and assume that because the string is long and random, it's "private."

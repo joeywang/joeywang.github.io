@@ -7,6 +7,11 @@ tags: [postgresql, backup, recovery]
 
 # The Replica Backup Trap: Why Your PostgreSQL Backups Are Mysteriously Failing
 
+<audio controls preload="metadata" src="/assets/audio/backup-postgres-on-replica-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 It’s 3:00 AM. Your automated cron job kicks off a `pg_dump` on your database read replica. You chose to run backups on the replica for a perfectly logical reason: backups are intensive, resource-heavy operations, and you want to save your primary database's CPU and disk I/O for your actual living, breathing users.
 
 You go to sleep thinking your data is safe. Instead, you wake up to a failed job alert and a message that looks all too familiar:

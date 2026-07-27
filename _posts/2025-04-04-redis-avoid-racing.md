@@ -8,6 +8,11 @@ categories: database performance integrity
 
 # **Ensuring Idempotency with Semaphore Locks in Rails: Handling Concurrent Requests Efficiently**
 
+<audio controls preload="metadata" src="/assets/audio/redis-avoid-racing-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Concurrency issues in web applications, especially when dealing with race conditions, are common when multiple users or processes try to perform the same action at the same time. These issues often result in data inconsistencies, errors, or failures — especially when trying to enforce uniqueness, such as creating a new resource with a unique identifier (e.g., a UUID).
 
 In this article, we'll explore how to address these problems in a **Ruby on Rails** application by using **semaphore locks**. We'll walk through a solution using **Redis-backed caching** to ensure that only one process or thread can access a critical section of code at a time, making the process **idempotent**.

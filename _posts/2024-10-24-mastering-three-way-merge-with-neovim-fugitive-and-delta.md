@@ -7,6 +7,11 @@ tags: [vim, fugitive, delta, merge, three-way-merge, neovim]
 
 # Mastering Three-Way Merge with Neovim, Fugitive, and Delta
 
+<audio controls preload="metadata" src="/assets/audio/mastering-three-way-merge-with-neovim-fugitive-and-delta-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Installation](#installation)

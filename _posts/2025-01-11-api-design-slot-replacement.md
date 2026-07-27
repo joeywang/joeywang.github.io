@@ -7,6 +7,11 @@ categories: api design refactoring
 
 # 🛠️ **API Design for Time Slot Replacement: Principles and Trade-offs**
 
+<audio controls preload="metadata" src="/assets/audio/api-design-slot-replacement-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In modern booking systems, **time management** is a critical aspect. In scenarios like **online tutoring platforms**, tutors may occasionally need to replace their regular available slots with alternative ones due to vacations, personal commitments, or emergencies. When designing the API for such systems, we need to ensure that:
 - Students never book an invalid time slot.
 - The system maintains data consistency.

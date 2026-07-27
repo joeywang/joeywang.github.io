@@ -11,6 +11,11 @@ sitemap: false
 ---
 ```bash
 # compress image with scale
+
+<audio controls preload="metadata" src="/assets/audio/compress-images-with-ffmpeg-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ffmpeg -i test.mp4 -vf scale=320:240 small.mp4
 
 

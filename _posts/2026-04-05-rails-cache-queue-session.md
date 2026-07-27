@@ -7,6 +7,11 @@ categories: redis
 
 # The Resilient Rails Stack: Mastering Redis HA, Shared Sessions, and Fault Tolerance
 
+<audio controls preload="metadata" src="/assets/audio/rails-cache-queue-session-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In a modern microservices or multi-app architecture, Redis is often the "glue" that holds everything together. It manages your user sessions, speeds up your app via caching, and handles background job orchestration. 
 
 However, many teams fall into the trap of the **"Single Point of Failure"**—using one Redis instance for everything. If that instance blips during a cloud provider node upgrade, your entire platform goes dark. Here is the blueprint for a "Bulletproof" Web Service.

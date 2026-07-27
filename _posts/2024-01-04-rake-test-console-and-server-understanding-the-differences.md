@@ -6,6 +6,11 @@ categories: Rails
 ---
 # Rake, Test, Console, and Server: Understanding the Differences
 
+<audio controls preload="metadata" src="/assets/audio/rake-test-console-and-server-understanding-the-differences-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In Ruby on Rails development, developers often interact with their applications using various commands and environments. Among these are Rake tasks, the Rails console, tests, and the server. Each of these serves a distinct purpose and operates with different loading mechanisms. Understanding these differences is crucial for optimizing your development workflow and debugging issues. Let's explore each one and their unique behaviors.
 
 ## Rake Tasks

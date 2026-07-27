@@ -9,6 +9,11 @@ description: "How to connect Sentry and GitHub so you can create or link GitHub 
 
 # Can Sentry Create GitHub Issues? Yes, Here Is How
 
+<audio controls preload="metadata" src="/assets/audio/sentry-github-issue-integration-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Short answer: yes.
 
 If you install the GitHub integration, Sentry can create a new GitHub issue from a Sentry issue, or link an existing GitHub issue to it.

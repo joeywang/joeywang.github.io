@@ -109,6 +109,11 @@ Once inside the pod's shell, you can run `pgbench` to initialize a test environm
 
 ```bash
 # Inside the pgbench-interactive pod
+
+<audio controls preload="metadata" src="/assets/audio/pgpool-performance-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 # Initialize pgbench tables (-i) with a scale factor (-s)
 pgbench -i -s 1
 

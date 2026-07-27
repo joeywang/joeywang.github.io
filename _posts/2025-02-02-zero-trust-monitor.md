@@ -7,6 +7,11 @@ categories: security cloudflare zero-trust macos
 
 # 🕵️‍♂️ Monitoring Cloudflare Zero Trust (WARP) and Disconnecting on macOS
 
+<audio controls preload="metadata" src="/assets/audio/zero-trust-monitor-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Cloudflare Zero Trust is great for enforcing corporate security policies, but if you're using a **company-managed device**, it can be frustrating when the **WARP client re-enables automatically** and reroutes traffic—even while you're off duty.
 
 In this guide, we'll walk through how to:

@@ -7,6 +7,11 @@ tags: ["kaminari", "will_paginate", "rails", "pagination"]
 
 # Migrating from Kaminari to will_paginate in Rails: A Complete Guide
 
+<audio controls preload="metadata" src="/assets/audio/migrate-kaminari-to-will-paginate-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Pagination is a crucial feature in web applications, helping manage large datasets by breaking them into manageable chunks. While both Kaminari and will_paginate are excellent pagination libraries for Rails, you might find yourself needing to migrate from one to the other. This guide walks through the complete process of migrating from Kaminari to will_paginate, covering all aspects from basic setup to handling complex scenarios.
 
 ## Table of Contents

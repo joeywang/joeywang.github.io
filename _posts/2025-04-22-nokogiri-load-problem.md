@@ -8,6 +8,11 @@ tags: [nokogiri, ruby, rubygems]
 
 # Debugging Dynamic Library Conflicts in Ruby: The Nokogiri libxml2 Mystery
 
+<audio controls preload="metadata" src="/assets/audio/nokogiri-load-problem-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 *A deep dive into resolving dynamic library version conflicts between gems in containerized Ruby applications*
 
 ## The Problem: When Tests Pass Locally But Fail in Production

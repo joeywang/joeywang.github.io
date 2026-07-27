@@ -84,6 +84,11 @@ import os
 import random
 
 # Simulate an I/O-intensive task: reading a file
+
+<audio controls preload="metadata" src="/assets/audio/io-cpu-bound-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 def read_file_data(filepath="data_file.txt", lines_to_read=100000, simulate_slow_io_ms=0):
     """
     Reads a specified number of lines from a file.

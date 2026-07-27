@@ -9,6 +9,11 @@ layout: post
 
 # Improving Daily Git Workflow with Stacked Git (StGit)
 
+<audio controls preload="metadata" src="/assets/audio/stacked-git-worklflow-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 > *Stop fighting commits. Start stacking ideas.*
 
 Most Git workflows are optimized for **sharing code**, not for **thinking while coding**.

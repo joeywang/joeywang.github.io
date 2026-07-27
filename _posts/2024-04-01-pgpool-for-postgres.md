@@ -7,6 +7,11 @@ categories: PostgreSQL
 
 # Pgpool-II: Middleware for PostgreSQL
 
+<audio controls preload="metadata" src="/assets/audio/pgpool-for-postgres-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Pgpool-II is a middleware solution that operates between PostgreSQL servers and a PostgreSQL database client. It is particularly useful for managing scenarios where PostgreSQL may not handle concurrent connections as efficiently as needed. In such cases, Pgpool-II serves as an effective load balancer between the application server and the database servers.
 
 For more information, you can visit the official repository: [Pgpool-II on Kubernetes](https://github.com/pgpool/pgpool2_on_k8s).

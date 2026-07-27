@@ -7,6 +7,11 @@ tags: [ruby, javascript, overflow]
 ---
 # Demystifying Number Overflow and the Anomalies of Floating-Point Arithmetic
 
+<audio controls preload="metadata" src="/assets/audio/demystifying-number-overflow-and-the-anomalies-of-floating-point-arithmetic-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 In the world of computing, numbers are represented and manipulated in ways that may not always align with our intuitive understanding of mathematics. Two common issues that developers and programmers encounter are number overflow and the inaccuracies of floating-point arithmetic, such as why `0.1 + 0.2` might not equal `0.3`. This article delves into these topics, explaining the underlying causes and providing practical examples.

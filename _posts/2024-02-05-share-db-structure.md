@@ -1,5 +1,10 @@
 # Designing Microservices with Proper Data Boundaries: Why Shared Databases Are a Code Smell
 
+<audio controls preload="metadata" src="/assets/audio/share-db-structure-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When building microservices, it's common to start with simplicity: multiple services reading and writing to the same database. But over time, this creates tight coupling, fragile integrations, and hidden data contracts. In this article, we explore why sharing databases across services is a code smell, and how to improve or evolve your architecture with clean boundaries, APIs, and events.
 
 ---

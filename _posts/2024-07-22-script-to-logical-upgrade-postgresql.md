@@ -8,6 +8,11 @@ categories: PostgreSQL
 
 # Seamless Logical Upgrades of PostgreSQL with Zero Downtime
 
+<audio controls preload="metadata" src="/assets/audio/script-to-logical-upgrade-postgresql-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the world of database management, ensuring zero downtime during upgrades is crucial for maintaining the availability and integrity of services. Logical replication in PostgreSQL provides a powerful mechanism for achieving this. In this article, we will explore a script designed to perform a logical upgrade of PostgreSQL with zero downtime.
 
 ## Introduction to Logical Replication

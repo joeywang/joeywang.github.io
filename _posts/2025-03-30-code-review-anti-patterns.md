@@ -4,6 +4,10 @@ title: "Mastering Code Reviews: Best Practices and Anti-Patterns"
 date: 2025-03-30
 tags: [code review, best practices, anti-patterns]
 ---
+<audio controls preload="metadata" src="/assets/audio/code-review-anti-patterns-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### Mastering Code Reviews: Best Practices and Anti-Patterns
 
 As an experienced software developer, I've participated in countless code reviews. Effective code reviews are crucial—they not only maintain code quality but also build stronger, more knowledgeable teams. Here, I share essential best practices and common anti-patterns to help your team maximize the value of code reviews.

@@ -76,6 +76,11 @@ Controller specs are for testing the logic *inside* a single controller action i
 
 ```ruby
 # spec/controllers/sessions_controller_spec.rb
+
+<audio controls preload="metadata" src="/assets/audio/warden-session-cookie-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 RSpec.describe SessionsController, type: :controller do
   it "populates the session with the user's key on login" do
     user = create(:user)

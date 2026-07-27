@@ -9,6 +9,11 @@ tags: [Ruby, Kubernetes, Debugging, Production, rbspy, rbtrace, gdb, DevOps, SRE
 
 # Production Ruby Debugging: A Progressive Escalation Guide
 
+<audio controls preload="metadata" src="/assets/audio/production-ruby-debugging-guide-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## The Production Debugging Dilemma
 
 It's 2 AM. Your API latency just spiked from 200ms to 30 seconds. Customer support is getting complaints. The on-call dashboard is a sea of red.

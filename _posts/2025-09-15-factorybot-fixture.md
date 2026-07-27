@@ -7,6 +7,11 @@ categories: [rails]
 
 # The Hidden Cost of Setup: Why Using Business Logic for Test Data is a Rails Antipattern
 
+<audio controls preload="metadata" src="/assets/audio/factorybot-fixture-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Abstract
 
 Faced with complex model relationships and validations, many Ruby on Rails developers default to using their application's services or commands (the business logic) to create test setup data. This practice is an **antipattern**. It couples your test data setup to your application's logic, leading to **slow, fragile, and high-maintenance** test suites.

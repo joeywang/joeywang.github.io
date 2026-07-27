@@ -5,6 +5,10 @@ date: 2025-06-01
 categories: [gcp kubernetes]
 
 ---
+<audio controls preload="metadata" src="/assets/audio/gcp-502-two-systems-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Mystery of the Premature 502: Untangling GCP's Two Health Check Systems
 
 ### The Scene of the Crime: A Flawless Deployment Ends in a 502

@@ -12,6 +12,11 @@ layout: post
 
 # Zero-Downtime Kubernetes Upgrades on GCP
 
+<audio controls preload="metadata" src="/assets/audio/kube-node-upgrade-v2-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ### How We Upgrade GKE (Including PostgreSQL) Without Maintenance Windows
 
 Upgrading Kubernetes in production is one of those tasks that looks easy on paper and terrifying in reality—especially when **databases are running inside the cluster**.

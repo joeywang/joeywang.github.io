@@ -5,6 +5,10 @@ date: "2025-01-12"
 categories: ruby retry exception handling
 ---
 
+<audio controls preload="metadata" src="/assets/audio/retry-with-exception-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 **Retry Mechanisms in Ruby: Best Practices, Pros, and Cons**
 
 ### Introduction

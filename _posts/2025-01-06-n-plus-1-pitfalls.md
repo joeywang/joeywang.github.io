@@ -6,6 +6,11 @@ categories: rails optimization activerecord
 ---
 # Avoiding N+1 Queries in Rails: Common Pitfalls and Best Practices
 
+<audio controls preload="metadata" src="/assets/audio/n-plus-1-pitfalls-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 One of the most common performance pitfalls in Ruby on Rails applications is the **N+1 query problem**. ActiveRecord provides powerful tools like `includes`, `preload`, and `eager_load` to mitigate this, but sometimes, developers unknowingly break eager loading, causing unnecessary database queries.
 

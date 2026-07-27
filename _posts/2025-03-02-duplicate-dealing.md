@@ -7,6 +7,11 @@ categories: rails duplicate unique
 
 # Avoiding Duplicate Record Errors in Rails: Handling Concurrent Requests Gracefully
 
+<audio controls preload="metadata" src="/assets/audio/duplicate-dealing-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Handling duplicate record errors in a Ruby on Rails application is a common challenge, especially when dealing with concurrent client requests. This article walks through the problem, its root causes, and best practices for writing safe, idempotent Rails controller actions that avoid unnecessary exceptions and race conditions.
 
 ## The Problem: Duplicate Requests, Duplicate Keys

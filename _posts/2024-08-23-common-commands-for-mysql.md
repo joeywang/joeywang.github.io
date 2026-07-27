@@ -4,6 +4,10 @@ title: common commands for MySQL
 date: 2024-08-23 00:00 +0000
 ---
 
+<audio controls preload="metadata" src="/assets/audio/common-commands-for-mysql-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ```sql
 -- Show databases
 SHOW DATABASES;

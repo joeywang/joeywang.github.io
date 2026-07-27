@@ -51,6 +51,11 @@ Incus is now officially supported in the latest Ubuntu repositories, making inst
 #### 1. Installation & Init
 ```bash
 # Install the core packages
+
+<audio controls preload="metadata" src="/assets/audio/incus-vs-docker-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 sudo apt update && sudo apt install -y incus
 
 # Add your user to the management group

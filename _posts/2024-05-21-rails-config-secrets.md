@@ -6,6 +6,11 @@ categories: Rails
 ---
 # Managing Configurations and Secrets in Rails: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/rails-config-secrets-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the world of web development, properly managing configurations and secrets is crucial for maintaining security and ensuring smooth operations. Rails, being a popular web application framework, provides robust tools and best practices for handling sensitive information. This article will explore various methods to manage configurations and secrets in Rails applications, from built-in solutions to third-party tools.
 
 ## 1. Rails Credentials

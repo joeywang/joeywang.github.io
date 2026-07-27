@@ -10,6 +10,11 @@ categories: [AI, Engineering]
 
 # Tiny Puzzles for Testing and Debugging AI Agents
 
+<audio controls preload="metadata" src="/assets/audio/agent-debugging-puzzles-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 One of the smallest tests I use is also one of the dumbest:
 
 1. send `hello`

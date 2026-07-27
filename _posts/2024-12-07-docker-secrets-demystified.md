@@ -7,6 +7,11 @@ tags: [docker, security, secrets, environment-variables]
 ---
 # Docker Secrets Demystified: A Practical Guide to Managing Sensitive Information
 
+<audio controls preload="metadata" src="/assets/audio/docker-secrets-demystified-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Understanding Secret Management in Docker
 
 Let's dive into the world of Docker secrets and environment variables. Have you ever wondered how different types of key declarations behave in a Docker container? Let's explore this together with a practical example.

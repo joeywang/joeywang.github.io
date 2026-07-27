@@ -14,6 +14,11 @@ layout: post
 
 # 一起交通悲剧背后，我们可能正在掉进的三个误区
 
+<audio controls preload="metadata" src="/assets/audio/baoshan-driver-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ——以及三点必须认真面对的法理反思
 
 一名醉酒女子拍打车辆后倒在路中，被后车碾压身亡；

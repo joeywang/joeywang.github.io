@@ -10,6 +10,11 @@ optimization]
 
 # To `Type` or to `ID`: Mastering Polymorphic Indexing in MySQL & Rails
 
+<audio controls preload="metadata" src="/assets/audio/type-or-id-mysql-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When building polymorphic associations in Ruby on Rails, the database schema usually looks straightforward: a `relation_id` (Integer) and a `relation_type` (String). But beneath the surface, a debate rages: **Should your composite index start with the ID or the Type?**
 
 While Rails defaults to `[type, id]`, high-performance scenarios—especially when IDs are "mostly unique" (like when Athlete IDs are much larger than classroom IDs)—might tempt you to flip the script.

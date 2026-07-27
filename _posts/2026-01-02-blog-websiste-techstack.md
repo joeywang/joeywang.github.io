@@ -6,6 +6,10 @@ draft: false
 categories:
     - website
 ---
+<audio controls preload="metadata" src="/assets/audio/blog-websiste-techstack-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## Building a Website on a 1C1G Server: Technology Choices, Pros & Cons
 
 ### Introduction

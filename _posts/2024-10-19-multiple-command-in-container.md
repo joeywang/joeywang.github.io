@@ -7,6 +7,11 @@ tags: [docker, devops]
 
 # Running Multiple Commands Simultaneously in a Container: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/multiple-command-in-container-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 When working with containers, you may often need to run multiple processes or commands concurrently. This need becomes particularly apparent in development scenarios, such as debugging a Rails application in Visual Studio Code while simultaneously running the Rails server. In this article, we'll explore various methods to achieve this, focusing on the specific use case of running `rdbg listen` with a server and the Rails server simultaneously.

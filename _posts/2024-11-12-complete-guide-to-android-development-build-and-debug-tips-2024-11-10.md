@@ -8,6 +8,11 @@ tags: [android, build, debug]
 
 # Complete Guide to Android Development: Build and Debug Tips
 
+<audio controls preload="metadata" src="/assets/audio/complete-guide-to-android-development-build-and-debug-tips-2024-11-10-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 This comprehensive guide covers essential tips and techniques for Android development, including Java environment setup, USB debugging, wireless debugging, and build management.
 
 ## Setting Up Your Development Environment

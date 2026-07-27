@@ -5,6 +5,10 @@ Pausing on All Exceptions"
 date: 2025-04-26
 tags: [debugging, exceptions, best practices]
 ---
+<audio controls preload="metadata" src="/assets/audio/catch-exceptions-catch-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Annoyance of "Catch-All" Exceptions and the Debugging Nightmare
 
 "Catch-all" exceptions, typically `catch (Exception e)` in C#, `catch (Throwable t)` in Java, or `except Exception as e` in Python, might seem convenient at first. They guarantee that your program won't crash due to an unhandled exception. However, this seemingly helpful approach often leads to a debugging nightmare for several reasons:

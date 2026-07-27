@@ -8,6 +8,11 @@ tags: Postgres
 
 # The Phantom Postgres Ghost: Tracking Down "Conflict with Recovery" Errors on Read Replicas
 
+<audio controls preload="metadata" src="/assets/audio/cancelling-with-recovery-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 If you are running a modern application with a PostgreSQL database, there is a high chance you eventually split your traffic. You kept your writes on the Primary database and routed your heavy reads and analytics to a Read Replica. It’s a great setup. Everything is blazing fast—until one day, your background workers or analytics dashboards start throwing this cryptic nightmare:
 
 ```text

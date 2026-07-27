@@ -10,6 +10,10 @@ categories: [AI Engineering]
 
 # Giving Hermes durable codebase context with GitNexus, LSP, and AGENTS.md
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-18-durable-codebase-context-hermes-gitnexus-lsp-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Every coding agent eventually develops the same bad habit: repeated grep.
 
 I ask where a request enters the system. It searches for the route name.

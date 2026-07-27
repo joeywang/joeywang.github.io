@@ -8,6 +8,11 @@ tags: [GitHub, Actions, Variables]
 
 # Mastering GitHub Action Variables for Powerful Workflows
 
+<audio controls preload="metadata" src="/assets/audio/mastering-github-action-variables-for-powerful-workflows-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 GitHub Actions provide an extensive set of features to automate your software development workflows. One of the most powerful aspects of GitHub Actions is the ability to use variables to dynamically control your workflow. This article will explore the different types of variables available in GitHub Actions and how to use them effectively.

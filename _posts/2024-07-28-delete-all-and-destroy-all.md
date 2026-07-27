@@ -5,6 +5,11 @@ date: 2024-07-28 00:00 +0000
 ---
 # Misusing `delete_all` vs. `destroy_all` in Ruby on Rails: A Cautionary Tale
 
+<audio controls preload="metadata" src="/assets/audio/delete-all-and-destroy-all-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 As a backend developer, managing database records is an everyday task. However, it's not uncommon to encounter unexpected behavior when removing records, such as the count of active students not updating as expected. This can often be traced back to the inadvertent use of `delete_all` instead of `destroy_all`. In this article, we'll explore the differences between these two methods, why they matter, and how to prevent such issues from recurring.
 
 ## Understanding `delete_all` and `destroy_all`

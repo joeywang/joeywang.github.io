@@ -3,6 +3,10 @@ layout: post
 title: 'Crafting Elegant Ruby: Balancing Readability and Performance'
 date: 2024-12-03 23:35 +0000
 ---
+<audio controls preload="metadata" src="/assets/audio/crafting-elegant-ruby-balancing-readability-and-performance-2024-12-03-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Picture this: It's late evening, and I'm hunched over my laptop, lines of Ruby code dancing across the screen like fireflies. There's something magical about programming – it's part science, part art, and a whole lot of storytelling.
 
 ## The Code That Wouldn't Behave

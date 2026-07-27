@@ -7,6 +7,11 @@ tags: ruby
 ---
 # Round Is Not Always What You Expect
 
+<audio controls preload="metadata" src="/assets/audio/round-is-not-always-what-you-expect-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Rounding numbers is a common task in programming, but it's not always as straightforward as it seems. Different programming languages handle rounding in various ways, which can lead to unexpected results. Let's explore how some popular languages round the same number, `2.675`, to two decimal places.
 
 ## CSharp

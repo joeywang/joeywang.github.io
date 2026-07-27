@@ -5,6 +5,10 @@ date: 2022-05-17
 tags: ["google cloud", "cdn", "compression"]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/gcloud-bucket-compression-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## Boost Your Website Speed: Enabling Gzip/Brotli Compression with Google Cloud CDN
 
 In today's fast-paced digital world, website speed isn't just a nicety – it's a necessity. Faster loading times lead to better user experience, improved SEO rankings, and reduced bounce rates. One of the most effective ways to achieve this is by compressing your web content.

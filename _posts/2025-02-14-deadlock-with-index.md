@@ -7,6 +7,11 @@ categories: database performance integrity
 
 # Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance
 
+<audio controls preload="metadata" src="/assets/audio/deadlock-with-index-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 Database deadlocks are a classic source of frustration for backend developers, especially when working with complex transactional workloads in systems like MySQL or PostgreSQL. A deadlock happens when two or more transactions are each waiting for the other to release a lock, and none can proceed. This article explores how deadlocks occur in MySQL and PostgreSQL, with examples, and dives into the heated debate between maintaining referential integrity via foreign keys versus sacrificing it for performance and scalability.

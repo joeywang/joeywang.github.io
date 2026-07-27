@@ -11,6 +11,11 @@ Our main suspect was a brand new Rake task: `users:report`.
 
 ```ruby
 # spec/tasks/users_report_spec.rb
+
+<audio controls preload="metadata" src="/assets/audio/data-cleanup-between-tests-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 RSpec.describe 'users:report', type: :task do
   # This setup creates users the Rake task should process
   before { create_list(:user, 5, is_active: true) }

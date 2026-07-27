@@ -9,6 +9,11 @@ tags: [scorm, digital, e-learning]
 
 # Understanding SCORM: The Digital Learning Standard
 
+<audio controls preload="metadata" src="/assets/audio/understanding-scorm-the-digital-learning-standard-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 In the rapidly evolving landscape of e-learning, ensuring that educational content is accessible, interactive, and compatible across different platforms is crucial. This is where SCORM comes into play. SCORM is a set of standards that have been developed to make digital learning content shareable and reusable across various systems.

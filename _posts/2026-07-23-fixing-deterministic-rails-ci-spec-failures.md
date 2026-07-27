@@ -10,6 +10,10 @@ categories: [Ruby on Rails]
 
 # Fixing deterministic Rails CI failures without teaching the tests to lie
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-23-fixing-deterministic-rails-ci-spec-failures-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 The tempting thing, when a CI suite is red for the tenth time, is to make the test less demanding.
 
 Increase the Capybara wait time. Add a retry. Loosen the assertion. Skip the example in CI. Tell yourself browser specs are flaky anyway.

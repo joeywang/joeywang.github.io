@@ -7,6 +7,11 @@ categories: AI LLM Gemma Ollama coding-agent
 
 # Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma
 
+<audio controls preload="metadata" src="/assets/audio/code-agent-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: "find all the Ruby files in this directory and replace `before_filter` with `before_action`." The first tool call worked perfectly. The model correctly asked to run `find . -name '*.rb'`. But when I fed the file list back to it, instead of calling `sed` or a file editor, it started *explaining* what I should do next, as if I were asking for advice rather than expecting it to act.
 
 I bumped the temperature down. I rewrote the prompt three times. I tried adding explicit instructions like "you must call a tool." Nothing helped.

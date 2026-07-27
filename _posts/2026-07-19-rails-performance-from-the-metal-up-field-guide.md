@@ -10,6 +10,10 @@ categories: [Ruby on Rails]
 
 # Rails Performance from the Metal Up: A Field Guide
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-19-rails-performance-from-the-metal-up-field-guide-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Most Rails performance advice fails for the same reason: it prescribes a fix before establishing a diagnosis. Someone reads that threads are good, cranks Puma to 16 threads per worker, and watches p99 latency get worse. Someone else reads that caching solves everything, wraps a CPU-bound serializer in Redis, and now has a slow endpoint plus a cache invalidation problem. I know both of these failure modes intimately because I have shipped both of them. The 16-thread config lived in production for months before anyone thought to question it.
 
 A Rails request travels through at least five layers that each have their own performance characteristics: your application code, the Rails framework, the Ruby VM, the operating system, and (these days, almost always) a container runtime with resource limits. A fix that is correct at one layer is frequently harmful at another. More threads help an IO-bound app and hurt a CPU-bound one. A bigger heap reduces GC frequency and increases OOM risk under a cgroup memory limit. What follows is the mental model I wish someone had handed me ten years ago, plus the tools that tell you the truth at each layer.

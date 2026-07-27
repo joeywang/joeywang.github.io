@@ -10,6 +10,10 @@ categories: [AI, Security]
 
 # Securing Hermes Agent with OpenShell
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-23-securing-hermes-agent-with-openshell-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Hermes is most useful when it can do real work.
 
 That is also exactly why its security model matters.

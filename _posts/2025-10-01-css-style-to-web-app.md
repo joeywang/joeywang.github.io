@@ -5,6 +5,10 @@ layout: post
 
 ---
 
+<audio controls preload="metadata" src="/assets/audio/css-style-to-web-app-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## 🎨 Choosing Your CSS Color Strategy: Static Values vs. Dynamic Variables
 
 Most CSS color problems do not start with color theory. They start six months later, when you need to change one shade and realize you hard-coded it in forty places.

@@ -10,6 +10,11 @@ summary: "Learn how to use a simple macOS Terminal script to audit your USB-C ca
 
 # The Invisible Bottleneck: How to Audit Your USB-C Cables Using macOS Terminal
 
+<audio controls preload="metadata" src="/assets/audio/cache-check-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 We’ve all been there: you plug your MacBook into a premium-looking braided cable, but the battery percentage barely moves. In the world of USB-C, looks are deceiving. A cable might be physically beefy but electronically limited to **60W** or, worse, failing to negotiate **Power Delivery (PD)** protocols.
 
 Instead of buying an expensive physical USB-C voltmeter, you can use the macOS **I/O Kit registry** to see exactly what’s happening inside the copper.

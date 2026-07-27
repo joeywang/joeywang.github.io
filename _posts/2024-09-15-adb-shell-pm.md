@@ -8,6 +8,11 @@ tags: [adb, package management, android]
 
 # Mastering Android Package Management with ADB and pm
 
+<audio controls preload="metadata" src="/assets/audio/adb-shell-pm-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Ever felt like you needed superhero powers to manage apps on your Android device? Well, grab your cape because we're about to turn you into an Android package management pro! In this guide, we'll explore the dynamic duo of ADB (Android Debug Bridge) and pm (Package Manager) that will give you unprecedented control over your Android apps.
 
 ## The Power Couple: ADB and pm

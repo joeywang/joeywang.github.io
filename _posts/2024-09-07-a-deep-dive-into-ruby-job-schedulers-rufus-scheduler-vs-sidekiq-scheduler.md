@@ -7,6 +7,11 @@ tags: [ruby, job scheduling, rufus-scheduler, sidekiq-scheduler]
 ---
 # A Deep Dive into Ruby Job Schedulers: Rufus-Scheduler vs Sidekiq-Scheduler
 
+<audio controls preload="metadata" src="/assets/audio/a-deep-dive-into-ruby-job-schedulers-rufus-scheduler-vs-sidekiq-scheduler-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the world of Ruby programming, job scheduling is a crucial aspect of many applications. Two popular libraries that handle this task are rufus-scheduler and sidekiq-scheduler. This article will explore the features, similarities, and differences between these two scheduling solutions, with a focus on their implementation details and performance characteristics.
 
 ## Rufus-Scheduler: The Standalone Scheduler

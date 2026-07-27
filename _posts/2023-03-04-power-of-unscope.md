@@ -6,6 +6,11 @@ categories: Rails
 ---
 # The Power of Unscope in Ruby on Rails
 
+<audio controls preload="metadata" src="/assets/audio/power-of-unscope-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In Ruby on Rails, scopes are a convenient way to encapsulate common query patterns, making it easier to write clean and reusable code. However, there are times when you might need to deviate from these patterns, and that's where the `unscope` method comes in.
 
 ## Understanding `unscope`

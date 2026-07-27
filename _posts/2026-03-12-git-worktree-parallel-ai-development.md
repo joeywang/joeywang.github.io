@@ -9,6 +9,11 @@ description: "How to use git worktree to run parallel AI coding sessions safely,
 
 # Git Worktree for Parallel AI Development
 
+<audio controls preload="metadata" src="/assets/audio/git-worktree-parallel-ai-development-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 If you use AI coding agents seriously, you run into the same problem pretty quickly:
 
 - one agent is fixing a bug

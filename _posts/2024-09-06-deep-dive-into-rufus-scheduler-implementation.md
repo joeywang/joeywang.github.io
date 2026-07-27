@@ -5,6 +5,11 @@ date: 2024-09-06 00:00 +0000
 ---
 # Deep Dive into Rufus Scheduler Implementation
 
+<audio controls preload="metadata" src="/assets/audio/deep-dive-into-rufus-scheduler-implementation-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the world of Ruby programming, job scheduling is a crucial aspect of
 many applications. Let's take a closer look at one of the most popular
 schedulers in the Ruby ecosystem.

@@ -8,6 +8,11 @@ date: 2025-12-29
 
 # Zero-Downtime Kubernetes Upgrades on GCP: A Practical DevOps Guide
 
+<audio controls preload="metadata" src="/assets/audio/kube-node-upgrade-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 **Upgrading Kubernetes without downtime** sounds simple in theory — but in production, especially with **stateful workloads**, it’s one of the hardest operational problems DevOps teams face.
 
 This article walks through **how to perform near zero-downtime Kubernetes upgrades on Google Cloud Platform (GCP)** using **GKE**, including **stateless services and PostgreSQL running inside Kubernetes**. It’s based on real production patterns, not idealized diagrams.

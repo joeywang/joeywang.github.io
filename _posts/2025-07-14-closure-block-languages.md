@@ -36,6 +36,11 @@ def create_counter():
     return increment # Return the inner function
 
 # Create separate counter instances
+
+<audio controls preload="metadata" src="/assets/audio/closure-block-languages-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 counter1 = create_counter()
 counter2 = create_counter()
 

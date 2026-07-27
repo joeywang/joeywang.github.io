@@ -8,6 +8,11 @@ pin: true
 
 # Scaling PostgreSQL on Kubernetes with Kubegres
 
+<audio controls preload="metadata" src="/assets/audio/rds-with-k8s-postgre-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 As a small company or startup, managing a relational database like PostgreSQL can be challenging, especially when it comes to ensuring high availability, scalability, and cost-effectiveness. While services like Amazon RDS (Relational Database Service) or Google Cloud SQL offer attractive solutions, the associated costs can be prohibitive for smaller organizations.

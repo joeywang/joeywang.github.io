@@ -7,6 +7,10 @@ categories: [ gcp ]
 tags: [ gcp, load balancer ]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/migrate-gcp-load-balancer-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Essential Guide to Migrating Your GCP Classic Load Balancer to the Global External Load Balancer
 
 The Global External Application Load Balancer is the latest evolution of Google Cloud's Layer 7 load balancing service. It provides a modern control plane with enhanced traffic management, security, and global reach. If your applications are still running behind a **Classic Application Load Balancer**, it's time to upgrade to take advantage of these new capabilities. This guide provides a step-by-step walkthrough of the migration process using the `gcloud` command-line tool, following a safe, staged approach to ensure zero downtime.

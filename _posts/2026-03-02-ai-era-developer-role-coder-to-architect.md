@@ -359,6 +359,11 @@ How to Develop:
 Example:
 # Developer with healthcare domain expertise:
 
+<audio controls preload="metadata" src="/assets/audio/ai-era-developer-role-coder-to-architect-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 def build_healthcare_ai_system():
     """Build AI system with healthcare-specific safeguards."""
     

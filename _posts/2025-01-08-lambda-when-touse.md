@@ -7,6 +7,11 @@ categories: security otp authentication
 
 # When to Use AWS Lambda for API Endpoints — A Practical Decision Guide
 
+<audio controls preload="metadata" src="/assets/audio/lambda-when-touse-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When building a new system or endpoint, one of the first questions that often comes up is: *"Should I use AWS Lambda or go with a container/server-based approach?"* While serverless functions like AWS Lambda offer a lot of flexibility, they are not a one-size-fits-all solution. This article aims to help you decide when Lambda is the right fit — and when it's not.
 
 ---

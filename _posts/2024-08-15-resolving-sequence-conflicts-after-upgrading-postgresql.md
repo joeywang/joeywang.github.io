@@ -11,6 +11,11 @@ sitemap: false
 ---
 # Title: Resolving Sequence Conflicts After Upgrading PostgreSQL
 
+<audio controls preload="metadata" src="/assets/audio/resolving-sequence-conflicts-after-upgrading-postgresql-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise post-upgrade is the misalignment of sequences, which can lead to significant problems such as blocking user sign-ins. In this article, we will explore the nature of sequence issues, why they occur during an upgrade, and how to effectively resolve them using custom SQL functions and scripts.

@@ -7,6 +7,11 @@ categories: security otp authentication
 
 # Migrating OTP Services from Google Authenticator to Other Providers
 
+<audio controls preload="metadata" src="/assets/audio/otp-migration-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 One-time password (OTP) authentication is widely used to enhance security in online services. If you're looking to migrate your OTP service from Google Authenticator to another provider, this guide will walk you through the process step by step. Additionally, we'll cover the basics of OTP authentication with a simple graphical explanation.
 
 ---

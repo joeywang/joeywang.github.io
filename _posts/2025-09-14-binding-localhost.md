@@ -7,6 +7,11 @@ categories: MySQL
 
 # Navigating Network Bindings: Understanding `localhost`, `127.0.0.1`, `0.0.0.0`, and `*`
 
+<audio controls preload="metadata" src="/assets/audio/binding-localhost-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When you run multiple services on your local machine that need to listen on network ports, understanding network binding addresses is crucial for avoiding conflicts and ensuring your applications connect to the correct service.
 
 ## Step 1: Demystifying Localhost vs. 127.0.0.1

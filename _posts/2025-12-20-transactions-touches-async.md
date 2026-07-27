@@ -7,6 +7,11 @@ tags: [ruby-on-rails, database, architecture, async-jobs, data-consistency]
 
 # Transactions, Touches, and Async Rollups in Ruby on Rails
 
+<audio controls preload="metadata" src="/assets/audio/transactions-touches-async-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ### Designing Consistent, Performant Derived Data
 
 In real-world Rails applications, not all data is equal.

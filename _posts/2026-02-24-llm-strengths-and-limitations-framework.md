@@ -66,6 +66,11 @@ Based on their architecture (Article 1) and generalization capabilities (Article
 **Example:**
 ```python
 # Reliable use case
+
+<audio controls preload="metadata" src="/assets/audio/llm-strengths-and-limitations-framework-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 def summarize_support_ticket(ticket_text):
     prompt = f"""
     Summarize this support ticket in 2-3 sentences.

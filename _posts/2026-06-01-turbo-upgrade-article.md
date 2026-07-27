@@ -7,6 +7,11 @@ categories: Rails
 
 # Migrating from Rails UJS to Turbo: The Hidden Pitfalls That Broke Our Production App
 
+<audio controls preload="metadata" src="/assets/audio/turbo-upgrade-article-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 **A cautionary tale about event timing, async promises, and why your tests might be lying to you**
 
 ---

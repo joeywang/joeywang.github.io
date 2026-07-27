@@ -7,6 +7,11 @@ categories: [test, develop, TDD]
 
 # 🧪 Designing Effective Software Tests: A Practical Guide
 
+<audio controls preload="metadata" src="/assets/audio/test-best-practice-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 In the world of software development, testing is not just a safety net — it's a foundation of quality, confidence, and maintainability. But how much testing is enough? Should tests mimic real-life usage or cover every possible edge case? How do you balance unit, integration, and E2E tests? What about layering tests between controllers, services, and models?

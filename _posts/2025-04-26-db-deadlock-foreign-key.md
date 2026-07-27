@@ -1,3 +1,7 @@
+<audio controls preload="metadata" src="/assets/audio/db-deadlock-foreign-key-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### MySQL (InnoDB)
 
 When you update a foreign key in MySQL (InnoDB engine), even if you're updating different "child" rows (orders in your case), there can still be contention because of how MySQL handles foreign key checks and locking on the *parent* table.

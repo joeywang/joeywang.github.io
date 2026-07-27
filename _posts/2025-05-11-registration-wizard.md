@@ -38,6 +38,11 @@ At the end of each step, you serialize the validated form data for that step and
 
 ```ruby
 # Controller for Step 1
+
+<audio controls preload="metadata" src="/assets/audio/registration-wizard-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 class RegistrationsController < ApplicationController
   def step1_submit
     # ... validate params[:user_step1] ...

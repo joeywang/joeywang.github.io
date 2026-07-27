@@ -6,6 +6,10 @@ draft: false
 tags: ["Database Design", "SQL", "PostgreSQL", "System Architecture", "Data Modeling", "Best Practices", "Tech Article"]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/db-design-optional-attributes-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ### The Database Designer's Mind: From Vague Requirement to Robust Schema
 
 **Meta Description:** Go beyond just knowing the rules of database design. This article walks you through the step-by-step thought process of tackling a real-world problem, weighing pragmatism, purity, and modern tools to build a schema that lasts.

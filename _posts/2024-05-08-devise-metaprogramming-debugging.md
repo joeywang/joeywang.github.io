@@ -8,6 +8,11 @@ tags: [devise, metaprogramming, rails]
 
 # Devise Metaprogramming: A Deep Dive into current_user
 
+<audio controls preload="metadata" src="/assets/audio/devise-metaprogramming-debugging-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## 1. What is Devise?
 
 Devise is a flexible authentication solution for Rails based on Warden. It's a full-featured authentication framework that handles everything from encrypting passwords to creating and managing user sessions. Devise is highly modular and configurable, making it a popular choice for Rails developers.

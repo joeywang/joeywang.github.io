@@ -5,6 +5,11 @@ date: 2006-01-02 00:00 +0000
 ---
 # Function Definition
 
+<audio controls preload="metadata" src="/assets/audio/register-function-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Register Information
 This function allows the organization to specify what information is necessary for users to provide during the free trial registration. The organization can also choose which information should be visible to the first-time viewer through an interface.
 

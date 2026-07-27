@@ -6,6 +6,11 @@ categories: Rails
 ---
 # Ruby on Rails Session Management Options
 
+<audio controls preload="metadata" src="/assets/audio/session-stores-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Ruby on Rails offers various methods for managing sessions, each with its own set of advantages and disadvantages. Let's explore the primary options available.
 
 ## Cookie Session Store

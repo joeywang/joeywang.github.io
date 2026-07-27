@@ -9,6 +9,10 @@ tags:
   - proxying
 ---
 
+<audio controls preload="metadata" src="/assets/audio/error-tracking-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## When Your Crucial Scripts Go Dark: Demystifying "Blocked:Other" and the Power of Proxying
 
 This is one of those browser problems that looks vague until you have seen it a few times.

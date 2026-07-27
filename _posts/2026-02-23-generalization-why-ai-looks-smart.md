@@ -42,6 +42,11 @@ In traditional software, there's no generalization:
 
 ```python
 # This function works ONLY for exactly what it was programmed to do
+
+<audio controls preload="metadata" src="/assets/audio/generalization-why-ai-looks-smart-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 def calculate_discount(price, discount_percent):
     return price * (1 - discount_percent / 100)
 

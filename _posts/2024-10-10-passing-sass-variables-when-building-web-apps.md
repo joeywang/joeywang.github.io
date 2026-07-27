@@ -6,6 +6,11 @@ date: 2024-10-10 00:00 +0000
 
 # Passing Sass Variables When Building Web Apps
 
+<audio controls preload="metadata" src="/assets/audio/passing-sass-variables-when-building-web-apps-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In our project, scrom-wrapper is using the training-components library. We want to implement a flexible theming system by changing the primary color in training-components. This article explains how we can set environment variables during the build process of scorm-wrapper to customize the primary color of the imported training-components.
 
 ## Why We Want to Pass Variables When Building

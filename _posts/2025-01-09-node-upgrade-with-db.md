@@ -7,6 +7,11 @@ categories: k8s node upgrade database
 
 # Kubernetes Node Upgrade Procedure: Best Practices and Failover Mechanisms
 
+<audio controls preload="metadata" src="/assets/audio/node-upgrade-with-db-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When managing a Kubernetes cluster, node upgrades are an inevitable part of the maintenance cycle. Whether you're applying security patches, upgrading the Kubernetes version, or implementing system updates, a well-planned node upgrade procedure ensures minimal disruption to your workloads. This article outlines a comprehensive approach to node upgrades and explores the various hooks and mechanisms available for implementing effective failover strategies.
 
 ## Understanding Node Upgrades

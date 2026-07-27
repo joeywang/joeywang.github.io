@@ -15,6 +15,11 @@ tags:
 
 # Rails Style Guide
 
+<audio controls preload="metadata" src="/assets/audio/rails-styles-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Transactions, Touch, and Async Derived Data
 
 This document defines **official patterns and anti-patterns** for handling transactions, derived data, `touch`, and async updates in Rails services at Reallyenglish.

@@ -5,6 +5,11 @@ date: 2024-10-05 23:51 +0100
 ---
 # Upgrading React from 17 to 18: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/comprehensive-guide-upgrading-react-from-17-to-18-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 React 18 introduces several new features and improvements that enhance performance and developer experience. This guide will walk you through the process of upgrading your React application from version 17 to 18, covering dependency updates, breaking changes, and best practices.
 
 ## 1. Update Dependencies

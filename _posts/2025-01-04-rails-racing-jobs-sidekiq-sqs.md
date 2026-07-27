@@ -7,6 +7,11 @@ date: "2025-01-03 21:34 +0000"
 ---
 # From Rails to Laravel: A Story of Conquering Racing Updates and “Last Update Wins”
 
+<audio controls preload="metadata" src="/assets/audio/rails-racing-jobs-sidekiq-sqs-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 I still remember the day I first stumbled upon a peculiar bug in my Rails application. My team and I had built a service to handle a flood of status changes from our users—think toggling an “active” switch, or updating personal preferences. It felt so straightforward: whenever a user clicked a toggle in our web interface, the system would enqueue a job to update the user’s database record. Quick, easy, done—right?
 
 But then we discovered the dreaded *“racing updates.”* It started with a bewildered user report. They swore they had turned off their “active” flag, but the UI insisted they were still active. Confused, we dug into the logs. Sure enough, there were two updates queued up in quick succession:

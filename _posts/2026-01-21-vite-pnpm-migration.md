@@ -6,6 +6,11 @@ categories: Rails
 ---
 # Migrating a Rails App from Yarn + Webpacker to pnpm + Vite
 
+<audio controls preload="metadata" src="/assets/audio/vite-pnpm-migration-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 We recently migrated a Rails application from a legacy JavaScript toolchain (`yarn` + `webpacker`) to a modern stack (`pnpm` + `vite`). This write-up captures the exact migration path, the pitfalls we hit, and the fixes that made production stable.
 
 If your app still runs Webpacker, this can save you a lot of trial and error.

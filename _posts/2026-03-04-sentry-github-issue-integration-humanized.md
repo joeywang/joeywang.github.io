@@ -10,6 +10,11 @@ description: "The Sentry-GitHub integration seems simple until it doesn't work. 
 
 # How I Finally Got Sentry to Create GitHub Issues (After 3 Hours of Clicking Around)
 
+<audio controls preload="metadata" src="/assets/audio/sentry-github-issue-integration-humanized-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Last Wednesday, I spent three hours trying to get Sentry to create GitHub issues. The integration page showed a green checkmark. GitHub confirmed the app was installed. Everything looked perfect.
 
 Then I clicked "Create issue" and got: **"GitHub integration not installed."**

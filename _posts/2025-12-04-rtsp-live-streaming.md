@@ -11,6 +11,11 @@ tags:
 
 # How to Debug and Discover an IP Camera Live Stream (RTSP) — A Practical Guide
 
+<audio controls preload="metadata" src="/assets/audio/rtsp-live-streaming-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Abstract
 
 Many IP cameras advertise “RTSP support”, yet finding a **working live stream URL** is often undocumented, inconsistent, or obscured by vendor UI. This article presents a **systematic, command-line–first approach** to discovering, debugging, and validating an IP camera’s live stream—**without cloud access, reverse engineering, or proprietary SDKs**.

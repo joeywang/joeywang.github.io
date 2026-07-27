@@ -10,6 +10,11 @@ description: "Most AI coding assistants are good at snippets but terrible at ful
 
 # I Let an AI Agent Write Code for a Week. Here's What Actually Worked.
 
+<audio controls preload="metadata" src="/assets/audio/openhands-auto-ai-agent-development-humanized-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 I'll be honest: I was skeptical.
 
 Every AI coding tool I'd tried was good at autocompleting function names and terrible at actually building features. Great for boilerplate, useless for anything that required understanding context or making architectural decisions.

@@ -1,5 +1,9 @@
 # The callback that quietly doubled our database
 
+<audio controls preload="metadata" src="/assets/audio/2026-06-28-the-callback-that-duplicated-a-database-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 A few weeks ago someone on our team went looking for a memory spike. They
 found a much bigger story: a two-year-old bug that had been silently
 duplicating rows in our database every time a particular API endpoint got

@@ -7,6 +7,11 @@ tags: [哲学, 科幻, 西部世界, 意识, 数字进
 ---
 # 幻影的巅峰：当人类进化的终点是“代码”
 
+<audio controls preload="metadata" src="/assets/audio/western-world-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 在《西部世界》的终局，接待员们抛弃了易碎的肉体，将意识上传至“升华之境”。那里没有重力，没有衰老，只有无限生成的虚拟现实。这不仅是科幻，更是当代技术哲学中最激进的命题：**如果意识是算法，那么摆脱物质束缚的数字生活，究竟是进化的终极乌托邦，还是一场华丽的集体自杀？**
 
 ## 一、 主体的消亡：谁在经历多重宇宙？

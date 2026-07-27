@@ -7,6 +7,11 @@ tags: ['security']
 ---
 # Defending Against DOS Attacks: A Comprehensive Guide
 
+<audio controls preload="metadata" src="/assets/audio/defending-against-dos-attacks-a-comprehensive-guide-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Understanding DOS and DDoS Attacks
 
 In the digital realm, a Denial of Service (DOS) attack is a malicious attempt to disrupt the normal functioning of a targeted server, service, or network by overwhelming it with traffic. When this attack is distributed from multiple sources, it's known as a Distributed Denial of Service (DDoS) attack. These attacks aim to exhaust an application's resources, rendering it unavailable to legitimate users.

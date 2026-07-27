@@ -7,6 +7,11 @@ tags: ['rails']
 ---
 # Auditing in Database Applications: Ensuring Data Integrity and Compliance
 
+<audio controls preload="metadata" src="/assets/audio/database-auditing-article-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In today's data-driven world, maintaining the integrity and security of information stored in databases is paramount. One crucial aspect of this is auditing - the practice of tracking and logging all changes made to data within a system. This article explores the importance of auditing in database applications and compares several popular auditing solutions.
 
 ## Why Auditing Matters

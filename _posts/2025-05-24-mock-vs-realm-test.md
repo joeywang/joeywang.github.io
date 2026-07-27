@@ -4,6 +4,10 @@ title: "Mock vs Real: The Art of Testing in Rails"
 date: 2025-05-24
 categories: [testing, rails, software development]
 ---
+<audio controls preload="metadata" src="/assets/audio/mock-vs-realm-test-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 Alright, let's be honest. Building software isn't just about cranking out features; it's about making sure the damn thing *works*. And that, my friends, brings us directly to testing. We all know we need it, but the constant tug-of-war between making tests lightning-fast and making them actually useful – that's the real challenge.
 
 We're talking about the age-old dilemma: when do you mock the world, and when do you let your code chew on the real thing? There's no silver bullet, but there's a hell of a lot of strategy involved. The goal isn't to pick a side; it's to play both sides like a pro, getting speed where it counts and iron-clad confidence where it *really* counts.

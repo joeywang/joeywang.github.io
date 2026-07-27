@@ -7,6 +7,11 @@ tags: [kubernetes, shell, aliases, functions]
 ---
 # Creating Practical Kubernetes Shell Aliases and Functions: A Developer's Guide
 
+<audio controls preload="metadata" src="/assets/audio/creating-practical-kubernetes-shell-aliases-and-functions-a-developer-s-guide-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 When working with Kubernetes, developers often find themselves typing the same commands repeatedly. While `kubectl` is a powerful tool, its verbosity can slow down common workflows. This guide will explore practical aliases and functions to streamline your Kubernetes development experience, with a focus on container access patterns.

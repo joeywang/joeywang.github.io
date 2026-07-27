@@ -8,6 +8,11 @@ tags: [Android, Github, Actions, CI/CD, Build Optimization]
 
 # Optimizing Android Builds in GitHub Actions: Environments, Caching, and Best Practices
 
+<audio controls preload="metadata" src="/assets/audio/android-build-in-github-actions-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Building Android applications in GitHub Actions can be a resource-intensive process, often taking several minutes to complete. However, with the right optimizations, you can significantly reduce build times and improve the security of your CI/CD pipeline. In this article, we'll explore how to optimize Android builds in GitHub Actions with a focus on environments, caching strategies, and security best practices.
 
 ## The Challenge with Android Builds

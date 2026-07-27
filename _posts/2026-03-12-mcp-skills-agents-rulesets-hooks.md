@@ -10,6 +10,11 @@ description: "A practical introduction to the main building blocks of modern AI 
 
 # MCP, Skills, Agents, Rulesets, and Hooks: A Practical Map for AI Development
 
+<audio controls preload="metadata" src="/assets/audio/mcp-skills-agents-rulesets-hooks-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 In the earlier articles in this series, I focused on the big shifts:
 
 - LLMs are components, not complete applications

@@ -7,6 +7,11 @@ tags: [PostgreSQL, Security, Authentication, SCRAM, MD5, Migration, Pgpool, PgBo
 
 # **Upgrading PostgreSQL Authentication from MD5 to SCRAM-SHA-256: Why It Matters and How to Do It Safely**
 
+<audio controls preload="metadata" src="/assets/audio/md5-obsolete-pg-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 PostgreSQL has supported **MD5 password authentication** for over a decade, but MD5 is now considered cryptographically broken and unsafe. Modern database security standards — and PostgreSQL itself — are moving toward **SCRAM-SHA-256**, a robust, modern authentication mechanism that significantly improves password protection.
 
 With PostgreSQL 18 marking MD5 authentication as deprecated, now is the right time to upgrade. The good news? PostgreSQL allows a **zero-downtime migration path**.

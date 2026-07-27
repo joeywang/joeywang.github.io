@@ -7,6 +7,10 @@ categories: PostgreSQL
 
 # The Zombie Replica: Solving PostgreSQL's "WAL Segment Removed" Deadlock on Kubernetes
 
+<audio controls preload="metadata" src="/assets/audio/2026-06-27-zombie-replica-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 If you run PostgreSQL on Kubernetes using an operator like Kubegres, CloudNativePG, or Crunchy Data, you are likely no stranger to the peace of mind automated failovers bring. But there is a silent killer lurking in the cloud-native database world—a scenario where a replica isn't exactly dead, but it isn't alive either. It becomes a **Zombie Replica**.
 
 It loops endlessly, logging a fatal error, while your Kubernetes liveness probes cheerfully report that everything is fine. Let's dissect why this happens, how the community handles it, and how to build a bulletproof, hands-off automated fix.

@@ -257,6 +257,11 @@ class InstructionBuilder:
 
 
 # Usage
+
+<audio controls preload="metadata" src="/assets/audio/context-engineering-new-software-engineering-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 instructions = (InstructionBuilder()
     .add_instruction("Think step-by-step before answering")
     .add_instruction("Cite sources when making factual claims")

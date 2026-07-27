@@ -11,6 +11,11 @@ tags:
 ---
 # Browsing Through a Remote SSH Server Without DNS Leaks (Security Education)
 
+<audio controls preload="metadata" src="/assets/audio/ssh-socks5-proxy-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Why DNS leaks matter
 
 Even when your web traffic is encrypted (HTTPS), **DNS requests** can reveal which domains you’re visiting. On managed networks (office Wi-Fi, corporate VPN, hotels), DNS is often monitored, filtered, or logged. That can create privacy and security issues such as:

@@ -7,6 +7,11 @@ categories: [Web Workers, Service Workers]
 
 # Web Workers vs. Service Workers: A Deep Dive into Browser Background Scripts
 
+<audio controls preload="metadata" src="/assets/audio/web-worker-vs-service-worker-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 As web applications grow more powerful, the need to perform tasks in the background without freezing the user interface has become critical. Modern browsers provide two powerful tools for this: **Web Workers** and **Service Workers**.
 
 Many developers, however, find themselves confused. Are they the same thing? Do they conflict? When should you use one over the other?

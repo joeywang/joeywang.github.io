@@ -10,6 +10,10 @@ categories: [AI, DevOps]
 
 # Giving Hermes read-only access to GCP, AWS, and Kubernetes
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-18-read-only-cloud-kubernetes-access-for-hermes-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I wanted Hermes to help me investigate QA and production problems.
 
 The useful version of that is not pasting a screenshot of a failed pod into a chat. I want the agent to inspect the current deployment, compare replicas, read events and logs, check CPU and memory, then search the matching application repository. That gives it enough context to answer questions such as:

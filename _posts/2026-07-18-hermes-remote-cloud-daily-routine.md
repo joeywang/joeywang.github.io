@@ -10,6 +10,10 @@ categories: [AI, Engineering]
 
 # Running Hermes on a cloud machine as a daily routine assistant
 
+<audio controls preload="metadata" src="/assets/audio/2026-07-18-hermes-remote-cloud-daily-routine-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I have wanted a personal assistant for a long time, but most versions of this idea are disappointing.
 
 A chatbot can talk, but it cannot actually see the day. It does not know that my calendar is packed, that CI failed overnight, or that the error tracker got noisy again.

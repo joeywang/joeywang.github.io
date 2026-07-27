@@ -372,6 +372,11 @@ class EvolvingAI:
 
 ```python
 # Monitoring (traditional)
+
+<audio controls preload="metadata" src="/assets/audio/why-ai-applications-are-ecosystems-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 def monitor_system():
     metrics = {
         "latency": get_latency(),

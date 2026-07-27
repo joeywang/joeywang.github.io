@@ -32,6 +32,11 @@ First things first, add `pretender` to your `Gemfile`:
 
 ```ruby
 # Gemfile
+
+<audio controls preload="metadata" src="/assets/audio/user-impersonation-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 gem 'pretender'
 ```
 

@@ -9,6 +9,11 @@ tags: [SPA, cookie, token]
 
 # A Tale of Tabs and Tokens: My Journey Solving Authentication Puzzles in Single Page Applications
 
+<audio controls preload="metadata" src="/assets/audio/a-tale-of-tabs-and-tokens-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## The Curious Case of the Confused Classroom
 
 As the lead developer for "LearnQuest," an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless experience for students eager to absorb knowledge across various subjects. But lately, I'd been losing sleep over a bizarre phenomenon...

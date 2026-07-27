@@ -8,6 +8,11 @@ tags: [Ruby on Rails, Puma, Nginx, DevOps, Performance, Backend Engineering]
 
 # 🧱 From 499 to 200: Understanding Puma Worker Timeouts, Nginx 499s, and How to Keep Your Rails API Fast
 
+<audio controls preload="metadata" src="/assets/audio/nginx-499-timeout-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When you start seeing a spike in **HTTP 499s** in your Nginx logs, it feels mysterious:
 > “The client closed the connection before the server responded.”
 

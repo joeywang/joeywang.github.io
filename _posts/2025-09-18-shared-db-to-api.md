@@ -9,6 +9,10 @@ categories: [architecture, performance, microservices, api, caching]
 layout: post
 ---
 
+<audio controls preload="metadata" src="/assets/audio/shared-db-to-api-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## From Shared Database to APIs: Justifying the Move and Taming the Performance Hit
 
 Many growing engineering teams reach a crossroads. The architecture that got you off the ground—multiple services reading and writing to the same central database—becomes a bottleneck. It’s fast, simple, and... incredibly brittle.

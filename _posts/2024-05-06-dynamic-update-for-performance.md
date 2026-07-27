@@ -80,6 +80,11 @@ Here's a simple example of how you might handle cache invalidation in Rails:
 
 # When a lesson is updated
 
+<audio controls preload="metadata" src="/assets/audio/dynamic-update-for-performance-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 def update_lesson(lesson, attributes)
 
   lesson.update!(attributes)

@@ -7,6 +7,11 @@ categories: [rails, ruby, debugging, caching]
 
 # Rails 8.1.1 + Ruby 3.4 + connection_pool 3.x: RedisCacheStore boot crash and a safe monkey-patch
 
+<audio controls preload="metadata" src="/assets/audio/connection_pool_3-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Summary
 
 Upgrading to **Ruby 3.4** and pulling in **connection_pool 3.x** can break a **Rails 8.1.1** app at boot with:

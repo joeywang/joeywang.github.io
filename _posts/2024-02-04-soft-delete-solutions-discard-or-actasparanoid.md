@@ -5,6 +5,11 @@ date: 2024-02-04 00:00 +0000
 ---
 # Soft Delete Solutions: Discard or ActAsParanoid?
 
+<audio controls preload="metadata" src="/assets/audio/soft-delete-solutions-discard-or-actasparanoid-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## What is Soft Delete and Why It is Used a Lot
 
 Soft delete, also known as logical delete, is a data management strategy that allows for the preservation of data in a database while marking it as "deleted" to the application. This is achieved by adding a flag or timestamp column (such as `deleted_at` or `is_deleted`) to the database table. When a record is soft deleted, it is not actually removed from the database; instead, it is hidden from regular queries but can still be accessed and restored if necessary.

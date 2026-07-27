@@ -9,6 +9,11 @@ description: "A practical guide to using OpenHands for autonomous software work:
 
 # How to Develop with Auto AI Agents Using OpenHands
 
+<audio controls preload="metadata" src="/assets/audio/openhands-auto-ai-agent-development-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 Most teams trying AI-assisted development hit the same wall: the assistant is good at snippets, but weak at end-to-end execution.
 
 That is the gap OpenHands is trying to close.

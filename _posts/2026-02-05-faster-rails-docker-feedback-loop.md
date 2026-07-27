@@ -9,6 +9,11 @@ description: "How I reduced Docker development friction across three Rails apps 
 
 # Faster Rails Docker Feedback Loop: Runtime Bundler, Yarn Cache, and HMR
 
+<audio controls preload="metadata" src="/assets/audio/faster-rails-docker-feedback-loop-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 When local development runs in Docker, feedback loop speed often gets worse over time.
 
 I hit the same 3 problems repeatedly in `wfb`, `n2r`, and `turtle`:

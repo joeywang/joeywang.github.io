@@ -7,6 +7,11 @@ categories: [PHP, Ruby]
 
 # Monkey-Patching: A Tale of Two Languages
 
+<audio controls preload="metadata" src="/assets/audio/class-override-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 ## Introduction
 
 Monkey-patching—also known as runtime method override or class reopening—is a technique that allows modifying or augmenting existing classes or modules at runtime. While it’s a powerful feature in some languages, it can be an anti-pattern in others. In this article, we explore why overriding class methods in PHP is risky and hard to revert, and contrast that with Ruby’s built-in, manageable approach.

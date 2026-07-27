@@ -5,6 +5,10 @@ date:   2024-08-19 14:41:26 +0100
 categories: PostgreSQL
 tags: [postgres, devops]
 ---
+<audio controls preload="metadata" src="/assets/audio/materialized-view-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## Materialized Views: Speeding Up Queries with a Tradeoff
 
 In PostgreSQL, a materialized view is a powerful tool that can significantly improve query performance. It acts as a pre-computed snapshot of a complex query, stored as a physical table. This means instead of re-running the potentially slow query every time, the materialized view delivers the results quickly.

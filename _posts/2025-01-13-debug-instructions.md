@@ -5,6 +5,10 @@ date: "2025-01-13"
 categories: debug ruby python php
 ---
 
+<audio controls preload="metadata" src="/assets/audio/debug-instructions-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 **Comparing Debugging Skills: PHP, Python, and Ruby**
 
 Debugging is a critical skill for developers, and different programming languages provide different tools and techniques for diagnosing and fixing issues. In this article, we compare debugging capabilities in PHP, Python, and Ruby, highlighting their strengths and common debugging commands.

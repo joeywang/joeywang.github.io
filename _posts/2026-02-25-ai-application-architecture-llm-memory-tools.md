@@ -290,6 +290,11 @@ class Tool:
 
 
 # Example tools
+
+<audio controls preload="metadata" src="/assets/audio/ai-application-architecture-llm-memory-tools-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 tools = [
     Tool(
         name="get_weather",

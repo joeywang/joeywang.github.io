@@ -6,6 +6,10 @@ categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"
 ---
 
+<audio controls preload="metadata" src="/assets/audio/ai-impact-software-development-lifecycle-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 ## The Problem
 
 If you have been building software for a while, the basic loop is familiar:

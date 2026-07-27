@@ -7,6 +7,11 @@ categories: rails deadlock queue jobs
 
 # Debugging Transaction Deadlocks in Rails Tests: A Case Study
 
+<audio controls preload="metadata" src="/assets/audio/slow-test-debug-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 This was one of those Rails test failures that wastes hours because it does not fail in a satisfying way.
 
 The suite would hang. A single test might pass on its own. Then the full run would stall somewhere inside a transaction and leave behind just enough logging to be irritating.

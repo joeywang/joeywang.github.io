@@ -39,6 +39,11 @@ IRB.conf[:PROMPT_MODE] = :DOC
 
 # Tracking and Debugging Helpers
 
+<audio controls preload="metadata" src="/assets/audio/irbrc-for-development-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+
 # Log method calls with their arguments
 # Usage: track_method_calls(User, :save)
 def track_method_calls(klass, method_name)

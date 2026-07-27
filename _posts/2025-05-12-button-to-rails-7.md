@@ -5,6 +5,10 @@ date: 2025-05-12 14:41:26 +0100
 categories: [Rails, JavaScript, CSS]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/button-to-rails-7-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 It was a Tuesday like any other. Coffee was brewing, code was flowing, and our trusty Rails 6 application was humming along. Then came the upgrade. A leap of faith into the world of Rails 7, promising performance boosts and a host of new features. The transition was surprisingly smooth, or so I thought. The calm before the storm.
 
 ### The Mystery of the Unstyled Button
