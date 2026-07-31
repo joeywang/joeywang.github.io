@@ -8,6 +8,10 @@ tags: [ai, agents, security, hermes, bitwarden, secrets]
 categories: [AI, Security, Engineering]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/tightening-hermes-secrets-with-bitwarden-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 # Tightening Hermes secrets with Bitwarden
 
 I recently tightened up my Hermes setup by moving the provider and tool tokens out of the local `.env` file and into Bitwarden Secrets Manager.

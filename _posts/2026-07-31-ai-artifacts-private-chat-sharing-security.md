@@ -8,6 +8,10 @@ tags: [ai, security, privacy, claude, artifacts, ai-agents]
 categories: [AI, Security]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/ai-artifacts-private-chat-sharing-security-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 # Shared AI artifacts are not private just because the URL is hard to guess
 
 I have been thinking about the Claude shared chats and Artifacts indexing incident because it sits exactly on a boundary that AI tools keep making blurry.
