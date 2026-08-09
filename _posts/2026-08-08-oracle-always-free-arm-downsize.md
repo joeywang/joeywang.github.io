@@ -104,32 +104,15 @@ For me, the always-on role is:
 
 ```text
 small ARM host
-  -> VPN entry points
-  -> SSH and basic Linux development access
-  -> Hermes control plane / Telegram gateway
-  -> scheduled maintenance and lightweight automation
+  -> private access paths
+  -> basic shell and development access
+  -> lightweight automation
+  -> scheduled maintenance
 ```
 
 Everything else has to justify itself.
 
-That means the host should keep running:
-
-- OpenVPN
-- WireGuard
-- SSH
-- the Hermes gateway / control plane
-- bounded logs, swap, backups, and basic shell tooling
-
-And these should become explicitly on-demand:
-
-- Kubernetes / k3s
-- Longhorn, Traefik, cert-manager, and cluster add-ons
-- MySQL or MariaDB
-- Docker workloads that are only needed for active development
-- local LLM servers
-- Multipass
-- Cloudflare WARP if a normal VPN path is already available
-- stale helper processes from one-off coding agent sessions
+That means the host should keep only the boring access and automation layer always running. Heavier platform services, databases, container workloads, local model servers, and one-off experiment processes should become explicitly on-demand.
 
 That is the important shift: not "can I squeeze it all in?" but "should this be always-on?"
 
@@ -175,23 +158,23 @@ free -h
 swapon --show
 
 df -h /
-systemctl is-active ssh openvpn openvpn-server@server wg-quick@wg0 || true
-systemctl is-enabled ssh openvpn openvpn-server@server wg-quick@wg0 || true
-systemctl is-active mysql k3s warp-svc snap.multipass.multipassd.service || true
-systemctl is-enabled mysql k3s warp-svc snap.multipass.multipassd.service || true
-ss -tulpn | grep -E ':(22|1194|51820|3306|33060|6443|10250|18080)\b' || true
+systemctl is-active <must-run-services> || true
+systemctl is-enabled <must-run-services> || true
+systemctl is-active <on-demand-services> || true
+systemctl is-enabled <on-demand-services> || true
+ss -tulpn
 ```
 
 The expected result is:
 
-- SSH is reachable.
-- VPN listeners are present.
-- Hermes still answers a smoke test.
-- MySQL and k3s are inactive and disabled.
-- heavy optional listeners are gone.
+- remote access is reachable.
+- the required private access paths are present.
+- the automation layer still answers a smoke test.
+- heavier optional services are inactive and disabled.
+- unnecessary listeners are gone.
 - available memory looks healthy before the resize.
 
-The resize itself is still a stop/start event. If the host runs the gateway that talks to me, I should expect the agent to be offline during the shape change unless I intentionally fail it over first.
+The resize itself is still a stop/start event. If the host runs the automation path that talks to me, I should expect that path to be offline during the shape change unless I intentionally fail it over first.
 
 ## Backups are part of the shape change
 
