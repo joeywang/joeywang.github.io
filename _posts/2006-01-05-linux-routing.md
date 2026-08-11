@@ -9,7 +9,7 @@ date: 2006-01-05 00:00 +0000
 
 # Linux下实现路由功能
 
-<audio controls preload="metadata" src="/assets/audio/linux下实现路由功能-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/linux-routing-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

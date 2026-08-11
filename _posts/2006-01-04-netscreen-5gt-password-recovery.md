@@ -8,7 +8,7 @@ date: 2006-01-04 00:00 +0000
 ---
 # [原创]NETSCREEN 5GT密码破解方法
 
-<audio controls preload="metadata" src="/assets/audio/netscreen-5gt密码破解方法-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/netscreen-5gt-password-recovery-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

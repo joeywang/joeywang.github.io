@@ -5,7 +5,7 @@ date: 2006-01-07 00:00 +0000
 ---
 # 域名解析服务探究与`nslookup`工具使用指南
 
-<audio controls preload="metadata" src="/assets/audio/域名解析服务探究与nslookup工具使用指南-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/dns-nslookup-guide-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

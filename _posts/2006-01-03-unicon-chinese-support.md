@@ -5,7 +5,7 @@ date: 2006-01-03 00:00 +0000
 ---
 # UNICON安装及中文支持指南
 
-<audio controls preload="metadata" src="/assets/audio/unicon安装及中文支持指南-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/unicon-chinese-support-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

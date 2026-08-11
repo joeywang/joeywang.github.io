@@ -5,7 +5,7 @@ date: 2006-01-06 00:00 +0000
 ---
 # 小乖的霸权与猫咪们的逆袭
 
-<audio controls preload="metadata" src="/assets/audio/小乖的霸权与猫咪们的逆袭-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/kitty-rebellion-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

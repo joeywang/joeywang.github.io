@@ -5,7 +5,7 @@ date: 2006-01-08 00:00 +0000
 ---
 # 最令PHP初学者头痛的十四个问题及解决方案
 
-<audio controls preload="metadata" src="/assets/audio/最令php初学者头痛的十四个问题及解决方案-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/php-beginner-problems-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

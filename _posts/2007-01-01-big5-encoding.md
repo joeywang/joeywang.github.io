@@ -5,7 +5,7 @@ date: 2007-01-01 00:00 +0000
 ---
 # GB码与BIG5编码转换技术解析
 
-<audio controls preload="metadata" src="/assets/audio/big5编码详解-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/big5-encoding-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

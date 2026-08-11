@@ -5,7 +5,7 @@ date: 2006-01-11 00:00 +0000
 ---
 # 享受生活的每一刻：跨文化体验与个人成长
 
-<audio controls preload="metadata" src="/assets/audio/享受生活的每一刻-跨文化体验与个人成长-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/cross-cultural-life-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

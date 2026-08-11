@@ -6,7 +6,7 @@ date: 2006-01-10 00:00 +0000
 
 # rsync技巧：高效实现主机间文件同步
 
-<audio controls preload="metadata" src="/assets/audio/rsync技巧-高效实现主机间文件同步-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/rsync-file-sync-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 

@@ -5,7 +5,7 @@ date: 2006-01-09 00:00 +0000
 ---
 # rsync：系统管理员的备份利器
 
-<audio controls preload="metadata" src="/assets/audio/rsync-系统管理员的备份利器-summary.ogg">
+<audio controls preload="metadata" src="/assets/audio/rsync-backup-guide-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
