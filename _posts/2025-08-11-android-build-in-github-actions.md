@@ -81,6 +81,7 @@ If you're building a React Native app or using Node.js tools:
 For Android builds, Gradle dependencies are a major time sink:
 
 ```yaml
+{% raw %}
 - name: Set up Gradle caching
   uses: actions/cache@v4
   with:
@@ -90,6 +91,7 @@ For Android builds, Gradle dependencies are a major time sink:
     key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
     restore-keys: |
       ${{ runner.os }}-gradle-
+{% endraw %}
 ```
 
 ### Caching Build Outputs
@@ -97,6 +99,7 @@ For Android builds, Gradle dependencies are a major time sink:
 Cache intermediate build artifacts to avoid redundant compilation:
 
 ```yaml
+{% raw %}
 - name: Cache build outputs
   uses: actions/cache@v4
   with:
@@ -104,6 +107,7 @@ Cache intermediate build artifacts to avoid redundant compilation:
       android/app/build
       !android/app/build/outputs/apk
     key: ${{ runner.os }}-android-build-${{ hashFiles('android/app/src/main/AndroidManifest.xml', 'android/app/build.gradle') }}
+{% endraw %}
 ```
 
 ## Complete Workflow Example
@@ -111,6 +115,7 @@ Cache intermediate build artifacts to avoid redundant compilation:
 Here's a comprehensive workflow that incorporates all the optimizations:
 
 ```yaml
+{% raw %}
 name: Android Build
 
 on:
@@ -178,6 +183,7 @@ jobs:
         with:
           name: app-release.apk
           path: android/app/build/outputs/apk/release/app-release.apk
+{% endraw %}
 ```
 
 ## Advanced Optimization Techniques

@@ -390,6 +390,7 @@ def validate_user_data(data):
 **Context-Driven (AI):**
 
 ```python
+{% raw %}
 def validate_user_data(data, country="US"):
     """AI-powered data validation with context."""
     
@@ -437,6 +438,7 @@ def validate_user_data(data, country="US"):
 # + Detects suspicious patterns
 # + Provides contextual warnings
 # + Adapts to different countries
+{% endraw %}
 ```
 
 ---
@@ -595,6 +597,7 @@ The future isn't purely context-driven. It's **hybrid**:
 ### Hybrid Pattern Example
 
 ```python
+{% raw %}
 class HybridDataProcessor:
     """Combine LLM understanding with deterministic processing."""
     
@@ -641,6 +644,7 @@ class HybridDataProcessor:
         """)
         
         return response
+{% endraw %}
 ```
 
 ---

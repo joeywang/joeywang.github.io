@@ -3,6 +3,7 @@ layout: post
 title: "Redis Cleanup & Memory Management in Kubernetes"
 date: 2026-01-20 10:00:00 -0500
 categories: redis kubernetes sidekiq
+---
 
 # Redis Cleanup & Memory Management in Kubernetes
 
