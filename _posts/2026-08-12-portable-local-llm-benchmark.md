@@ -10,6 +10,10 @@ categories: [AI, Engineering]
 
 # A Portable Workflow for Testing Small Local LLMs on Modest Hardware
 
+<audio controls preload="metadata" src="/assets/audio/portable-local-llm-benchmark-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I wanted a local model that could handle routine Hermes work on a small ARM server: 12 GB of memory and two virtual CPUs. The target was not a leaderboard score. I wanted to know whether the model could follow short instructions, return JSON, write a small function, fix a bug, and produce a short plan without exhausting the machine.
 
 The same question comes up whenever hardware changes. A model that feels good on a 16 GB Apple Silicon laptop may behave very differently on a two-core Linux VM. Rather than asking whether a model needs a fixed amount of memory, I wanted a measurement process I could repeat on the next machine.

@@ -10,6 +10,10 @@ categories: [Engineering, DevOps]
 
 # When Ubuntu Builds Fail on libvips but macOS Does Not
 
+<audio controls preload="metadata" src="/assets/audio/libvips-ubuntu-build-mismatch-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 A Rails test suite can work perfectly on a MacBook and fail before the first example runs on an Ubuntu build machine. That sounds like an application bug, but sometimes the application has not even started yet. The failure is in a native dependency loaded during Rails boot.
 
 I recently hit this with a Rails application using Active Storage and `ruby-vips`. The error was essentially:

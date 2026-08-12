@@ -10,6 +10,10 @@ categories: [AI, Engineering]
 
 # Orchestrating Hermes with Local Gemma
 
+<audio controls preload="metadata" src="/assets/audio/orchestrating-hermes-local-gemma-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 A useful coding agent is more than a language model with a terminal attached. It needs a workspace, tools, approval boundaries, a way to delegate, and a recovery plan for the cases where the first attempt stalls.
 
 This post documents my current Hermes setup on an Apple Silicon Mac and the practical lesson from the experiment:
