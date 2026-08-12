@@ -1,3 +1,8 @@
+---
+title: Rails Headers
+mermaid: true
+---
+
 Here are two tech articles based on your request.
 
 ***
