@@ -158,6 +158,8 @@ exclude:
   - package*.json
   - assets/404.html
   - assets/feed.xml
+  - vendor
+  - _site
 
 jekyll-archives:
   enabled: [categories, tags]
