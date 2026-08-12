@@ -1,0 +1,31 @@
+# Post sharing platforms (rendered by _includes/post-sharing.html)
+# Placeholders: TITLE (page title) and URL (absolute post URL) are escaped by the theme.
+platforms:
+  - type: X
+    icon: "fa-brands fa-square-x-twitter"
+    link: "https://twitter.com/intent/tweet?text=TITLE&url=URL"
+
+  - type: Facebook
+    icon: "fa-brands fa-square-facebook"
+    link: "https://www.facebook.com/sharer/sharer.php?title=TITLE&u=URL"
+
+  - type: LinkedIn
+    icon: "fa-brands fa-linkedin"
+    link: "https://www.linkedin.com/sharing/share-offsite/?url=URL"
+
+  - type: Telegram
+    icon: "fa-brands fa-telegram"
+    link: "https://t.me/share/url?url=URL&text=TITLE"
+
+  - type: WhatsApp
+    icon: "fa-brands fa-square-whatsapp"
+    link: "https://api.whatsapp.com/send?text=TITLE+URL"
+
+  - type: Reddit
+    icon: "fa-brands fa-square-reddit"
+    link: "https://www.reddit.com/submit?url=URL&title=TITLE"
+
+  - type: Mastodon
+    icon: "fa-brands fa-mastodon"
+    instances:
+      - "https://mastodon.social"
