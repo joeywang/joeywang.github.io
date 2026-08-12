@@ -38,7 +38,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7' # Chirpy 7.6 requires Ruby ~> 3.1
+          ruby-version: '3.4.10' # Chirpy 7.6 requires Ruby ~> 3.1
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
           cache-version: 0 # Increment this number if you need to re-download cached gems
       - name: Check post front matter
