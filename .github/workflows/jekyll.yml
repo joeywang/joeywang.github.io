@@ -41,6 +41,8 @@ jobs:
           ruby-version: '3.4.7' # Chirpy 7.6 requires Ruby ~> 3.1
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
           cache-version: 0 # Increment this number if you need to re-download cached gems
+      - name: Check post front matter
+        run: bundle exec ruby scripts/check_frontmatter.rb
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
@@ -49,6 +51,10 @@ jobs:
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
+      - name: Check internal links
+        # Internal-only: external link checks are flaky in CI (rate limits, transient 5xx).
+        # enforce-https off: legacy posts contain http:// external links (cosmetic, not mixed-content).
+        run: bundle exec htmlproofer ./_site --disable-external --allow-missing-href --no-enforce-https
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v5

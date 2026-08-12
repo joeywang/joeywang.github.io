@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    # Jekyll/Chirpy upgrades land as tracked PRs so CI catches breakage first.
+    ignore:
+      - dependency-name: "jekyll"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "jekyll-theme-chirpy"
+        update-types: ["version-update:semver-major"]

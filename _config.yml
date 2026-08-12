@@ -70,6 +70,20 @@ pagination:
   per_page: 5
   permalink: '/page:num/'
 
+# Comments via giscus (GitHub Discussions).
+# NOTE: category_id is filled once Discussions is enabled on the repo:
+#   Settings -> General -> Features -> Discussions (category "Announcements").
+comments:
+  provider: giscus
+  giscus:
+    repo: joeywang/joeywang.github.io
+    repo_id: R_kgDOMf4qNQ
+    category: Announcements
+    category_id:
+    mapping: pathname
+    input_position: top
+    reactions_enabled: true
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
