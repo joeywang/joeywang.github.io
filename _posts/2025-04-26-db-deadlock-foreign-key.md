@@ -1,3 +1,10 @@
+---
+title: "Database Deadlocks and Foreign Keys"
+date: 2025-04-26
+description: "Deadlock scenarios around foreign keys in MySQL InnoDB and PostgreSQL, and how to avoid them."
+tags: [database, mysql, postgresql, deadlock]
+---
+
 <audio controls preload="metadata" src="/assets/audio/db-deadlock-foreign-key-summary.ogg">
   Your browser does not support the audio element.
 </audio>

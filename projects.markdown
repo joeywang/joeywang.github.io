@@ -6,14 +6,6 @@ permalink: /projects/
 
 ## Own Projects
 
-### GCSE Tools
-
-- [GCSE Tools](static/gcse-math/)
-
-### Huarongdao
-
-- [Huarongdao](static/huarongdao/)
-
 ### Kubegres: PostgresSQL Operator
 
 - [Kubegres](https://github.com/reallyenglish-global/kubegres)

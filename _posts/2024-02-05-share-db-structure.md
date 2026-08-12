@@ -1,3 +1,10 @@
+---
+title: "Designing Microservices with Proper Data Boundaries: Why Shared Databases Are a Code Smell"
+date: 2024-02-05
+description: "Why shared databases across microservices are a code smell, and how to design proper data boundaries."
+tags: [microservices, database, architecture]
+---
+
 # Designing Microservices with Proper Data Boundaries: Why Shared Databases Are a Code Smell
 
 <audio controls preload="metadata" src="/assets/audio/share-db-structure-summary.ogg">

@@ -1,3 +1,10 @@
+---
+title: "The callback that quietly doubled our database"
+date: 2026-06-28
+description: "A Rails after_save callback silently duplicated database rows — how the symptom appeared, why the obvious suspect wasn't guilty, and the real root cause."
+tags: [rails, activerecord, debugging, database]
+---
+
 # The callback that quietly doubled our database
 
 <audio controls preload="metadata" src="/assets/audio/2026-06-28-the-callback-that-duplicated-a-database-summary.ogg">

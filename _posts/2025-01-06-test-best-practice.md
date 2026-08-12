@@ -43,8 +43,6 @@ Not all tests are equal in value. A great test suite doesn’t test everything �
 
 A visual metaphor for balancing speed, cost, and confidence in your test strategy.
 
-![Testing Pyramid](testing_pyramid_visual.png)
-
 | Test Type     | Speed | Cost  | Value            | Volume     |
 |---------------|-------|-------|------------------|------------|
 | Unit          | ⚡Fast | 💸Low | Local correctness | Many       |
@@ -130,7 +128,6 @@ A smart test strategy:
 ---
 
 ## 📎 Appendix
-- **Visual asset**: `testing_pyramid_visual.png`
 - **Suggested tooling**: Jest, Mocha, RSpec, Pytest, Cypress, Playwright, etc.
 - **Test data generation tips**: Factory pattern, test builders, fixture templates.
 
