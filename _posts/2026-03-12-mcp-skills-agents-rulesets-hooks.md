@@ -546,6 +546,11 @@ Ask the better question:
 
 That is where most of the engineering really is.
 
+## Continue reading
+
+- [How an LLM Coding Agent Actually Builds Software](/posts/llm-agent-building/)
+- [Giving Hermes Durable Codebase Context with GitNexus, LSP, and AGENTS.md](/posts/durable-codebase-context-hermes-gitnexus-lsp/)
+
 ---
 
 *This is a companion article in the **"Software Engineering in the LLM Era"** series. It fits most closely with the architecture and context-engineering entries: [AI Application Architecture: LLM + Memory + Tools](/posts/ai-application-architecture-llm-memory-tools/) and [Context Engineering: The New Software Engineering](/posts/context-engineering-new-software-engineering/).*

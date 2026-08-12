@@ -396,3 +396,8 @@ It builds software by repeatedly doing four things well:
 If you want to build a better local agent, spend less time imagining a magical autonomous coder and more time improving those four steps.
 
 What looks like intelligence is often just good plumbing.
+
+## Continue reading
+
+- [Giving Hermes Durable Codebase Context with GitNexus, LSP, and AGENTS.md](/posts/durable-codebase-context-hermes-gitnexus-lsp/)
+- [The Hard Part of AI PR Review Is Not Reading the Diff](/posts/ai-pr-review-open-code-review/)

@@ -11,6 +11,8 @@ start_here: true
 
 # Orchestrating Hermes with Local Gemma
 
+*Part of the [AI & Agents reading path](/ai-agents/).*
+
 <audio controls preload="metadata" src="/assets/audio/orchestrating-hermes-local-gemma-summary.ogg">
   Your browser does not support the audio element.
 </audio>

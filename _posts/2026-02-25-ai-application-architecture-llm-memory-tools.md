@@ -8,6 +8,8 @@ start_here: true
 series: "Software Engineering in the LLM Era"
 ---
 
+*Part of the [AI & Agents reading path](/ai-agents/).*
+
 ## The Problem
 
 You build a chatbot. It works fine for simple questions. Then real users show up.

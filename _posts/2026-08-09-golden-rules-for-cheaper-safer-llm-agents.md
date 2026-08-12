@@ -11,6 +11,8 @@ start_here: true
 
 # Golden rules for cheaper, safer LLM agents
 
+*Part of the [AI & Agents reading path](/ai-agents/).*
+
 A small thing happened while I was wiring a few Hermes hosts together.
 
 I had a workflow that I could have left as a chat instruction: collect a little status from two worker machines, check that the shared knowledge repo does not contain secrets, commit the update, push it, sync the repo back to the workers, and verify that they received it.
