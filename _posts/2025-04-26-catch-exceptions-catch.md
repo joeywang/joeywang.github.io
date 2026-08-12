@@ -4,6 +4,7 @@ title: "Catch Exceptions, Catch Debugging Nightmares: The Power of
 Pausing on All Exceptions"
 date: 2025-04-26
 tags: [debugging, exceptions, best practices]
+description: "\"Catch-all\" exceptions, typically catch (Exception e) in C#, catch (Throwable t) in Java, or except Exception as e in Python, might seem convenient at first."
 ---
 <audio controls preload="metadata" src="/assets/audio/catch-exceptions-catch-summary.ogg">
   Your browser does not support the audio element.

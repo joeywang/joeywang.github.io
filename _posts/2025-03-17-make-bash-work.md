@@ -16,6 +16,7 @@ tags:
   - oh-my-zsh
   - prezto
   - zmv
+description: "The command line is an indispensable tool for developers, system administrators, and power users. While many are familiar with basic command entry and"
 ---
 
 <audio controls preload="metadata" src="/assets/audio/make-bash-work-summary.ogg">

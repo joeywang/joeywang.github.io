@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Debugging Transaction Deadlocks in Rails Tests: A Case Study"
+description: "This was one of those Rails test failures that wastes hours because it does not fail in a satisfying way."
 date: "2025-03-15"
 categories: rails deadlock queue jobs
 ---

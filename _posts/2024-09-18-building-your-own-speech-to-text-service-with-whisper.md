@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Building Your Own Speech-to-Text Service with Whisper
+description: "In the realm of English language learning, transcribing audio files is a crucial yet time-consuming task. Manual transcription is not only laborious but also"
 date: 2024-09-18 00:00 +0000
 categories: [AI]
 tags: [Ruby]

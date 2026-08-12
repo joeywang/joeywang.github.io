@@ -1,5 +1,6 @@
 ---
 title: 'When Your Crucial Scripts Go Dark: Demystifying "Blocked:Other"$ and the Power of Proxying'
+description: "This is one of those browser problems that looks vague until you have seen it a few times."
 date: 2025-11-06
 tags:
   - web-development

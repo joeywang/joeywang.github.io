@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Whisper: Speech-to-Text"
+description: "![IMAGE ALT TEXT HERE](https://www.youtube.com/watch?v=4pHfPe50x0)"
 date: 2024-08-13 14:41:26 +0100
 categories: [Python]
 tags: AI

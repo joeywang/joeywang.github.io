@@ -1,6 +1,7 @@
 ---
 layout: post
 title: delete_all and destroy_all
+description: "As a backend developer, managing database records is an everyday task. However, it's not uncommon to encounter unexpected behavior when removing records, such"
 date: 2024-07-28 00:00 +0000
 ---
 # Misusing `delete_all` vs. `destroy_all` in Ruby on Rails: A Cautionary Tale

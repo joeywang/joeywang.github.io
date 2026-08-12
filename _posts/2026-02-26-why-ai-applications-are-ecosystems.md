@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Why AI Applications Are Ecosystems, Not Software"
+description: "You launch an AI customer support assistant. In testing it looks great. A week later it starts behaving in ways that feel harder to describe:"
 date: "2026-02-26"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

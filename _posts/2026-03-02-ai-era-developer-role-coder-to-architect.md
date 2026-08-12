@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The AI-Era Developer: From Coder to AI System Architect"
+description: "If you have been a developer for a while, part of your identity probably came from being good at things like:"
 date: "2026-03-02"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

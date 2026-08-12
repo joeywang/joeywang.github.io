@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance"
+description: "Database deadlocks are a classic source of frustration for backend developers, especially when working with complex transactional workloads in systems like"
 date: "2025-01-01"
 categories: database performance integrity
 ---

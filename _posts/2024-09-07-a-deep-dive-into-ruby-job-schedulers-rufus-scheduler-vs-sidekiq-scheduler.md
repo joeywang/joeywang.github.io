@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'A Deep Dive into Ruby Job Schedulers: Rufus-Scheduler vs Sidekiq-Scheduler'
+description: "In the world of Ruby programming, job scheduling is a crucial aspect of many applications. Two popular libraries that handle this task are rufus-scheduler and"
 date: 2024-09-07 00:00 +0000
 categories: [ruby]
 tags: [ruby, job scheduling, rufus-scheduler, sidekiq-scheduler]

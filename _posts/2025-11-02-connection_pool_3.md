@@ -1,5 +1,6 @@
 ---
 title: "Rails 8.1.1 + Ruby 3.4 + connection_pool 3.x: RedisCacheStore boot crash and a safe monkey-patch"
+description: "Upgrading to Ruby 3.4 and pulling in connectionpool 3.x can break a Rails 8.1.1 app at boot with:"
 layout: post
 date: 2025-11-02
 categories: [rails, ruby, debugging, caching]

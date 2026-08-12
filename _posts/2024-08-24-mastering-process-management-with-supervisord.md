@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Mastering Process Management with Supervisord"
+description: "In the dynamic world of system administration, ensuring that your services are running smoothly and reliably is paramount. supervisord is a powerful tool"
 date: 2024-08-24 00:00 +0000
 categories: container
 tags: [container, supervisord]

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "The Mystery of the Premature 502: Untangling GCP's Two Health Check Systems"
+description: "You’ve just deployed a new version of your application to Google Kubernetes Engine (GKE). The CI/CD pipeline glows green, kubectl get pods shows all pods in a"
 date: 2025-06-01
 categories: [gcp kubernetes]
 

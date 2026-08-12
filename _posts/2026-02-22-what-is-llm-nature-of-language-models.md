@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "What is LLM: The Nature of Language Models"
+description: "You can use ChatGPT, Claude, or Cursor every day and still give a fuzzy answer when someone asks, \"What exactly is a large language model?\""
 date: "2026-02-22"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Defending Against DOS Attacks: A Comprehensive Guide'
+description: "In the digital realm, a Denial of Service (DOS) attack is a malicious attempt to disrupt the normal functioning of a targeted server, service, or network by"
 date: 2020-03-04 00:00 +0000
 categories: ['cloud']
 tags: ['security']

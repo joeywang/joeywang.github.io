@@ -1,6 +1,7 @@
 ---
 layout: post
 title: The Configuration Chronicles
+description: "This tale illustrates why configuration is crucial:"
 date: 2024-05-19 00:00 +0000
 categories: [devops, config]
 tags: [devops, config]

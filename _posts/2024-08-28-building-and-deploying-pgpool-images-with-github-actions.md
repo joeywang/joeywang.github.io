@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Building and Deploying PGPool Images with GitHub Actions
+description: "In the ever-evolving landscape of DevOps and CI/CD pipelines, containerization has become a pivotal component for deploying applications. One such application,"
 date: 2024-08-28 00:00 +0000
 categories: [GitHub, Actions]
 tags: [GitHub, Actions]

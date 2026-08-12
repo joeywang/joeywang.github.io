@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Running Multiple Commands Simultaneously in a Container: A Comprehensive Guide"
+description: "When working with containers, you may often need to run multiple processes or commands concurrently. This need becomes particularly apparent in development"
 date: 2024-10-19 00:00 +0000
 tags: [docker, devops]
 ---

@@ -1,10 +1,12 @@
 ---
 layout: post
 title: 'A Tale of Tabs and Tokens: My Journey Solving Authentication Puzzles in Single
+"As the lead developer for \"LearnQuest,\" an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless"
   Page Applications'
 date: 2024-09-28 21:37 +0100
 categories: [Web Development, Authentication]
 tags: [SPA, cookie, token]
+description: "As the lead developer for \"LearnQuest,\" an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless"
 ---
 
 # A Tale of Tabs and Tokens: My Journey Solving Authentication Puzzles in Single Page Applications

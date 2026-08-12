@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Upgrading React from 17 to 18: A Comprehensive Guide'
+description: "React 18 introduces several new features and improvements that enhance performance and developer experience. This guide will walk you through the process of"
 date: 2024-10-05 23:51 +0100
 ---
 # Upgrading React from 17 to 18: A Comprehensive Guide

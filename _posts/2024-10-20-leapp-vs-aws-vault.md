@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Authenticating AWS CLI: A Comparison of Leapp and aws-vault"
+description: "In the world of AWS (Amazon Web Services) development, securely managing credentials for the AWS CLI (Command Line Interface) is crucial. Two popular tools"
 date: 2024-10-20 00:00 +0000
 tags: [aws, devops]
 ---

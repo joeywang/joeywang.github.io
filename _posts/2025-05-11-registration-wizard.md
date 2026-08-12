@@ -4,6 +4,7 @@ title: "The Art of the Vanishing Form: Taming Temporary Data in Rails
 Wizards"
 date: 2025-05-11
 categories: [Rails, Development, Best Practices]
+description: "Multi-step forms, or \"wizards,\" are a common pattern for guiding users through complex data entry processes like registrations, profile setups, or product"
 ---
 
 ## The Art of the Vanishing Form: Taming Temporary Data in Rails Wizards

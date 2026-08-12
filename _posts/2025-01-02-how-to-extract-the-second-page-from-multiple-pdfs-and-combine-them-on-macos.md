@@ -1,6 +1,7 @@
 ---
 layout: post
 title: How to Extract the Second Page From Multiple PDFs and Combine Them on macOS
+description: "How to Extract the Second Page From Multiple PDFs and Combine Them on macOS Managing PDFs on the command line may seem daunting at first, but it can be"
 date: 2025-01-02 21:34 +0000
 ---
 <audio controls preload="metadata" src="/assets/audio/how-to-extract-the-second-page-from-multiple-pdfs-and-combine-them-on-macos-summary.ogg">

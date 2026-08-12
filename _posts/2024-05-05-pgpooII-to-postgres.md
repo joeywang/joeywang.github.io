@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Too many connections already"
+description: "PostgreSQL is my favorite database, and I have experience with Oracle, SQL Server, MySQL, and MongoDB. However, due to performance issues with MongoDB,"
 date:   2024-05-05 14:41:26 +0100
 categories: PostgreSQL
 tags: [postgres, devops]

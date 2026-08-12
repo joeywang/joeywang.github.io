@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "The Zombie Replica: Solving PostgreSQL's 'WAL Segment Removed' Deadlock on Kubernetes"
+description: "If you run PostgreSQL on Kubernetes using an operator like Kubegres, CloudNativePG, or Crunchy Data, you are likely no stranger to the peace of mind automated"
 date:   2026-06-27 00:00:00
 categories: PostgreSQL
 ---

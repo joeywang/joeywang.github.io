@@ -1,5 +1,6 @@
 ---
 title: "Stop Hiding, Start Securing: Moving from Hashed Paths to Identity-Aware GCS"
+description: "In my twenty years of moving data—from physical tapes to local SANs and now the cloud—I’ve seen one \"security\" shortcut pop up more than any other: The Secret"
 date: 2026-03-13
 categories: GCP
 layout: post

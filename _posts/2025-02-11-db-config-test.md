@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Testing Beyond Business Logic: Catching Hidden Configuration Failures in Microservices"
+description: "In microservice architectures, it's easy to assume that two services sharing a database are inherently working together correctly. But that assumption can"
 date: "2025-02-11"
 categories: test microservice DB configuration
 ---

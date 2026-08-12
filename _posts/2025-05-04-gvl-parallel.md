@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Ractor to solve the problem of GVL"
+description: "Ruby's ability to handle multiple tasks simultaneously is a cornerstone of its power and flexibility. However, understanding the nuances of how Ruby achieves"
 date:   2025-05-04 14:41:26 +0100
 pin: true
 categories: Ruby

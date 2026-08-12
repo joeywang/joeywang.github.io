@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Migrating a Rails App from Yarn + Webpacker to pnpm + Vite
+description: "We recently migrated a Rails application from a legacy JavaScript toolchain (yarn + webpacker) to a modern stack (pnpm + vite). This write-up captures the"
 date: 2026-01-21
 categories: Rails
 ---

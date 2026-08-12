@@ -1,5 +1,6 @@
 ---
 title: "Building a Website on a 1C1G Server: Technology Choices, Pros & Cons"
+description: "Once your 1C1G server is optimized, the next question is:"
 layout: post
 date: 2026-01-02T00:00:00+00:00
 draft: false

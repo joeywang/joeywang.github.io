@@ -1,6 +1,6 @@
 ---
-title: "Upgrading PostgreSQL Authentication from MD5 to SCRAM-SHA-256:
-Why It Matters and How to Do It Safely"
+title: "Upgrading PostgreSQL Authentication from MD5 to SCRAM-SHA-256: Why It Matters and How to Do It Safely"
+description: "PostgreSQL has supported MD5 password authentication for over a decade, but MD5 is now considered cryptographically broken and unsafe. Modern database security"
 date: 2025-11-05
 tags: [PostgreSQL, Security, Authentication, SCRAM, MD5, Migration, Pgpool, PgBouncer, Kubernetes, Kubegres]
 ---

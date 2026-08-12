@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Web Workers vs. Service Workers: A Deep Dive into Browser Background Scripts"
+description: "As web applications grow more powerful, the need to perform tasks in the background without freezing the user interface has become critical. Modern browsers"
 date: 2025-05-06
 categories: [Web Workers, Service Workers]
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Rack: The Swiss Army Knife of Ruby Web Servers'
+description: "Rack provides a minimal, modular, and adaptable interface for developing web applications in Ruby. It serves as a standard interface between web servers and"
 date: 2024-09-05 00:00 +0000
 categories: Ruby
 tags: [rack, web]

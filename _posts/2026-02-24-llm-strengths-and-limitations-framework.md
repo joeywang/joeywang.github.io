@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "LLM Strengths and Limitations: A Practical Framework"
+description: "At some point the theory stops being the bottleneck and you run into the real question:"
 date: "2026-02-24"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Generalization: Why AI Looks Smart"
+description: "This is the part that makes people either overrate LLMs or get spooked by them."
 date: "2026-02-23"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

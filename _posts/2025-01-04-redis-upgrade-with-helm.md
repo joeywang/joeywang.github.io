@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "A DevOps Journey: Smoothly Upgrading Bitnami Redis Helm Charts"
+description: "It was 3 AM when Sarah's phone buzzed with alerts. The Redis cluster had crashed during what should have been a routine upgrade. As the team's DevOps engineer,"
 date: "2025-01-04"
 categories: [devops, redis, helm]
 ---

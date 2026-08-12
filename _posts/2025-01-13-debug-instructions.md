@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Comparing Debugging Skills: PHP, Python, and Ruby"
+description: "Debugging is a critical skill for developers, and different programming languages provide different tools and techniques for diagnosing and fixing issues. In"
 date: "2025-01-13"
 categories: debug ruby python php
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Improve your productivity with irbrc
+description: "begin require 'irbtools'"
 date: 2024-06-09 00:00 +0000
 categories: Ruby
 tags: irb

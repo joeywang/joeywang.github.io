@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Transactions, Touches, and Async Rollups in Ruby on Rails"
+description: "In real-world Rails applications, not all data is equal."
 date: 2025-12-20
 tags: [ruby-on-rails, database, architecture, async-jobs, data-consistency]
 ---

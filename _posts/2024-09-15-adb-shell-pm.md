@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Mastering Android Package Management with ADB and pm
+description: "Ever felt like you needed superhero powers to manage apps on your Android device? Well, grab your cape because we're about to turn you into an Android package"
 date: 2024-09-15 00:00 +0000
 categories: Android
 tags: [adb, package management, android]

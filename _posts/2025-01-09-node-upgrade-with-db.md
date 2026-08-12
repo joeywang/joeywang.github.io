@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Kubernetes Node Upgrade Procedure: Best Practices and Failover Mechanisms"
+description: "When managing a Kubernetes cluster, node upgrades are an inevitable part of the maintenance cycle. Whether you're applying security patches, upgrading the"
 date: "2025-01-09"
 categories: k8s node upgrade database
 ---

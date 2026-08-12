@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Auditing in Database Applications: Ensuring Data Integrity and Compliance'
+description: "In today's data-driven world, maintaining the integrity and security of information stored in databases is paramount. One crucial aspect of this is auditing -"
 date: '2021-01-01 00:00 +0000'
 categories: ['audit']
 tags: ['rails']

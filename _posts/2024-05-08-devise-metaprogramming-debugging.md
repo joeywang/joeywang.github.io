@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Devise Metaprogramming: A Deep Dive into current_user"
+description: "Devise is a flexible authentication solution for Rails based on Warden. It's a full-featured authentication framework that handles everything from encrypting"
 date:   2024-05-08 14:41:26 +0100
 categories: [Rails]
 tags: [devise, metaprogramming, rails]

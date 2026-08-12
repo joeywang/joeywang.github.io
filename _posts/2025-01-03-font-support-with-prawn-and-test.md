@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Font Support with Prawn and test 2025-01-03
+description: "When working with PDF generation in Ruby using Prawn and testing with PDF::Inspector, developers often encounter challenges with non-ASCII character support,"
 date: 2025-01-03 14:58 +0000
 ---
 # Debugging Font Support Issues with Prawn and PDF::Inspector in Ruby

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Pgpool-II: Middleware for PostgreSQL"
+description: "Pgpool-II is a middleware solution that operates between PostgreSQL servers and a PostgreSQL database client. It is particularly useful for managing scenarios"
 date:   2024-04-01 14:41:26 +0100
 categories: PostgreSQL
 ---

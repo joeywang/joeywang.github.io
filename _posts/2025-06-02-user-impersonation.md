@@ -3,6 +3,7 @@ layout: post
 title: "Stepping Into Another User's Shoes: User Impersonation in Rails"
 date: 2025-06-02
 tags: [Rails, User Impersonation, Pretender Gem, Web Development]
+description: "Hey everyone! Today, I wanted to share a really useful pattern I've come across in Rails development, especially when you're building applications that serve"
 ---
 Hey everyone\! Today, I wanted to share a really useful pattern I've come across in Rails development, especially when you're building applications that serve different types of users. We're going to talk about "user impersonation."
 

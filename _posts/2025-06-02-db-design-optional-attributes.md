@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The Database Designer's Mind: From Vague Requirement to Robust Schema"
+description: "A new feature request arrives in your inbox. It seems simple enough: \"When a student fails a course, we need to record the reason why.\""
 date: 2025-06-02T00:00:00-07:00
 draft: false
 tags: ["Database Design", "SQL", "PostgreSQL", "System Architecture", "Data Modeling", "Best Practices", "Tech Article"]

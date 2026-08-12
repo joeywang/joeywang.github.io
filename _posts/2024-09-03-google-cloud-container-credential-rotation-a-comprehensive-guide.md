@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Google Cloud Container Credential Rotation: A Comprehensive Guide'
+description: "In the dynamic world of cloud security, regularly managing and rotating credentials is crucial for maintaining the integrity and security of your Kubernetes"
 date: 2024-09-03 09:37 +0100
 categories: devops
 tags: [gcp, kubernetes, credential]

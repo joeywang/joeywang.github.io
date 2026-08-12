@@ -1,6 +1,7 @@
 ---
 layout: post
 title: How to Debug Docker Image Builds
+description: "This guide covers various techniques to debug Docker image builds, from basic to advanced approaches."
 date: 2024-10-21 00:00 +0000
 tags: [debug, docker, image, build]
 ---

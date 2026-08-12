@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Optimizing Android Builds in GitHub Actions: Environments, Caching, and Best Practices"
+description: "Building Android applications in GitHub Actions can be a resource-intensive process, often taking several minutes to complete. However, with the right"
 date: 2025-08-11
 categories: [Android, CI/CD]
 tags: [Android, Github, Actions, CI/CD, Build Optimization]

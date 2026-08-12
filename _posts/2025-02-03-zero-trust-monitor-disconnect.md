@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Monitoring Cloudflare Zero Trust & WARP on macOS
+description: "This article explores how to detect and respond to Cloudflare WARP and Zero Trust activity on a macOS system — especially useful when you're off-duty but find"
 date: "2025-02-03"
 categories: security cloudflare zero-trust macos
 ---

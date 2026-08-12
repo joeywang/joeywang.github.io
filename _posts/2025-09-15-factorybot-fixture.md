@@ -1,5 +1,6 @@
 ---
 title: "The Hidden Cost of Setup: Why Using Business Logic for Test Data is a Rails Antipattern"
+description: "Faced with complex model relationships and validations, many Ruby on Rails developers default to using their application's services or commands (the business"
 date: 2025-09-15
 tags: [rails]
 categories: [rails]

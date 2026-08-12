@@ -1,8 +1,10 @@
 ---
 layout: post
 title: 'Mastering Linux Kill Signals: Graceful Shutdown in Containerized Worker Environments
+description: "Linux kill signals are a crucial mechanism for process communication and management. These signals provide a way to send specific instructions to processes,"
   2024-11-24'
 date: 2024-11-26 22:54 +0000
+description: "Linux kill signals are a crucial mechanism for process communication and management. These signals provide a way to send specific instructions to processes,"
 ---
 # Mastering Linux Kill Signals: Graceful Shutdown in Containerized Worker Environments
 

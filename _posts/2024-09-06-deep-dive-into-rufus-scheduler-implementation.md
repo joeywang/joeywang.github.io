@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Deep Dive into Rufus Scheduler Implementation
+description: "In the world of Ruby programming, job scheduling is a crucial aspect of many applications. Let's take a closer look at one of the most popular"
 date: 2024-09-06 00:00 +0000
 ---
 # Deep Dive into Rufus Scheduler Implementation

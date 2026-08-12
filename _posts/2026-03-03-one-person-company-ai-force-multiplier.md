@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The One-Person Company: AI as Force Multiplier"
+description: "For decades, building a software company required a team:"
 date: "2026-03-03"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

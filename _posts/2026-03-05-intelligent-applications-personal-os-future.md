@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Intelligent Applications & Personal OS: The Future of Software"
+description: "You've used software for decades. It all works the same way:"
 date: "2026-03-05"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

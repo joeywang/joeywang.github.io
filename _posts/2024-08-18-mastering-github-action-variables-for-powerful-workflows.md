@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Mastering GitHub Action Variables for Powerful Workflows
+description: "GitHub Actions provide an extensive set of features to automate your software development workflows. One of the most powerful aspects of GitHub Actions is the"
 date: 2024-08-18 00:00 +0000
 categories: [GitHub, Actions]
 tags: [GitHub, Actions, Variables]

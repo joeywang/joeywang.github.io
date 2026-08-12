@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Mastering AWS Access: Securely Managing Credentials with aws-vault and 1Password"
+description: "In the world of cloud computing, security is paramount. For developers and operations teams working with Amazon Web Services (AWS), managing access credentials"
 date:   2025-09-13 10:00:00 -0400
 categories: aws security
 tags: [aws, security, aws-vault, 1Password]

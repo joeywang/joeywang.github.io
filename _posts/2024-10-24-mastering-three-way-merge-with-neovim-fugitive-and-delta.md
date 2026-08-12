@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Mastering Three-Way Merge with Neovim, Fugitive, and Delta'
+description: "Three-way merging is a common challenge in Git workflows. This guide will show you how to set up and use a powerful combination of tools - Neovim/Vim with"
 date: 2024-10-24 00:00 +0000
 tags: [vim, fugitive, delta, merge, three-way-merge, neovim]
 ---

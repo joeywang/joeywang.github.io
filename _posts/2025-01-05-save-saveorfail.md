@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Laravel Model: Understanding `save()` vs. `saveOrFail()`"
+description: "When working with Laravel Eloquent models, you often need to persist data into the database. Laravel provides two commonly used methods for this: save() and"
 date: "2025-01-05"
 categories: php model validation
 ---

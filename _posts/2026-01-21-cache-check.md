@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "The Invisible Bottleneck: How to Audit Your USB-C Cables Using
-macOS Terminal"
+title: "The Invisible Bottleneck: How to Audit Your USB-C Cables Using macOS Terminal"
+description: "We’ve all been there: you plug your MacBook into a premium-looking braided cable, but the battery percentage barely moves. In the world of USB-C, looks are"
 date: 2026-01-21
 categories: [macOS, USB-C, Power Delivery, Terminal]
 tags: [macOS, USB-C, Power Delivery, Terminal, Scripting]

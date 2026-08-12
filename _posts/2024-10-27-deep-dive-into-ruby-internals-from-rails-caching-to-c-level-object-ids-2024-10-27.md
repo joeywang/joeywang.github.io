@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Deep Dive into Ruby Internals: From Rails Caching to C-Level Object IDs 2024-10-27'
+description: "When debugging Rails applications, sometimes we stumble upon fascinating aspects of Ruby's internal workings. This article shares a journey that started with a"
 date: 2024-10-27 12:13 +0000
 tags: [ruby rails rdbg]
 ---

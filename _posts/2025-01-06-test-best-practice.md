@@ -1,6 +1,7 @@
 ---
 layout: post
 title: " 🧪 Designing Effective Software Tests: A Practical Guide"
+description: "In the world of software development, testing is not just a safety net — it's a foundation of quality, confidence, and maintainability. But how much testing is"
 date: "2025-01-06"
 categories: [test, develop, TDD]
 ---

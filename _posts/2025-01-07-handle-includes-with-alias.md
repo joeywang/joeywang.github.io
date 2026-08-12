@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Handling Ordering in Rails with includes and Aliased Joins
+description: "When working with ActiveRecord in Rails, it's common to use includes to eager-load associations and prevent N+1 queries. However, issues arise when ordering by"
 date: "2025-01-07"
 categories: includes eager-loading rails activerecord
 ---

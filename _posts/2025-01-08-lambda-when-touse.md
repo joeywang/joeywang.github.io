@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "When to Use AWS Lambda for API Endpoints — A Practical Decision Guide"
+description: "When building a new system or endpoint, one of the first questions that often comes up is: \"Should I use AWS Lambda or go with a container/server-based"
 date: "2025-01-08"
 categories: security otp authentication
 ---

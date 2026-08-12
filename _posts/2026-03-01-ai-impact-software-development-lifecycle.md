@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "AI's Impact on the Software Development Lifecycle"
+description: "If you have been building software for a while, the basic loop is familiar:"
 date: "2026-03-01"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

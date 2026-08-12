@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Migrating OTP Services from Google Authenticator to Other Providers"
+description: "One-time password (OTP) authentication is widely used to enhance security in online services. If you're looking to migrate your OTP service from Google"
 date: "2025-01-01"
 categories: security otp authentication
 ---

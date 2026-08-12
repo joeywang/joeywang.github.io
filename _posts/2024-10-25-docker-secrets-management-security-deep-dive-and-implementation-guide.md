@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Docker Secrets Management: Security Deep Dive and Implementation Guide'
+description: "Docker containerization has transformed how we build and deploy applications, but managing secrets securely remains a critical challenge. This deep dive"
 date: 2024-10-25 00:00 +0000
 tags: [Docker, Security, DevOps]
 ---

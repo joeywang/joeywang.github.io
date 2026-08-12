@@ -4,6 +4,7 @@ title: "Setting Up OpenSSH on WSL and Enabling Remote Access (Windows
 10)"
 date: 2025-11-01
 tags: [wsl, ssh, openssh, windows10, remote-access]
+description: "Running an SSH server inside WSL is a clean way to manage your Linux environment from Windows or other machines on your network. The main work is:"
 ---
 # Setting Up OpenSSH on WSL and Enabling Remote Access (Windows 10)
 

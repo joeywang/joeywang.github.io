@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Navigating Network Bindings: Understanding `localhost`, `127.0.0.1`, `0.0.0.0`, and `*`"
+description: "When you run multiple services on your local machine that need to listen on network ports, understanding network binding addresses is crucial for avoiding"
 date:   2025-09-14 14:41:26 +0100
 categories: MySQL
 ---

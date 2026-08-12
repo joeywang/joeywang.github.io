@@ -1,6 +1,7 @@
 ---
 layout: post
 title: NETSCREEN 5GT密码破解方法
+description: "本文将分享个人经验，介绍NETSCREEN 5GT密码的破解方法。请注意，以下方法将设备恢复至出厂设置，原有配置将被删除。"
 date: 2006-01-04 00:00 +0000
 ---
 以下是关于NETSCREEN 5GT密码破解方法的Markdown格式文章：

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "How to Debug and Discover an IP Camera Live Stream (RTSP) — A
-Practical Guide"
+title: "How to Debug and Discover an IP Camera Live Stream (RTSP) — A Practical Guide"
+description: "Many IP cameras advertise “RTSP support”, yet finding a working live stream URL is often undocumented, inconsistent, or obscured by vendor UI. This article"
 date: 2025-12-04
 tags:
   - ip-camera

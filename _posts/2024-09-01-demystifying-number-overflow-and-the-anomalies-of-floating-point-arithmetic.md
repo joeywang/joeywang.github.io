@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Demystifying Number Overflow and the Anomalies of Floating-Point Arithmetic
+description: "In the world of computing, numbers are represented and manipulated in ways that may not always align with our intuitive understanding of mathematics. Two"
 date: 2024-09-01 00:00 +0000
 categories: [overflow, float]
 tags: [ruby, javascript, overflow]

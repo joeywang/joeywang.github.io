@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "🕵️‍♂️ Monitoring Cloudflare Zero Trust (WARP) and Disconnecting on macOS"
+description: "Cloudflare Zero Trust is great for enforcing corporate security policies, but if you're using a company-managed device, it can be frustrating when the WARP"
 date: "2025-02-02"
 categories: security cloudflare zero-trust macos
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: count file size from json
+description: "set -o nounset # Treat unset variables as an error"
 date: 2014-01-01 00:00 +0000
 categories: Bash
 tags: script

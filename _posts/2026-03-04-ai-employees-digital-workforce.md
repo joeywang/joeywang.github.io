@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "AI Employees: Building Your Digital Workforce"
+description: "For all of business history, you had two options:"
 date: "2026-03-04"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

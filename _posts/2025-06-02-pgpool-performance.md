@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Advanced Troubleshooting for pgpool Connection Termination in Kubernetes"
+description: "Intermittent connection termination is a frequent and frustrating issue when managing PostgreSQL with pgpool in a Kubernetes environment. This article provides"
 date:   2025-06-02T00:00:00-07:00
 categories: [Kubernetes, pgpool, Troubleshooting]
 ---

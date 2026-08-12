@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Complete Guide to Android Development: Build and Debug Tips 2024-11-10'
+description: "This comprehensive guide covers essential tips and techniques for Android development, including Java environment setup, USB debugging, wireless debugging, and"
 date: 2024-11-12 22:26 +0000
 categories: Android
 tags: [android, build, debug]

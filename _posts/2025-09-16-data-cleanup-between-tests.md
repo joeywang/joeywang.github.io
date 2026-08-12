@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "The Ghost in the Test Suite: A Detective Story on Rails Cleanup"
+description: "It started with a whisper of a bug: a flaky test. Not a test that failed all the time, but one that only failed when run alongside a specific Rake task spec,"
 date:   2025-09-16
 categories: Rails
 ---

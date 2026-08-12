@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Responsive Images: Serving the Right Size for Every Screen"
+description: "In today's multi-device world, delivering a great user experience means ensuring your website looks and performs flawlessly on everything from a tiny"
 date: 2025-06-17
 tags: [web development, responsive design, images, srcset, picture
 element, jQuery Foundation Interchange]

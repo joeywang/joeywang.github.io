@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Register Function
+description: "This function allows the organization to specify what information is necessary for users to provide during the free trial registration. The organization can"
 date: 2006-01-02 00:00 +0000
 ---
 # Function Definition

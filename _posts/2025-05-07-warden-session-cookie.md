@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Cracking the Code: How Rails, Warden, and Cookies Handle Your Session"
+description: "When a user logs into a Rails app, they magically stay logged in across multiple requests. It feels simple, but beneath the surface is a coordinated dance"
 date:   2025-05-07 14:41:26 +0100
 categories: Rails
 ---

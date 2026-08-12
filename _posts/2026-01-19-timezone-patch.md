@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Time Zone Patch: Solving the Asia/Rangoon Postgres Error in Alpine Linux"
+description: "If you recently updated your Docker images and were greeted by a PG::InvalidParameterValue: ERROR: time zone \"Asia/Rangoon\" not recognized, you aren't alone."
 date: 2026-01-19
 categories: ["Alpine Linux", "Docker", "Postgres"]
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: common commands for MySQL
+description: "SHOW DATABASES;"
 date: 2024-08-23 00:00 +0000
 ---
 

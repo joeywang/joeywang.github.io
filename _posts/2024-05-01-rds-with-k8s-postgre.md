@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Scaling PostgreSQL on Kubernetes with Kubegres"
+description: "As a small company or startup, managing a relational database like PostgreSQL can be challenging, especially when it comes to ensuring high availability,"
 date:   2024-05-01 14:41:26 +0100
 categories: PostgreSQL
 pin: true

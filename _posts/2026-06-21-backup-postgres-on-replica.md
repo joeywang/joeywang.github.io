@@ -1,5 +1,6 @@
 ---
 title: "The Replica Backup Trap: Why Your PostgreSQL Backups Are Mysteriously Failing"
+description: "It’s 3:00 AM. Your automated cron job kicks off a pgdump on your database read replica. You chose to run backups on the replica for a perfectly logical reason:"
 date: 2026-06-21
 categories: postgresql
 tags: [postgresql, backup, recovery]

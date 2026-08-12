@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Debugging Dynamic Library Conflicts in Ruby: The Nokogiri libxml2 Mystery"
+description: "Picture this: your Rails tests pass perfectly on your M1 MacBook, but fail mysteriously in your Docker container with cryptic XPath syntax errors:"
 date: "2025-04-22"
 categories: [libxml2, ruby, rubygems]
 tags: [nokogiri, ruby, rubygems]

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: How to Configure OpenVPN to Allow Access to Specific IPs Only
+description: "OpenVPN is a popular open-source VPN solution that provides secure point-to-point or site-to-site connections. While it's often used to provide full network"
 date: 2024-10-08 00:00 +0000
 categories: OpenVPN
 tags: [openvpn, devops, firewall]

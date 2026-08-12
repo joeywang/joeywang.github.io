@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The Fork in the Road: Modeling Data Relationships with PostgreSQL JSONB vs. Traditional Tables"
+description: "As developers and architects, we often stand at a crossroads. Down one path lies the well-trodden road of relational purity: structured, secure, and governed"
 date: 2025-05-03T00:00:00-07:00
 
 ---

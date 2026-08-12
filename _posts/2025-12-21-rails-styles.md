@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Rails Style Guide: Transactions, Touch, and Async Derived Data"
+description: "This document defines official patterns and anti-patterns for handling transactions, derived data, touch, and async updates in Rails services at Reallyenglish."
 date: 2025-12-21
 draft: false
 categories:

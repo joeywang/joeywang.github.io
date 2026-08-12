@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Migrating from Rails UJS to Turbo: The Hidden Pitfalls That Broke Our Production App"
+description: "Our Rails application had been running smoothly for years with Turbolinks and Rails UJS handling AJAX form submissions. When we upgraded to Rails 7 and Turbo"
 date:  2026-06-01
 categories: Rails
 ---

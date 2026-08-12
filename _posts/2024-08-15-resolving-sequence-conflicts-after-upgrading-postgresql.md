@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Resolving Sequence Conflicts After Upgrading PostgreSQL
+description: "Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise"
 date: 2024-08-15 14:01 +0100
 description:
 image:
@@ -8,6 +9,7 @@ category:
 tags:
 published: false
 sitemap: false
+description: "Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise"
 ---
 # Title: Resolving Sequence Conflicts After Upgrading PostgreSQL
 

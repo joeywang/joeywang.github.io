@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance"
+description: "Concurrency issues in web applications, especially when dealing with race conditions, are common when multiple users or processes try to perform the same"
 title: "Ensuring Idempotency with Semaphore Locks in Rails: Handling Concurrent Requests Efficiently"
 date: "2025-04-04"
 categories: database performance integrity

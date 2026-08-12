@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Redis in Ruby on Rails: Cache Server and Job Queue"
+description: "Redis is a versatile tool that can be utilized in various ways within Ruby on Rails projects. The two primary uses are as a cache server and as a queue for"
 date:   2024-05-03 14:41:26 +0100
 categories: [Rails, devops]
 ---

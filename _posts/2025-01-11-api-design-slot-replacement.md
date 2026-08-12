@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "🛠️  API Design for Time Slot Replacement: Principles and Trade-offs"
+description: "In modern booking systems, time management is a critical aspect. In scenarios like online tutoring platforms, tutors may occasionally need to replace their"
 date: "2025-01-10"
 categories: api design refactoring
 ---

@@ -1,5 +1,6 @@
 ---
 title: "Browsing Through a Remote SSH Server Without DNS Leaks"
+description: "Even when your web traffic is encrypted (HTTPS), DNS requests can reveal which domains you’re visiting. On managed networks (office Wi-Fi, corporate VPN,"
 date: 2025-12-03
 tags:
     - security

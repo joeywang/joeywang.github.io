@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Mastering Code Reviews: Best Practices and Anti-Patterns"
+description: "As an experienced software developer, I've participated in countless code reviews. Effective code reviews are crucial—they not only maintain code quality but"
 date: 2025-03-30
 tags: [code review, best practices, anti-patterns]
 ---

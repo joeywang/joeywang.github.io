@@ -1,6 +1,7 @@
 ---
 layout: post
 title: UNICON安装及中文支持指南
+description: "UNICON是一个用于Linux系统的CJK（中文/日文/韩文）控制台显示系统。请注意，UNICON不支持UTF-8。"
 date: 2006-01-03 00:00 +0000
 ---
 # UNICON安装及中文支持指南

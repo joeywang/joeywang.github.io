@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Redis Sentinel Mode Overview"
+description: "Redis Sentinel is a high-availability solution for Redis. It operates by deploying a distributed system of Sentinel instances that monitor the health and"
 date:   2024-07-10 14:41:26 +0100
 categories: Redis
 ---

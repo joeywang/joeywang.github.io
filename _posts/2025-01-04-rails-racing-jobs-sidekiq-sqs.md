@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "From Rails to Laravel: A Story of Conquering Racing Updates and “Last Update Wins”"
+description: "I still remember the day I first stumbled upon a peculiar bug in my Rails application. My team and I had built a service to handle a flood of status changes"
 categories: Rails
 tags: [Rails, Laravel, Sidekiq, SQS]
 date: "2025-01-03 21:34 +0000"

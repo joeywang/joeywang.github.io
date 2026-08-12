@@ -5,6 +5,7 @@ Syncing"
 date: 2025-05-29
 tags: [docker, performance, development, macOS, Windows]
 
+description: "Docker makes it easy to develop in isolated environments, but file syncing between host and container can introduce painful slowness — especially on macOS and"
 ---
 
 <audio controls preload="metadata" src="/assets/audio/docker-sync-summary.ogg">

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Taming the Cross-Origin Beast: Mastering Proxy Options in Your React App"
+description: "In the modern web development landscape, it's common for your React frontend to communicate with a backend API running on a different domain or port. While"
 date: "2025-02-09"
 categories: nodejs react proxy
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Passing Sass Variables When Building Web Apps
+description: "In our project, scrom-wrapper is using the training-components library. We want to implement a flexible theming system by changing the primary color in"
 date: 2024-10-10 00:00 +0000
 ---
 

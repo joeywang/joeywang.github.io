@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Seamless Logical Upgrades of PostgreSQL with Zero Downtime"
+description: "In the world of database management, ensuring zero downtime during upgrades is crucial for maintaining the availability and integrity of services. Logical"
 date: 2024-07-22 00:00 +0000
 pin: true
 categories: PostgreSQL

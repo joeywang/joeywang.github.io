@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Avoiding Duplicate Record Errors in Rails: Handling Concurrent Requests Gracefully"
+description: "Handling duplicate record errors in a Ruby on Rails application is a common challenge, especially when dealing with concurrent client requests. This article"
 date: "2025-03-02"
 categories: rails duplicate unique
 ---

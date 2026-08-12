@@ -1,5 +1,6 @@
 ---
 title: "Redis Sentinel Split-Brain: A Midnight Nightmare"
+description: "Redis is a powerful in-memory data structure store, often used as a database, cache, and message broker. However, when it comes to high"
 date:   2025-03-28 14:41:26 +0100
 categories: [Redis, Kubernetes]
 tags: [Redis, Kubernetes, Sentinel, Split-Brain]

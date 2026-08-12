@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Managing Configurations and Secrets in Rails: A Comprehensive Guide"
+description: "In the world of web development, properly managing configurations and secrets is crucial for maintaining security and ensuring smooth operations. Rails, being"
 date:   2024-05-21 14:41:26 +0100
 categories: Rails
 ---

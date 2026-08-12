@@ -1,5 +1,6 @@
 ---
 title: "Zero-Downtime Kubernetes Upgrades on GCP (Including PostgreSQL)"
+description: "Upgrading Kubernetes in production is one of those tasks that looks easy on paper and terrifying in reality—especially when databases are running inside the"
 date: 2026-01-01
 tags:
     - gcp

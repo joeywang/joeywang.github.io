@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The Phantom Postgres Ghost: Tracking Down \"Conflict with Recovery\" Errors on Read Replicas"
+description: "If you are running a modern application with a PostgreSQL database, there is a high chance you eventually split your traffic. You kept your writes on the"
 date:   2026-06-20 14:41:26 +0100
 categories: Postgres
 tags: Postgres

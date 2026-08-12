@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Ruby on Rails Session Management Options"
+description: "Ruby on Rails offers various methods for managing sessions, each with its own set of advantages and disadvantages. Let's explore the primary options available."
 date:   2024-06-01 14:41:26 +0100
 categories: Rails
 ---

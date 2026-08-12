@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "From CI Nightmares to Reliable Builds: A Developer's Guide to Retry Mechanisms"
+description: "It was 3 AM when Sarah's phone buzzed with a notification: \"CI Pipeline Failed\". Again. The production hotfix that needed to go out first thing in the morning"
 date: 2024-11-05 00:26 +0000
 tags: [development, ci]
 ---

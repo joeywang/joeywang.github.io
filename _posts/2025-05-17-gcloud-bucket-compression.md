@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Boost Your Website Speed: Enabling Gzip/Brotli Compression with Google Cloud CDN"
+description: "In today's fast-paced digital world, website speed isn't just a nicety – it's a necessity. Faster loading times lead to better user experience, improved SEO"
 date: 2022-05-17
 tags: ["google cloud", "cdn", "compression"]
 ---

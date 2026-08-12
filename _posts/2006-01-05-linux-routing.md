@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Linux下实现路由功能
+description: "路由是网络通信中非常关键的功能，Linux系统提供了强大的路由功能，可以分为静态路由和动态路由两种。"
 date: 2006-01-05 00:00 +0000
 ---
 以下是关于Linux下实现路由功能的Markdown格式文档：

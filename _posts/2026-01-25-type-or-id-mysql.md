@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "To `Type` or to `ID`: Mastering Polymorphic Indexing in MySQL & Rails"
+description: "When building polymorphic associations in Ruby on Rails, the database schema usually looks straightforward: a relationid (Integer) and a relationtype (String)."
 date: 2026-01-25
 categories: [database, mysql, rails, performance]
 tags: [polymorphic associations, indexing strategies, performance

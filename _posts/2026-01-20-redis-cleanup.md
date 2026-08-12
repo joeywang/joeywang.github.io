@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Redis Cleanup & Memory Management in Kubernetes"
+description: "This article is a practical, production-tested guide to keeping Redis healthy in a Kubernetes (K8s) environment. It focuses on memory control, cleanup"
 date: 2026-01-20 10:00:00 -0500
 categories: redis kubernetes sidekiq
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: How to debug React Applications
+description: "Debugging React applications can be a complex task, but with the right tools and techniques, you can streamline the process and quickly identify and fix"
 date: 2024-09-02 00:00 +0000
 categories: [Debugging]
 tags: [debugging, react, frontend]

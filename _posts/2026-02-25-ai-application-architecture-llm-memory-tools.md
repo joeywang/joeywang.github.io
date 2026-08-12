@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "AI Application Architecture: LLM + Memory + Tools"
+description: "You build a chatbot. It works fine for simple questions. Then real users show up."
 date: "2026-02-25"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

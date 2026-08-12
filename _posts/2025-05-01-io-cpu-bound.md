@@ -7,6 +7,7 @@ categories:
   - performance
   - optimization
   - profiling
+description: "Modern web services and backend endpoints often perform a variety of tasks – from fetching data from files or databases to executing complex business logic."
 ---
 
 ## Is Your Endpoint Waiting or Working? Identifying I/O vs. CPU Bottlenecks

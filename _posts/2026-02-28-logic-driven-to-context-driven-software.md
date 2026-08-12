@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "From Logic-Driven to Context-Driven Software"
+description: "If you have been an engineer for long enough, you probably built your instincts around things like:"
 date: "2026-02-28"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

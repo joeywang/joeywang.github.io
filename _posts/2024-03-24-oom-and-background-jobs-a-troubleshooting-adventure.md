@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'OOM and Background Jobs: A Troubleshooting Adventure'
+description: "A few months ago, we received an urgent complaint from a customer: a notification email had failed to reach him on time. As the assigned detective of the"
 date: 2024-03-24 00:00 +0000
 categories: OOM
 tags: [oom, troubleshooting]

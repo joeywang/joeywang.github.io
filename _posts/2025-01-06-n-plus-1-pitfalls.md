@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Avoiding N+1 Queries in Rails: Common Pitfalls and Best Practices"
+description: "One of the most common performance pitfalls in Ruby on Rails applications is the N+1 query problem. ActiveRecord provides powerful tools like includes,"
 date: "2025-01-06"
 categories: rails optimization activerecord
 ---

@@ -1,9 +1,11 @@
 ---
 layout: post
 title: 'Creating Practical Kubernetes Shell Aliases and Functions: A Developer''s
+"When working with Kubernetes, developers often find themselves typing the same commands repeatedly. While kubectl is a powerful tool, its verbosity can slow"
   Guide'
 date: 2024-10-26 00:00 +0000
 tags: [kubernetes, shell, aliases, functions]
+description: "When working with Kubernetes, developers often find themselves typing the same commands repeatedly. While kubectl is a powerful tool, its verbosity can slow"
 ---
 # Creating Practical Kubernetes Shell Aliases and Functions: A Developer's Guide
 

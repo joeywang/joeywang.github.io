@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Migrating from Kaminari to will_paginate in Rails: A Complete Guide"
+description: "Pagination is a crucial feature in web applications, helping manage large datasets by breaking them into manageable chunks. While both Kaminari and"
 date: 2024-10-20 10:00 +0000
 tags: ["kaminari", "will_paginate", "rails", "pagination"]
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Soft Delete Solutions: Discard or ActAsParanoid?'
+description: "Soft delete, also known as logical delete, is a data management strategy that allows for the preservation of data in a database while marking it as \"deleted\""
 date: 2024-02-04 00:00 +0000
 ---
 # Soft Delete Solutions: Discard or ActAsParanoid?

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Enabling Local HTTPS for Development and Debugging"
+description: "Developing and debugging web applications often requires mirroring production environments as closely as possible. A crucial aspect of this parity is using"
 date:   2025-07-01 14:41:26 +0100
 categories: Rails
 ---

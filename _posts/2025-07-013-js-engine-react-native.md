@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "JavaScript Engines: The Heart of Your React Native App"
+description: "At the core of every React Native application lies a JavaScript engine. This crucial component is responsible for executing your JavaScript code, translating"
 date: 2025-07-13
 tags: ["react-native", "javascript", "hermes", "jsc"]
 categories: ["react-native"]

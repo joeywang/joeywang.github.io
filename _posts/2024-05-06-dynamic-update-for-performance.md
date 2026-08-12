@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Dynamic updates to improve performance"
+description: "Improving the performance of a web application that handles a large number of lessons with dynamic information can be challenging. Here are some strategies and"
 date:   2024-05-06 14:41:26 +0100
 categories: Rails
 tags: [postgres, rails]

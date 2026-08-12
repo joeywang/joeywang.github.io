@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Round Is Not Always What You Expect
+description: "Rounding numbers is a common task in programming, but it's not always as straightforward as it seems. Different programming languages handle rounding in"
 date: 2024-08-22 10:58 +0100
 categories: [math, programming, rounding]
 tags: ruby

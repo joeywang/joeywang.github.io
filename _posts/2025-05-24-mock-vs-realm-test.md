@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Mock vs Real: The Art of Testing in Rails"
+description: "Alright, let's be honest. Building software isn't just about cranking out features; it's about making sure the damn thing works. And that, my friends, brings"
 date: 2025-05-24
 categories: [testing, rails, software development]
 ---

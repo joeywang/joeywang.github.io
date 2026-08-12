@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Understanding and Debugging Anonymous Modules in Ruby: A Deep Dive with Kaminari"
+description: "When working with Rails caching, you might encounter the cryptic error: TypeError: can't dump anonymous module. This article explores what anonymous modules"
 date: 2024-10-17 00:00 +0000
 tags: [kaminari, anonymous, modules, serialization, debugging]
 ---

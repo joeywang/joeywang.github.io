@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Monkey-Patching: A Tale of Two Languages"
+description: "Monkey-patching—also known as runtime method override or class reopening—is a technique that allows modifying or augmenting existing classes or modules at"
 date: 2025-03-03 14:41:26 +0100
 categories: [PHP, Ruby]
 ---

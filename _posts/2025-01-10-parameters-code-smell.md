@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "🚫 5 Parameter-Related Code Smells and How to Refactor Them"
+description: "In software development, the way you design and pass parameters can significantly impact code readability, maintainability, and robustness. Poor parameter"
 date: "2025-01-10"
 categories: code smell refactoring
 ---

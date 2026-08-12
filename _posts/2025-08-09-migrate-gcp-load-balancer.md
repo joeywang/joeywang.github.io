@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Migrate GCP Classic Load Balancer
+description: "The Global External Application Load Balancer is the latest evolution of Google Cloud's Layer 7 load balancing service. It provides a modern control plane with"
 permalink: /migrate-gcp-classic-load-balancer/
 date: 2025-08-09
 categories: [ gcp ]

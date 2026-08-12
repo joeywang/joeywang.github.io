@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Incus vs. Docker: The Next-Generation Guide to System Containers"
+description: "In the world of containerization, Docker has long been the household name. However, for developers who need more than just a place to run a single process,"
 date:   2026-04-06 10:00:00 -0400
 categories: incus docker
 ---

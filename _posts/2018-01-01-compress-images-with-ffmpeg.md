@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Compress Images with FFMPEG
+description: "FFmpeg one-liners to scale and compress images: fixed dimensions, percentage scaling, and aspect-ratio-safe resizing."
 date: 2018-01-01 00:00 +0000
-description:
 image:
 category:
 tags:

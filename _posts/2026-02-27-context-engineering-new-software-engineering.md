@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Context Engineering: The New Software Engineering"
+description: "You build an AI application. The model is good. The architecture is fine. And still the outputs wobble all over the place."
 date: "2026-02-27"
 categories: LLM AI software-engineering series
 series: "Software Engineering in the LLM Era"

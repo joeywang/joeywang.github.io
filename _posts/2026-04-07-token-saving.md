@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "The 2026 Developer’s Guide to Token Efficiency"
+description: "In 2026, the bottleneck for AI coding isn't model intelligence—it's the Context Tax. As agents like Claude Code (CC) and Codex become more autonomous, they"
 date:   2026-04-07 10:00:00 +0000
 categories: Token Efficiency
 tags: [token, efficiency, context, tax]

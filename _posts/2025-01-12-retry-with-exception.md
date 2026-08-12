@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Retry Mechanisms in Ruby: Best Practices, Pros, and Cons"
+description: "Handling transient failures in applications is a common requirement, especially when dealing with external services, databases, or network calls. A common"
 date: "2025-01-12"
 categories: ruby retry exception handling
 ---

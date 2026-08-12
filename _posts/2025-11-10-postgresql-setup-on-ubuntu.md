@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "PostgreSQL Setup on Ubuntu: Installation, User Setup, and Real-world Debugging"
+description: "This article walks through installing the latest PostgreSQL on Ubuntu, setting up users correctly for development, and debugging common authentication"
 date:   2025-11-10 10:00:00 +0000
 categories: PostgreSQL
 ---

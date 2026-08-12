@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Comprehensive Guide: Upgrading React from 16 to 17 2024-10-04'
+description: "React 17 brought several changes that, while not introducing many new features, laid the groundwork for future improvements. This guide will walk you through"
 date: 2024-10-05 00:40 +0100
 tags: [react, upgrade]
 ---

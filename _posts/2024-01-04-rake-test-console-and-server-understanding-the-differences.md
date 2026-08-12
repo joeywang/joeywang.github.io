@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Rake, Test, Console, and Server: Understanding the Differences'
+description: "In Ruby on Rails development, developers often interact with their applications using various commands and environments. Among these are Rake tasks, the Rails"
 date: 2024-01-04 00:00 +0000
 categories: Rails
 ---

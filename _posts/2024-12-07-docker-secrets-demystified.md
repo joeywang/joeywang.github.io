@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Docker Secrets Demystified: A Practical Guide to Managing Sensitive Information'
+description: "Let's dive into the world of Docker secrets and environment variables. Have you ever wondered how different types of key declarations behave in a Docker"
 date: 2024-12-07 00:00 +0000
 categories: [Docker, DevOps]
 tags: [docker, security, secrets, environment-variables]

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma"
+description: "Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: \"find all the Ruby files in this directory and"
 date: 2026-04-09
 categories: AI LLM Gemma Ollama coding-agent
 ---

@@ -30,10 +30,16 @@ end
 def extract_description(raw)
   body = raw.sub(/\A---\s*\n.*?\n---\s*\n/m, "")
   para = []
+  in_code = false
   body.lines.map(&:strip).each do |line|
+    if line.start_with?("```")
+      in_code = !in_code
+      next
+    end
+    next if in_code                                                    # skip code block bodies
     next if line.empty? && para.empty?
     break if line.empty? && !para.empty?
-    next if line.start_with?("#", "```", "|", ">", "-", "*", "![", "<")
+    next if line.start_with?("#", "|", ">", "-", "*", "![", "<")
     next if line.include?("Your browser does not support")   # <audio> fallback text
     next if line.match?(/以下是关于|The following is a markdown/i)  # AI-import scaffolding
     next if line.match?(/\A\d+[.)]/)
@@ -46,6 +52,7 @@ def extract_description(raw)
             .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')          # markdown links -> text
             .gsub(/`([^`]+)`/, '\1')                      # inline code -> text
             .gsub(/[*_~]{1,2}/, "")                       # emphasis markers
+            .gsub("\\", "")                               # markdown escapes (\!, \.) -> plain
             .gsub(/\s+/, " ").strip
   return nil if text.empty?
   text = text[0, 160]
@@ -84,11 +91,14 @@ files.each do |f|
   end
 
   raw = File.read(f)
-  title_line = raw[/^title:.*$/]
-  next unless title_line
+  fm_match = raw.match(/\A---\s*\n(.*?)\n---/m)
+  next unless fm_match
 
   desc_line = "description: #{yaml_escape(desc)}"
-  File.write(f, raw.sub(title_line, "#{title_line}\n#{desc_line}")) if APPLY
+  # Insert before the closing front matter delimiter: safe even when the title
+  # or other values span multiple lines (inserting after the title line would split it).
+  insert_at = fm_match.end(1)
+  File.write(f, raw[0...insert_at] + "\n" + desc_line + raw[insert_at..]) if APPLY
   changed += 1
   samples << "  #{base}\n    -> #{desc}" if samples.length < 5
 end

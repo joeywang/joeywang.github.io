@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Understanding SCORM: The Digital Learning Standard'
+description: "In the rapidly evolving landscape of e-learning, ensuring that educational content is accessible, interactive, and compatible across different platforms is"
 date: 2024-08-27 00:00 +0000
 categories: SCORM
 tags: [scorm, digital, e-learning]

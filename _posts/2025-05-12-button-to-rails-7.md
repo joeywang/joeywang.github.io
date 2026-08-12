@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "The Subtle Sabotage: A Rails 7 `button_to` Tale"
+description: "It was a Tuesday like any other. Coffee was brewing, code was flowing, and our trusty Rails 6 application was humming along. Then came the upgrade. A leap of"
 date: 2025-05-12 14:41:26 +0100
 categories: [Rails, JavaScript, CSS]
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Upgrade Rails to 7.2.0"
+description: "Exception won't be raised in specs"
 date:   2024-08-10 14:41:26 +0100
 categories: Rails
 ---

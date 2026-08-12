@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Power of unscope
+description: "In Ruby on Rails, scopes are a convenient way to encapsulate common query patterns, making it easier to write clean and reusable code. However, there are times"
 date: 2023-03-04 00:00 +0000
 categories: Rails
 ---
