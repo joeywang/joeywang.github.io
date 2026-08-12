@@ -1,29 +1,31 @@
 # Post sharing platforms (rendered by _includes/post-sharing.html)
-# Placeholders: TITLE (page title) and URL (absolute post URL) are escaped by the theme.
+# Placeholders: __TITLE__ (page title) and __URL__ (absolute post URL) are
+# escaped by the theme. The double-underscore delimiters avoid collisions with
+# ordinary post titles containing words such as "URL".
 platforms:
   - type: X
     icon: "fa-brands fa-square-x-twitter"
-    link: "https://twitter.com/intent/tweet?text=TITLE&url=URL"
+    link: "https://twitter.com/intent/tweet?text=__TITLE__&url=__URL__"
 
   - type: Facebook
     icon: "fa-brands fa-square-facebook"
-    link: "https://www.facebook.com/sharer/sharer.php?title=TITLE&u=URL"
+    link: "https://www.facebook.com/sharer/sharer.php?title=__TITLE__&u=__URL__"
 
   - type: LinkedIn
     icon: "fa-brands fa-linkedin"
-    link: "https://www.linkedin.com/sharing/share-offsite/?url=URL"
+    link: "https://www.linkedin.com/sharing/share-offsite/?url=__URL__"
 
   - type: Telegram
     icon: "fa-brands fa-telegram"
-    link: "https://t.me/share/url?url=URL&text=TITLE"
+    link: "https://t.me/share/url?url=__URL__&text=__TITLE__"
 
   - type: WhatsApp
     icon: "fa-brands fa-square-whatsapp"
-    link: "https://api.whatsapp.com/send?text=TITLE+URL"
+    link: "https://api.whatsapp.com/send?text=__TITLE__+__URL__"
 
   - type: Reddit
     icon: "fa-brands fa-square-reddit"
-    link: "https://www.reddit.com/submit?url=URL&title=TITLE"
+    link: "https://www.reddit.com/submit?url=__URL__&title=__TITLE__"
 
   - type: Mastodon
     icon: "fa-brands fa-mastodon"
