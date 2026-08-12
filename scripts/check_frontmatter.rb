@@ -8,18 +8,8 @@ require "yaml"
 
 STRICT = ARGV.include?("--strict")
 
-# Posts pending Joey's decision: AI-conversation artifacts accidentally published.
-# Remove from this list once each is deleted or rewritten.
-EXCLUDED = %w[
-  2006-01-03-1c1g-optimize.md
-  2025-05-08-rails-headers.md
-  2025-10-01-css-style-to-web-app.md
-  2026-01-06-second-me2.md
-].freeze
-
 posts_dir = File.expand_path("../../_posts", __FILE__)
 files = Dir[File.join(posts_dir, "*.md")].sort
-files = files.reject { |f| EXCLUDED.include?(File.basename(f)) }
 errors = []
 warnings = []
 

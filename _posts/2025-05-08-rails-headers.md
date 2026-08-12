@@ -1,11 +1,10 @@
 ---
-title: Rails Headers
+title: "Rails Sessions and Custom HTTP Headers"
+date: 2025-05-08
+description: "How Rails sessions work under the hood with Warden and cookies, and how to pick the right custom HTTP headers for your API."
+tags: [rails, sessions, warden, http]
 mermaid: true
 ---
-
-Here are two tech articles based on your request.
-
-***
 
 ## Article 1: Cracking the Code: How Rails, Warden, and Cookies Handle Your Session
 

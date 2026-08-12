@@ -1,8 +1,9 @@
 ---
-title:
+title: "Choosing Your CSS Color Strategy: Static vs. Dynamic Variables"
+date: 2025-10-01
 layout: post
-
-
+description: "Static CSS color values vs. variables: why hard-coded colors bite you later, and how to structure colors so they stay maintainable."
+tags: [css, frontend, web-development]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/css-style-to-web-app-summary.ogg">
