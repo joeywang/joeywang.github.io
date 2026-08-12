@@ -6,6 +6,7 @@ date: 2026-08-12 14:00:00 +0100
 author: "Joey Wang"
 tags: [hermes, agents, gemma, local-ai, coding-agent, rails, orchestration]
 categories: [AI, Engineering]
+start_here: true
 ---
 
 # Orchestrating Hermes with Local Gemma

@@ -6,6 +6,7 @@ author: "Joey Wang"
 description: "Notes on turning repeated AI workflows into scripts, skills, cron jobs, and guardrails so agents become cheaper, safer, and more useful over time."
 tags: [ai, llm, agents, automation, hermes, workflows]
 categories: [AI, Engineering]
+start_here: true
 ---
 
 # Golden rules for cheaper, safer LLM agents
