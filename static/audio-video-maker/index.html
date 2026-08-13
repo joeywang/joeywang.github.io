@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Audio + Image Video Maker | Joey</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#151c2f; --panel-2:#1b253d; --text:#eef2ff; --muted:#aab6d1; --line:#33415f; --accent:#8ab4ff; --good:#6ee7b7; --bad:#fca5a5; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at 20% 0,#18284a 0,#0b1020 45%); color:var(--text); font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif; padding:28px 16px; }
+    main { max-width:900px; margin:auto; }
+    a { color:var(--accent); }
+    h1 { font-size:clamp(1.8rem,4vw,2.7rem); line-height:1.1; margin:.3rem 0 .7rem; }
+    .intro { color:var(--muted); max-width:720px; }
+    .card { background:rgba(21,28,47,.92); border:1px solid var(--line); border-radius:16px; padding:22px; margin:20px 0; box-shadow:0 14px 40px #0003; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media(max-width:680px){ .grid{grid-template-columns:1fr;} }
+    label { display:block; font-weight:650; margin-bottom:7px; }
+    input[type=file], input[type=number] { width:100%; color:var(--text); background:var(--panel-2); border:1px solid var(--line); border-radius:9px; padding:11px; }
+    input[type=number] { max-width:150px; }
+    .hint { color:var(--muted); font-size:.88rem; margin:.45rem 0 0; }
+    button { border:0; border-radius:10px; padding:12px 18px; background:var(--accent); color:#07101f; font-weight:750; cursor:pointer; }
+    button:disabled { cursor:not-allowed; opacity:.5; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:22px; }
+    progress { width:min(100%,420px); height:12px; accent-color:var(--good); }
+    #status { color:var(--muted); min-height:1.6em; }
+    .notice { border-left:3px solid var(--accent); padding-left:13px; color:var(--muted); }
+    .warning { color:#fcd34d; }
+    .success { color:var(--good); }
+    code { background:#0b1224; padding:2px 5px; border-radius:5px; }
+    footer { color:var(--muted); font-size:.9rem; margin-top:24px; }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="/tools/">← All tools</a></p>
+  <h1>Audio + image video maker</h1>
+  <p class="intro">Turn a single 1080p image and a long MP3 into an MP4 locally in your browser. The output is encoded without real-time playback and is streamed to disk when your browser supports it.</p>
+
+  <section class="card">
+    <div class="grid">
+      <div>
+        <label for="image">Still image</label>
+        <input id="image" type="file" accept="image/*">
+        <p class="hint">JPEG, PNG, or WebP. The image is fitted inside the selected output size.</p>
+      </div>
+      <div>
+        <label for="audio">Audio track</label>
+        <input id="audio" type="file" accept="audio/mpeg,audio/mp3,audio/*">
+        <p class="hint">MP3 is recommended. Audio is decoded and re-encoded as AAC for broad MP4 compatibility.</p>
+      </div>
+      <div>
+        <label for="fps">Video frame rate</label>
+        <input id="fps" type="number" min="1" max="10" value="1" step="1">
+        <p class="hint">1 fps is enough for a static image and keeps the file small.</p>
+      </div>
+      <div>
+        <label for="size">Output size</label>
+        <select id="size" style="width:100%;padding:11px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line);color:var(--text)">
+          <option value="1920x1080">1920 × 1080 (1080p)</option>
+          <option value="1280x720">1280 × 720 (720p)</option>
+          <option value="3840x2160">3840 × 2160 (4K)</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="render" disabled>Render MP4</button>
+      <progress id="progress" value="0" max="1" hidden></progress>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="card notice">
+    <strong>Privacy and compatibility</strong>
+    <p>Files stay on this device. Chrome or Edge on desktop is recommended because it supports WebCodecs and the File System Access API. Safari and Firefox may not support this tool yet. The fallback download keeps the encoded file in a Blob, so it is less suitable for very long recordings.</p>
+    <p class="warning">For a 2-hour source, browser audio decoding can still require substantial temporary memory. Close memory-heavy tabs first.</p>
+  </section>
+  <footer>Built as a client-side experiment by <a href="/">Joey</a>.</footer>
+</main>
+<script type="module">
+  import { AudioBufferSource, CanvasSource, Mp4OutputFormat, Output, Quality, StreamTarget } from 'https://esm.sh/mediabunny@1.25.1';
+
+  const $ = id => document.getElementById(id);
+  const imageInput = $('image'), audioInput = $('audio'), renderButton = $('render');
+  let imageFile, audioFile;
+  imageInput.onchange = () => { imageFile = imageInput.files[0]; update(); };
+  audioInput.onchange = () => { audioFile = audioInput.files[0]; update(); };
+  function update() { renderButton.disabled = !(imageFile && audioFile); }
+  function say(text, cls = '') { $('status').className = cls; $('status').textContent = text; }
+  function dimensions() { return $('size').value.split('x').map(Number); }
+  function safeName(name) { return name.replace(/[^a-z0-9._-]+/gi, '-').replace(/-+/g, '-'); }
+
+  renderButton.onclick = async () => {
+    renderButton.disabled = true; $('progress').hidden = false; $('progress').value = 0;
+    let writable, output;
+    try {
+      say('Reading the image and audio…');
+      const [width, height] = dimensions();
+      const fps = Number($('fps').value);
+      if (!Number.isInteger(fps) || fps < 1 || fps > 10) throw new Error('Frame rate must be between 1 and 10.');
+      const bitmap = await createImageBitmap(imageFile);
+      const audioContext = new AudioContext();
+      const audioBuffer = await audioContext.decodeAudioData(await audioFile.arrayBuffer());
+      await audioContext.close();
+      if (!audioBuffer.duration || !Number.isFinite(audioBuffer.duration)) throw new Error('Could not determine audio duration.');
+
+      if (!window.showSaveFilePicker) throw new Error('Direct-to-disk saving is required for this large-file tool. Please use Chrome or Edge on desktop.');
+      const handle = await showSaveFilePicker({ suggestedName: `${safeName(audioFile.name.replace(/\.[^.]+$/, '')) || 'audio-image'}.mp4`, types: [{ description: 'MP4 video', accept: { 'video/mp4': ['.mp4'] } }] });
+      writable = await handle.createWritable();
+      const target = new StreamTarget(writable, { chunked: true });
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const context = canvas.getContext('2d', { alpha: false });
+      context.fillStyle = '#000'; context.fillRect(0, 0, width, height);
+      const scale = Math.min(width / bitmap.width, height / bitmap.height);
+      const drawWidth = bitmap.width * scale, drawHeight = bitmap.height * scale;
+      context.drawImage(bitmap, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+      bitmap.close();
+
+      output = new Output({ format: new Mp4OutputFormat({ fastStart: 'fragmented' }), target });
+      const videoSource = new CanvasSource(canvas, { codec: 'avc', quality: new Quality({ bitrate: 2_000_000 }) });
+      const audioSource = new AudioBufferSource({ codec: 'aac', quality: new Quality({ bitrate: 128_000 }) });
+      output.addVideoTrack(videoSource, { frameRate: fps });
+      output.addAudioTrack(audioSource);
+      await output.start();
+
+      const frameCount = Math.ceil(audioBuffer.duration * fps);
+      for (let i = 0; i < frameCount; i++) {
+        await videoSource.add(i / fps, 1 / fps);
+        if (i % Math.max(1, Math.floor(frameCount / 100)) === 0) {
+          $('progress').value = (i / frameCount) * .65;
+          say(`Encoding video… ${Math.round(i / frameCount * 100)}%`);
+        }
+      }
+      await audioSource.add(audioBuffer);
+      $('progress').value = .8; say('Finalizing MP4…');
+      await output.finalize();
+      if (writable) {
+        say('Finished — your MP4 was written directly to disk.', 'success');
+      } else {
+        say('Finished, but this browser needs a download fallback. Please use Chrome or Edge for large files.', 'success');
+      }
+      $('progress').value = 1;
+    } catch (error) {
+      if (output) try { await output.cancel(); } catch (_) {}
+      if (writable) try { await writable.abort(); } catch (_) {}
+      say(error.name === 'AbortError' ? 'Save cancelled.' : `Could not render: ${error.message}`, 'warning');
+    } finally { renderButton.disabled = false; update(); }
+  };
+</script>
+</body>
+</html>

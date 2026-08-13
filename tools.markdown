@@ -12,6 +12,7 @@ permalink: /tools/
   - [UUID Generator](/static/uuid-generator/) - Generate universally unique identifiers
   - [All-in-One Data Converter](/static/converter) - Convert between various data formats
   - [JSON To YAML Converter](/static/json2yaml) - Convert JSON to YAML and vice versa
+  - [Audio + Image Video Maker](/static/audio-video-maker/) - Create an MP4 locally from one image and a long audio track
 
 ### Converter
 - **Pandoc** - Markdown to HTML converter
