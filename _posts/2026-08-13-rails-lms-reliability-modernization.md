@@ -2,7 +2,7 @@
 layout: post
 title: "When a Rails or LMS Platform Becomes Hard to Change"
 description: "A practical way for small education and SaaS teams to diagnose platform friction before committing to a rewrite."
-date: 2026-08-13 09:00:00 +0100
+date: 2026-08-13 06:00:00 +0100
 author: "Joey Wang"
 tags: [ruby-on-rails, lms, software-architecture, performance, reliability]
 categories: [Engineering]
