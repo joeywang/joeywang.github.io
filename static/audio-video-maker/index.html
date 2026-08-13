@@ -79,7 +79,7 @@
   <footer>Built as a client-side experiment by <a href="/">Joey</a>.</footer>
 </main>
 <script type="module">
-  import { AudioBufferSource, CanvasSource, Mp4OutputFormat, Output, Quality, StreamTarget } from 'https://esm.sh/mediabunny@1.25.1';
+  import { AudioBufferSource, CanvasSource, Mp4OutputFormat, Output, StreamTarget } from 'https://esm.sh/mediabunny@1.25.1';
 
   const $ = id => document.getElementById(id);
   const imageInput = $('image'), audioInput = $('audio'), renderButton = $('render');
@@ -119,8 +119,8 @@
       bitmap.close();
 
       output = new Output({ format: new Mp4OutputFormat({ fastStart: 'fragmented' }), target });
-      const videoSource = new CanvasSource(canvas, { codec: 'avc', quality: new Quality({ bitrate: 2_000_000 }) });
-      const audioSource = new AudioBufferSource({ codec: 'aac', quality: new Quality({ bitrate: 128_000 }) });
+      const videoSource = new CanvasSource(canvas, { codec: 'avc', bitrate: 2_000_000 });
+      const audioSource = new AudioBufferSource({ codec: 'aac', bitrate: 128_000 });
       output.addVideoTrack(videoSource, { frameRate: fps });
       output.addAudioTrack(audioSource);
       await output.start();
