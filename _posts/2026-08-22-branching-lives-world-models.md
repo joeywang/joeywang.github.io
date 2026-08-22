@@ -8,6 +8,10 @@ tags: [ai, llm, world-models, multi-agent-systems, philosophy, future-of-work]
 categories: [AI, Ideas]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/branching-lives-world-models-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 I keep thinking about what a language model really contains.
 
 At the surface, it is a system that predicts the next piece of text. It answers questions, summarizes documents, writes code, and imitates different styles of conversation. That description is technically useful, but it can also make the model seem smaller than it is.
