@@ -32,7 +32,7 @@ JEKYLL_ENV=production bundle exec jekyll build
 # System generates humanized post + social media
 ```
 
-**Complete guide:** See [BLOG-WORKFLOW.md](BLOG-WORKFLOW.md)
+**Complete guide:** See [BLOG-WORKFLOW.md](BLOG-WORKFLOW.md) and the staged [blog agent pipeline](docs/blog-agent-pipeline.md).
 
 ---
 
