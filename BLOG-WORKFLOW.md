@@ -58,6 +58,12 @@ Run the full workflow:
 
 ---
 
+## Staged role pipeline
+
+For the current multi-role workflow, use [docs/blog-agent-pipeline.md](docs/blog-agent-pipeline.md). The repository provides bounded roles for research, high-reasoning writing, independent review, humanization/privacy, publication verification, social summaries, and local voice summaries. Publication, external social posting, Buffer queueing, and deployment remain explicit Joey approval gates.
+
+---
+
 ## Complete Workflow Diagram
 
 ```
