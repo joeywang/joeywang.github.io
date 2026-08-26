@@ -8,6 +8,10 @@ tags: [ai, ethics, society, productivity, poverty, technology, creativity]
 categories: [AI, Society]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/when-productivity-turns-against-its-purpose-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 There is something deeply unsettling about the current AI boom.
 
 The technology is often presented as a form of advanced productive power: a new general-purpose technology capable of increasing output, reducing costs, accelerating research, and making knowledge more accessible. In principle, this should be good news. If machines can perform more cognitive work, society should be able to produce more with less effort. People might work fewer hours, receive better services, and spend more time on relationships, education, creativity, and civic life.
