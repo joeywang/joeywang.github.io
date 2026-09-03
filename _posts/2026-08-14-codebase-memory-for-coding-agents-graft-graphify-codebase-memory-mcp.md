@@ -8,6 +8,10 @@ tags: [ai, coding-agents, code-intelligence, code-graph, context-engineering, mc
 categories: [AI, Engineering]
 ---
 
+<audio controls preload="metadata" src="/assets/audio/codebase-memory-for-coding-agents-graft-graphify-codebase-memory-mcp-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
 # Codebase memory for coding agents: Graft, Graphify, and codebase-memory-mcp
 
 A coding agent has a bad habit.

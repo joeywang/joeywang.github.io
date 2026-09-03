@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Designing an AI-Native Operating System for a One-Person Company"
+title: "The One-Person Company Is a Coordination Problem"
 description: "I am exploring how a one-person company could use agents, observability, project tracking, and market intelligence without turning automation into an ungoverned second company."
 date: 2026-08-30 12:00:00 +0000
 author: "Joey Wang"
@@ -8,7 +8,13 @@ tags: [ai-agents, one-person-company, hermes, software-engineering, product-mana
 categories: [AI, Engineering]
 ---
 
-# Designing an AI-Native Operating System for a One-Person Company
+<audio controls preload="metadata" src="/assets/audio/ai-native-one-person-company-operating-system-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+# The One-Person Company Is a Coordination Problem
+
+I did not start with the idea of building an AI company. I started with a more ordinary problem: too many small operational loops were competing for the same limited attention.
 
 I have been thinking about a slightly unusual company structure.
 
@@ -20,7 +26,7 @@ But “AI can do many jobs” is not yet an operating model.
 
 The harder question is how to connect those jobs safely. If Sentry sees an error, can an agent investigate it? If a market signal suggests a new feature, how does that become a real product decision? If an agent changes code, who verifies it? If a cloud worker disappears, what state is lost?
 
-I am treating this as a design and learning project, not as a claim that one person can automatically replace an entire company.
+I am treating this as a design and learning project, not as a claim that one person can automatically replace an entire company. None of this is a finished product yet. It is a design hypothesis assembled from existing tools, small experiments, and a set of constraints I want to test.
 
 ## The problem is coordination, not just coding
 
@@ -96,6 +102,28 @@ A useful project-management agent could answer:
 
 It could prepare a daily or weekly report from the issue tracker, Git, pull requests, CI, and Sentry. That is valuable because reporting is repetitive. The final decision about priority, trade-offs, and commitments still belongs to the founder.
 
+A useful report might be deliberately boring:
+
+```text
+Weekly project report
+
+Progress:
+- 2 tasks completed
+- 1 pull request awaiting review
+
+Blocked:
+- Sentry issue has no reproducible fixture
+
+Risk:
+- The next milestone contains more work than the current weekly capacity
+
+Recommendation:
+- Split the export feature and defer the admin UI
+```
+
+The point is not to produce an impressive narrative. It is to compress project
+state into a decision that I can inspect.
+
 ### 4. Market intelligence
 
 Market tracking is a separate loop again. It should collect and compare:
@@ -110,6 +138,12 @@ Market tracking is a separate loop again. It should collect and compare:
 A market agent should produce a small, cited digest rather than an endless stream of links. Every item needs a source, date, confidence, and an explanation of why it may matter.
 
 A trend is not validation. A competitor announcement is not proof of demand. A model's summary is not primary evidence.
+
+The business test is equally important: the system is useful only if it improves
+validated outcomes, such as reaching a useful product decision sooner, reducing
+unproductive development, finding customer pain earlier, or delivering a first
+paid version with less coordination overhead. More summaries, tickets, and agent
+traces are not outcomes by themselves.
 
 ## A layered architecture
 
@@ -177,6 +211,27 @@ It is not a good place for the only copy of company state. Important state must 
 
 The previous estimates I saw for monthly Spot VM cost should be treated as planning assumptions, not promises. Region, machine type, disks, network traffic, quotas, and interruption behavior all affect the real cost.
 
+My current default is therefore deliberately small: Hermes as the orchestrator,
+Sentry and GitHub as integration sources, an existing issue tracker for product
+state, and a Spot worker only for jobs that are demonstrably interruptible. I do
+not want to build the full platform before proving that one workflow saves time.
+
+## Why not buy the whole thing?
+
+The obvious alternative is to buy a collection of SaaS products and avoid building
+anything. That is probably the right answer for much of the system.
+
+Existing services are better at durable records, authentication, notifications,
+and collaboration than a one-person custom platform would be. The reason to add
+a control layer is narrower: connect the systems I already use, route work to the
+right model or worker, enforce approval boundaries, and produce a useful report
+without copying all state into a second database.
+
+Self-hosting becomes worthwhile only when it solves a demonstrated problem:
+privacy, integration control, cost at a known workload, or a workflow that the
+hosted products cannot express. Otherwise, operating another dashboard is just
+another coordination loop.
+
 ## The control plane needs authority levels
 
 Not every action should have the same approval requirement.
@@ -202,7 +257,7 @@ Not every action should have the same approval requirement.
 
 - deploy to production;
 - modify infrastructure;
-- access or display credentials;
+- retrieve, display, copy, or transfer credentials;
 - send sensitive external messages;
 - change VPN, SSH, or gateway continuity;
 - delete durable data;
