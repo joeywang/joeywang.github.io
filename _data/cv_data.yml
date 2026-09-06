@@ -8,7 +8,7 @@ contact_email: "joeyw@reallyenglish.com"
 github_url: "https://github.com/joeywang"
 linkedin_url: "https://www.linkedin.com/in/joey-dev"
 
-summary_text: "Highly accomplished Senior Software Engineer with over two decades of expertise in architecting and delivering impactful Ruby on Rails applications that significantly enhance user experience and accelerate business growth. Proven innovator in optimizing high-performance, scalable software solutions. Passionate about tackling complex technical challenges, fostering engineering best practices, and contributing to the open-source community."
+summary_text: "Senior Software Engineer focused on Ruby on Rails, learning platforms, reliability, cloud infrastructure, and practical delivery systems. Experienced in understanding long-lived applications, improving them incrementally, and making technical decisions easier to test, operate, and explain."
 
 experience:
   - id: 'kitman'
@@ -16,25 +16,25 @@ experience:
     role: 'Senior Web Engineer'
     period: 'Feb 2023 – July 2024'
     details:
-      - 'Spearheaded the design and development of advanced features for athlete management and performance tracking systems, resulting in improved data accuracy and user engagement with new analytical tools.'
-      - 'Achieved a 10% improvement in application performance through strategic code refactoring and database query optimization.'
-      - 'Collaborated effectively with data scientists to integrate machine learning models, enabling predictive analytics functionalities.'
+      - 'Designed and developed features for athlete management and performance tracking systems.'
+      - 'Investigated application performance through code refactoring and database query optimization.'
+      - 'Collaborated with data scientists on the integration of machine learning models and predictive analytics features.'
   - id: 'ably'
     company: 'Ably'
     role: 'Senior Web Engineer'
     period: 'Jan 2022 – Nov 2022'
     details:
-      - 'Engineered significant system-wide optimizations in Ruby and Puma configurations, resulting in a 20% overall performance boost.'
-      - 'Pioneered containerization initiatives by successfully Dockerizing complex Ruby on Rails applications, improving deployment consistency.'
-      - 'Implemented real-time data streaming features, contributing to a 15% increase in user engagement.'
+      - 'Worked on Ruby and Puma performance investigation and optimization.'
+      - 'Helped containerize complex Ruby on Rails applications and improve deployment consistency.'
+      - 'Implemented features for a real-time data platform.'
   - id: 'reallyenglish'
     company: 'Reallyenglish'
     role: 'Lead Ruby Developer'
     period: 'Oct 2005 - Jan 2022'
     details:
-      - 'Led the architecture and end-to-end development of three generations of a sophisticated Learning Management System (LMS), serving a large user base.'
-      - 'Drove a 25% increase in customer satisfaction by conceptualizing and implementing innovative, user-focused features.'
-      - 'Mentored and guided junior developers, cultivating a team culture centered on code quality, best practices, and continuous improvement.'
+      - 'Led architecture and development across multiple generations of a learning management platform.'
+      - 'Worked across application delivery, infrastructure automation, databases, and production operations.'
+      - 'Mentored developers and promoted testing, code quality, and maintainable engineering practices.'
 
 skills:
   'Languages & Frameworks':
@@ -82,19 +82,19 @@ skills:
 
 projects:
   - title: 'Enterprise Learning Management System (LMS)'
-    description: 'Architected and led the development of a scalable, customizable LMS using Ruby on Rails, supporting over 100,000 active users and maintaining 99.9% uptime.'
+    description: 'Architected and led the development of a scalable, customizable learning management platform using Ruby on Rails.'
   - title: 'Advanced Course Management System'
-    description: 'Engineered a state-of-the-art CMS leveraging Ruby on Rails, Stimulus, and Turbo, which successfully reduced course creation and management time by 50%.'
+    description: 'Engineered a course-management system using Ruby on Rails, Stimulus, and Turbo.'
   - title: 'Mobile Learning Application'
-    description: 'Led the full development lifecycle of a feature-rich React Native app, incorporating offline learning capabilities and achieving a 4.8-star rating on app stores.'
+    description: 'Led development of a React Native learning application, including offline-learning capabilities.'
   - title: 'Practical English Course Platform'
-    description: 'Architected and delivered a comprehensive and scalable e-learning platform using Node.js, Ruby, and JavaScript, leading to a 30% uplift in user engagement.'
+    description: 'Architected and delivered an e-learning platform using Node.js, Ruby, and JavaScript.'
   - title: 'Education Platform WordPress Homepage'
-    description: 'Developed a high-performance, SEO-optimized WordPress main site, resulting in a 40% increase in organic traffic and improved lead generation.'
+    description: 'Developed and maintained a performance- and SEO-focused WordPress main site.'
   - title: 'Containerization Initiative'
     description: 'Pioneered efforts to Dockerize complex legacy applications, significantly improving deployment consistency and developer onboarding.'
 
-open_source_intro: "Actively contribute to various open-source projects, such as providing performance patches to Ruby libraries or developing widely-used Docker images for Rails applications. Contributions typically focus on:"
+open_source_intro: "Public engineering work and repository contributions typically focus on:"
 open_source_contributions:
   - 'Identifying and resolving potential bugs to improve software stability and reliability.'
   - 'Proactively upgrading project dependencies to maintain security and leverage modern functionalities.'

@@ -1,40 +1,60 @@
 ---
 layout: page
-title: About(DevOps)
+title: About (DevOps)
 permalink: /about2/
 author_profile: true
 ---
-[📄 Download Resume (PDF)](/assets/pdf/JoeyW-DevOps.pdf){: .btn .btn-link .btn-lg style="float: right;"}
-## Summary:
-   Innovative Senior DevOps Engineer and SRE with 20+ years of experience in web development and cloud infrastructure optimization. Expert in Ruby on Rails applications, with a proven track record of revolutionizing development processes and architecting highly scalable, resilient solutions. Consistently delivers performance improvements and cost-effective cloud strategies that drive business growth.
 
-## Core Competencies:
-  - Cloud & DevOps: Kubernetes, Docker, Terraform, Helm, CI/CD pipelines, GCP, AWS
-  - Infrastructure as Code (IaC) & Automation
-  - Database Management: PostgreSQL, MySQL, MongoDB, Oracle
-  - Programming: Ruby, JavaScript, Python, Shell scripting
-  - Methodologies: Agile/Scrum, TDD, SRE practices
-  - Performance Optimization & Scalability
-  - Disaster Recovery & High Availability Solutions
+[📄 Download DevOps Resume (PDF)](/assets/pdf/JoeyW-DevOps.pdf){: .btn .btn-link .btn-lg style="float: right;"}
 
-## Professional Experience:
+## Infrastructure and reliability focus
 
-### Reallyenglish (Jan 2022 - Now): Lead Engineer(Freelancer)
-  - Improve existing cloud platform solutions
-  - Build toolchain to deploy whole systems
+I work across application development and the systems that keep applications deployable, observable, and recoverable. My strongest background is in Ruby on Rails, learning platforms, cloud infrastructure, Kubernetes, databases, and delivery automation.
 
-### Ably (Jan 2022 – Nov 2022): Senior DevOps Engineer
-  - Boosted system performance by 20% through advanced Puma and Ruby optimizations
-  - Spearheaded cloud migration strategy, successfully prototyping Heroku to AWS transition
-  - Implemented robust monitoring and alerting systems, reducing MTTR by 30%
+I am most useful when a team needs to understand an existing system before changing it: mapping dependencies, identifying operational risks, improving feedback loops, and making the next change safer to test and roll back.
 
-### Reallyenglish (Oct 2005 - Jan 2022): Lead DevOps Engineer / Site Reliability Engineer
-  - Architected and implemented a cutting-edge CI/CD pipeline, reducing deployment time by 70%
-  - Orchestrated a 30% improvement in deployment efficiency using Helm and Terraform on GCP
-  - Designed and maintained a highly available, fault-tolerant cloud infrastructure
-  - Led initiative to implement Infrastructure as Code, resulting in 99.99% uptime
+## Core competencies
 
-## Key Projects:
-  - Microservices Cloud Migration: Led the seamless transition of a monolithic Ruby on Rails application to a microservices architecture on GCP, resulting in 50% improved scalability and 30% cost reduction
-  - Kubernetes Optimization: Engineered a high-performance Kubernetes cluster for WordPress, improving scalability by 10% and reducing infrastructure costs by 25%
-  - Disaster Recovery Solution: Designed and implemented a multi-region disaster recovery plan, achieving an RPO of 5 minutes and RTO of 1 hour
+- **Cloud and DevOps:** Kubernetes, Docker, Terraform, Helm, CI/CD, GCP, AWS
+- **Infrastructure and automation:** deployment tooling, configuration management, operational documentation
+- **Databases:** PostgreSQL, MySQL, MongoDB, Oracle, query and connection-pool investigation
+- **Programming:** Ruby, Ruby on Rails, JavaScript, Python, and shell scripting
+- **Reliability:** monitoring, alerting, performance investigation, disaster recovery, and high availability
+- **Engineering practice:** testing, code review, incremental modernization, and incident learning
+
+## Professional experience
+
+### Reallyenglish — Lead Engineer, freelance consultant
+*Jan 2022 – present*
+
+- Maintain and extend a long-running learning platform.
+- Improve application, cloud, and deployment systems incrementally.
+- Build tools and operational paths for safer system delivery.
+- Support investigation of performance, reliability, and production issues.
+
+### Ably — Senior Web Engineer
+*Jan 2022 – Nov 2022*
+
+- Worked on Ruby and Puma performance investigation and optimization.
+- Helped containerize Ruby on Rails applications and improve deployment consistency.
+- Built and maintained features for a real-time data platform.
+- Contributed to cloud migration and operational improvement work.
+
+### Reallyenglish — Lead Ruby Developer / Site Reliability Engineer
+*Oct 2005 – Jan 2022*
+
+- Led architecture and development across multiple generations of a learning management platform.
+- Worked on application delivery, infrastructure automation, databases, and production operations.
+- Built and maintained CI/CD and deployment processes.
+- Mentored developers and promoted testing, code quality, and maintainable engineering practices.
+
+## Selected project areas
+
+- **Learning platforms:** Rails-based LMS and course-management systems with web, mobile, and content workflows.
+- **Containerization:** moving complex or long-lived applications toward more repeatable development and deployment environments.
+- **Kubernetes and databases:** operating application and PostgreSQL-related workloads with explicit attention to recovery and failure modes.
+- **Delivery systems:** improving the path from a code change to a tested, observable, and reversible deployment.
+
+For the broader engineering and consulting perspective, see [About](/about/), [Projects](/projects/), and [Consulting](/consulting/).
+
+> This page intentionally avoids unsupported performance, uptime, user-count, and business-impact figures. Public résumé claims should be traceable to evidence and safe to disclose.
