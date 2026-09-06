@@ -38,9 +38,9 @@ That approach is useful when a team has a Rails application that has grown over 
 ## Selected work
 
 - [Consulting](/consulting/) — a practical starting point for Rails, LMS, reliability, and modernization conversations.
-- [Rails/LMS work](/projects/) — selected projects and technical areas.
-- [Writing](/writing/) — investigations, engineering notes, and reflections on practical AI.
-- [AI & Agents](/ai-agents/) — experiments in making AI-assisted work more useful, bounded, and reviewable.
+- [When a Rails or LMS Platform Becomes Hard to Change](/posts/rails-lms-reliability-modernization/) — an evidence-led way to diagnose platform friction.
+- [AI’s Impact on the Software Development Lifecycle](/posts/ai-impact-software-development-lifecycle/) — thinking about useful AI without confusing assistance with judgment.
+- [Durable Codebase Context](/posts/durable-codebase-context-hermes-gitnexus-lsp/) — notes on making engineering context easier to inspect and reuse.
 
 ## A note on this site
 
