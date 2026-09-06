@@ -7,80 +7,43 @@ author_profile: true
 
 [📄 Download Resume (PDF)](/assets/pdf/JoeyW-dev.pdf){: .btn .btn-link .btn-lg style="float: right;"}
 
+## I build software that can be operated with confidence
 
-## Summary
-Results-driven Senior Software Engineer with over 20 years of expertise in architecting, developing, and deploying high-performance web applications, specializing in Ruby on Rails and modern backend technologies. Proven innovator with a consistent track record of delivering scalable software that enhances user engagement and drives significant business growth. Adept at leading development initiatives, optimizing system performance, modernizing infrastructure, and mentoring teams to achieve technical excellence. Passionate about leveraging technology to solve complex challenges and deliver exceptional value.
+I’m Joey Wang, a software engineer and consultant focused on Ruby on Rails, learning platforms, and the work that keeps established products dependable as they evolve.
 
-## Core Competencies
+My background is rooted in long-lived web systems. I’ve designed and maintained learning platforms, worked on product teams, modernized application and deployment infrastructure, and supported systems where reliability matters to the people using them every day.
 
-**Languages & Frameworks:**
-* Ruby on Rails, Ruby
-* PHP, Laravel
-* JavaScript (ES6+), Node.js, React Native
-* Python, C++, Java
+The interesting work is rarely just choosing a framework. It is understanding the existing system, finding the constraint that is actually limiting it, making a change that can be explained, and leaving the next person with a safer path forward.
 
-**Databases & Data Management:**
-* PostgreSQL, MySQL, MongoDB, Oracle
-* Database Design, Query Optimization, Data Modeling
+## What I work on
 
-**Development Practices & Tools:**
-* Agile/Scrum Methodologies
-* Test-Driven Development (TDD), Behavior-Driven Development (BDD)
-* Pair Programming, Code Review
-* CI/CD, Docker, AWS (EC2, ECS)
+- **Rails and LMS modernization** — improving established applications without pretending that a rewrite is always the answer.
+- **Reliability and performance** — tracing slow paths, reducing avoidable complexity, and making failures easier to diagnose.
+- **Cloud and delivery systems** — improving deployment, infrastructure, testing, and operational feedback loops.
+- **Practical AI workflows** — using AI to support engineering judgment and repeatable work, with explicit boundaries around verification, privacy, and human approval.
 
-**Architecture & Performance:**
-* RESTful API Design & Integration
-* Microservices Architecture
-* System Scalability & Performance Optimization
-* Cloud Infrastructure Modernization
+## How I work
 
-## Professional Experience
+I start with evidence: the code, the data, the deployment path, the logs, and the experience of the people using the system. I prefer a small, reversible improvement over a broad redesign justified by fashion.
 
-### Gousto (Oct 2024 – Present): Senior Software Engineer
-* Orchestrated the seamless migration of a critical microservice from legacy AWS EC2 instances to AWS ECS (Elastic Container Service), enhancing scalability, improving deployment efficiency, and bolstering system resilience.
-* Drove significant performance improvements and enhanced security posture by leading the successful upgrade of the core Laravel framework and underlying PHP environment.
-* Architected and implemented a high-performance, reusable API endpoint, reducing code duplication and accelerating data retrieval across multiple platform services.
+A typical engagement may involve:
 
-### Kitman Labs (Feb 2023 – July 2024): Senior Web Engineer
-* Spearheaded the development of critical athlete management and performance tracking features, directly contributing to enhanced product offerings.
-* Boosted application performance by 10% through strategic refactoring of core components and advanced query optimization techniques.
-* Collaborated with data scientists to successfully integrate machine learning models, enabling predictive analytics for athlete performance.
-* Championed best practices in an Agile environment, improving team velocity and code quality.
+1. understanding the current architecture and the problem behind the request;
+2. identifying risks, dependencies, and a practical first slice;
+3. implementing and testing the smallest coherent change;
+4. documenting what was learned and how to operate or roll it back.
 
-### Ably (Jan 2022 – Nov 2022): Senior Web Engineer
-* Engineered system-wide optimizations for a high-traffic platform, resulting in a 20% improvement in overall performance and reduced latency.
-* Pioneered containerization efforts by successfully Dockerizing complex Ruby on Rails applications, streamlining deployment and improving scalability.
-* Designed and implemented real-time data streaming features, enhancing user engagement by 15%.
+That approach is useful when a team has a Rails application that has grown over time, an LMS that is difficult to change safely, or a delivery process that no longer gives enough confidence.
 
-### Reallyenglish (Oct 2005 – Oct 2024)
+## Selected work
 
-**Lead Engineer (Jan 2022 – Oct 2024): Part-Time Freelance Consultant**
-* Provided ongoing expert-level maintenance and feature development for a high-performance, scalable EdTech platform built on Ruby on Rails.
-* Enhanced and optimized existing mobile (React Native) and JavaScript-based applications, improving user experience and functionality.
-* Rapidly addressed critical bugs and implemented new features based on evolving business needs.
-    *Note: This freelance engagement was concurrent with full-time roles at Ably and Kitman Labs.*
+- [Consulting](/consulting/) — a practical starting point for Rails, LMS, reliability, and modernization conversations.
+- [Rails/LMS work](/projects/) — selected projects and technical areas.
+- [Writing](/writing/) — investigations, engineering notes, and reflections on practical AI.
+- [AI & Agents](/ai-agents/) — experiments in making AI-assisted work more useful, bounded, and reviewable.
 
-**Lead Ruby Developer (Oct 2005 – Jan 2022)**
-* Architected, developed, and successfully launched three generations of a robust Learning Management System (LMS), serving as the core product for the company.
-* Drove a 25% increase in customer satisfaction by conceptualizing and implementing innovative features and intuitive user interfaces.
-* Mentored and led a team of junior developers, fostering a culture of code quality, continuous learning, and adherence to best practices.
-* Successfully scaled the LMS platform to support over 100,000 active users while maintaining 99.9% uptime.
+## A note on this site
 
-## Key Projects
+This site is a working record rather than a catalogue of buzzwords. Some posts describe completed engineering work; others are experiments or developing ideas. I try to make that distinction clear, show the reasoning behind decisions, and avoid presenting an interesting possibility as a shipped result.
 
-* **Enterprise Learning Management System (LMS) Evolution (Reallyenglish):**
-    * Led the end-to-end design, development, and deployment of three successive LMS platforms using Ruby on Rails, PostgreSQL, and various frontend technologies.
-    * *Impact:* Scaled to serve 100,000+ users, achieved 99.9% uptime, and significantly improved customer retention through continuous feature enhancement.
-* **Practical English Course Platform (Independent/Reallyenglish):**
-    * Developed a comprehensive and scalable e-learning platform utilizing Node.js, Ruby, and JavaScript.
-    * *Impact:* Resulted in a 30% increase in user engagement and provided a flexible architecture for future course additions.
-* **Mobile Learning App (Reallyenglish):**
-    * Spearheaded the development of a feature-rich React Native mobile application, enabling offline learning capabilities.
-    * *Impact:* Achieved a 4.8-star rating on app stores and expanded user reach to mobile-first learners.
-* **Advanced Course Management System (Reallyenglish):**
-    * Engineered a state-of-the-art internal system using Ruby on Rails, Stimulus, and Turbo to streamline course creation and management.
-    * *Impact:* Reduced course creation and update time by 50%, significantly improving operational efficiency for the content team.
-* **Education Platform WordPress Homepage (Reallyenglish):**
-    * Designed and implemented a high-performance, SEO-optimized WordPress homepage for the main education platform.
-    * *Impact:* Increased organic search traffic by 40% and improved lead generation.
+If you are dealing with a difficult-to-change Rails or learning platform, [get in touch through the Consulting page](/consulting/).
