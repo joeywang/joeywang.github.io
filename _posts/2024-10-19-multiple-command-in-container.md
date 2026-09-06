@@ -1,212 +1,140 @@
 ---
 layout: post
-title: "Running Multiple Commands Simultaneously in a Container: A Comprehensive Guide"
-description: "When working with containers, you may often need to run multiple processes or commands concurrently. This need becomes particularly apparent in development"
+title: "Running Multiple Processes in a Single Container"
+description: "Six ways to run multiple processes in one Docker container, from GNU Parallel and Foreman to a custom entrypoint script, Supervisord, and tmux, with trade-offs."
 date: 2024-10-19 00:00 +0000
-tags: [docker, devops]
+categories: [DevOps]
+tags: [docker, devops, debugging]
 ---
-
-# Running Multiple Commands Simultaneously in a Container: A Comprehensive Guide
 
 <audio controls preload="metadata" src="/assets/audio/multiple-command-in-container-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction
+Debugging a Rails app from VSCode while the Rails server itself needs to keep running is a common case: the container has to run `rdbg`, the Ruby debug listener, and `rails server` at the same time. `CMD` and `ENTRYPOINT` only take one process, so something has to manage the rest. Here's what each option actually costs you.
 
-When working with containers, you may often need to run multiple processes or commands concurrently. This need becomes particularly apparent in development scenarios, such as debugging a Rails application in Visual Studio Code while simultaneously running the Rails server. In this article, we'll explore various methods to achieve this, focusing on the specific use case of running `rdbg listen` with a server and the Rails server simultaneously.
+## GNU Parallel
 
-## 1. GNU Parallel
+```
+RUN apt-get update && apt-get install -y parallel
+```
 
-GNU Parallel is a shell tool for executing jobs in parallel. It can be used to run multiple commands simultaneously within a container.
+```
+CMD parallel ::: "rdbg -n --open --host 0.0.0.0 --port 12345" "rails server -b 0.0.0.0"
+```
 
-### How to use:
-1. Install GNU Parallel in your container:
-   ```
-   RUN apt-get update && apt-get install -y parallel
-   ```
-2. Use it in your command:
-   ```
-   CMD parallel ::: "rdbg -n --open --host 0.0.0.0 --port 12345" "rails server -b 0.0.0.0"
-   ```
+Simple, but it's one more dependency for something that doesn't need a job-parallelization tool: Parallel is built for fan-out batch work, not for supervising two long-running services.
 
-### Pros:
-- Simple to use for running multiple commands
-- Provides good control over process management
+## Foreman with a Procfile
 
-### Cons:
-- Adds an extra dependency to your container
-- May require additional configuration for complex scenarios
+```
+RUN gem install foreman
+```
 
-## 2. Foreman with Procfile
+```
+debugger: rdbg -n --open --host 0.0.0.0 --port 12345
+web: rails server -b 0.0.0.0
+```
 
-Foreman is a manager for Procfile-based applications, which can be used to run multiple processes within a container.
+```
+CMD ["foreman", "start"]
+```
 
-### How to use:
-1. Install Foreman in your container:
-   ```
-   RUN gem install foreman
-   ```
-2. Create a Procfile in your project root:
-   ```
-   debugger: rdbg -n --open --host 0.0.0.0 --port 12345
-   web: rails server -b 0.0.0.0
-   ```
-3. Use Foreman in your command:
-   ```
-   CMD ["foreman", "start"]
-   ```
+The natural choice in a Ruby project: it's already part of the ecosystem, and it gives you unified, prefixed logs for both processes with no extra configuration.
 
-### Pros:
-- Well-integrated with Ruby/Rails ecosystem
-- Easy to manage multiple processes
-- Provides unified logging
+## A custom entrypoint script
 
-### Cons:
-- Adds another dependency to your container
-- May introduce additional complexity for simple use cases
+```bash
+#!/bin/bash
+set -e
 
-## 3. Using a Custom Entrypoint Script
+rdbg -n --open --host 0.0.0.0 --port 12345 &
+rails server -b 0.0.0.0
 
-A custom entrypoint script allows you to start multiple processes in a controlled manner.
+# Wait for any process to exit
+wait -n
 
-### How to use:
-1. Create an entrypoint script (e.g., `entrypoint.sh`):
-   ```bash
-   #!/bin/bash
-   set -e
+# Exit with status of process that exited first
+exit $?
+```
 
-   rdbg -n --open --host 0.0.0.0 --port 12345 &
-   rails server -b 0.0.0.0
+```
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+```
 
-   # Wait for any process to exit
-   wait -n
+No extra dependency, and full control over startup order and exit behavior, at the cost of a script you now own and have to keep correct. That's usually the right trade when the process logic is genuinely simple, as it is here.
 
-   # Exit with status of process that exited first
-   exit $?
-   ```
-2. Make the script executable:
-   ```
-   RUN chmod +x /entrypoint.sh
-   ```
-3. Set it as the entrypoint in your Dockerfile:
-   ```
-   ENTRYPOINT ["/entrypoint.sh"]
-   ```
+## Supervisord
 
-### Pros:
-- Provides full control over process startup and management
-- No additional dependencies required
-- Can include complex logic if needed
+```
+RUN apt-get update && apt-get install -y supervisor
+```
 
-### Cons:
-- Requires writing and maintaining a separate script
-- May be overkill for simple use cases
+```
+[supervisord]
+nodaemon=true
 
-## 4. Supervisord
+[program:debugger]
+command=rdbg -n --open --host 0.0.0.0 --port 12345
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
 
-Supervisord is a process control system that can be used to manage multiple processes within a container.
+[program:rails]
+command=rails server -b 0.0.0.0
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+```
 
-### How to use:
-1. Install Supervisord in your container:
-   ```
-   RUN apt-get update && apt-get install -y supervisor
-   ```
-2. Create a Supervisord configuration file (e.g., `supervisord.conf`):
-   ```
-   [supervisord]
-   nodaemon=true
+```
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+```
 
-   [program:debugger]
-   command=rdbg -n --open --host 0.0.0.0 --port 12345
-   stdout_logfile=/dev/stdout
-   stdout_logfile_maxbytes=0
-   stderr_logfile=/dev/stderr
-   stderr_logfile_maxbytes=0
+Supervisord restarts processes automatically and centralizes logging, which is what you want in production. For a local debugging setup, that's more process than the problem needs.
 
-   [program:rails]
-   command=rails server -b 0.0.0.0
-   stdout_logfile=/dev/stdout
-   stdout_logfile_maxbytes=0
-   stderr_logfile=/dev/stderr
-   stderr_logfile_maxbytes=0
-   ```
-3. Use Supervisord in your command:
-   ```
-   CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
-   ```
+## tmux
 
-### Pros:
-- Robust process management with automatic restarts
-- Centralized logging and monitoring
-- Suitable for production environments
+```
+RUN apt-get update && apt-get install -y tmux
+```
 
-### Cons:
-- Adds complexity and an additional dependency
-- May be excessive for development environments
+```bash
+#!/bin/bash
+tmux new-session -d -s myapp 'rdbg -n --open --host 0.0.0.0 --port 12345'
+tmux split-window -v 'rails server -b 0.0.0.0'
+tmux attach-session -d
+```
 
-## 5. Using tmux
+Useful if you actually want an interactive terminal into the container, less useful if you just want both processes running in the background. Not something to ship to production.
 
-Tmux is a terminal multiplexer that allows you to run multiple terminal sessions within a single window.
+## Docker Compose
 
-### How to use:
-1. Install tmux in your container:
-   ```
-   RUN apt-get update && apt-get install -y tmux
-   ```
-2. Create a tmux session in your entrypoint script:
-   ```bash
-   #!/bin/bash
-   tmux new-session -d -s myapp 'rdbg -n --open --host 0.0.0.0 --port 12345'
-   tmux split-window -v 'rails server -b 0.0.0.0'
-   tmux attach-session -d
-   ```
+Not a way to run multiple commands in one container, but often the better answer to the underlying problem: give the debugger and the server their own containers.
 
-### Pros:
-- Allows for interactive sessions within the container
-- Useful for development and debugging scenarios
+```yaml
+version: '3'
+services:
+  debugger:
+    image: your-rails-image
+    command: rdbg -n --open --host 0.0.0.0 --port 12345
+    ports:
+      - "12345:12345"
+  web:
+    image: your-rails-image
+    command: rails server -b 0.0.0.0
+    ports:
+      - "3000:3000"
+```
 
-### Cons:
-- May not be suitable for production environments
-- Requires additional setup and familiarity with tmux
+```
+docker-compose up
+```
 
-## 6. Docker Compose (for local development)
+## Which one to actually use
 
-While not a method for running multiple commands within a single container, Docker Compose is worth mentioning for local development scenarios.
-
-### How to use:
-1. Create a `docker-compose.yml` file:
-   ```yaml
-   version: '3'
-   services:
-     debugger:
-       image: your-rails-image
-       command: rdbg -n --open --host 0.0.0.0 --port 12345
-       ports:
-         - "12345:12345"
-     web:
-       image: your-rails-image
-       command: rails server -b 0.0.0.0
-       ports:
-         - "3000:3000"
-   ```
-2. Run with Docker Compose:
-   ```
-   docker-compose up
-   ```
-
-### Pros:
-- Separates concerns, making it easier to manage different processes
-- Ideal for local development environments
-- Allows for easy scaling and linking of services
-
-### Cons:
-- Not suitable for production deployments in a single container
-- Requires Docker Compose to be installed and configured
-
-## Conclusion
-
-Choosing the right method for running multiple commands simultaneously in a container depends on your specific use case, development environment, and production requirements. For debugging Rails in VSCode while running the Rails server, a combination of Docker Compose for local development and a custom entrypoint script or Foreman for containerized environments might provide the best balance of flexibility and simplicity.
-
-Remember to consider factors such as ease of use, maintainability, and performance when selecting the approach that best fits your needs. Experimenting with different methods will help you find the optimal solution for your development workflow.
+For the VSCode-plus-rdbg case specifically, a custom entrypoint script or Foreman covers it with the least added complexity. Reach for Supervisord only once this is running in production and needs automatic restarts. tmux and Docker Compose solve different problems, interactive access and container separation, not "run two commands in one container" as such.

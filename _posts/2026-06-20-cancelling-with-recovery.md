@@ -1,20 +1,18 @@
 ---
 layout: post
-title: "The Phantom Postgres Ghost: Tracking Down \"Conflict with Recovery\" Errors on Read Replicas"
-description: "If you are running a modern application with a PostgreSQL database, there is a high chance you eventually split your traffic. You kept your writes on the"
+title: "Postgres conflict with recovery: why replicas cancel queries"
+description: "A PostgreSQL replica cancels long queries with conflict with recovery errors during VACUUM replication, and hot_standby_feedback fixes it without downtime."
 date:   2026-06-20 14:41:26 +0100
-categories: Postgres
-tags: Postgres
+categories: [Database]
+tags: [postgresql, database, performance]
 ---
-
-# The Phantom Postgres Ghost: Tracking Down "Conflict with Recovery" Errors on Read Replicas
 
 <audio controls preload="metadata" src="/assets/audio/cancelling-with-recovery-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-If you are running a modern application with a PostgreSQL database, there is a high chance you eventually split your traffic. You kept your writes on the Primary database and routed your heavy reads and analytics to a Read Replica. It’s a great setup. Everything is blazing fast—until one day, your background workers or analytics dashboards start throwing this cryptic nightmare:
+If you run a PostgreSQL database at any scale, there's a good chance you've split your traffic: writes on the primary, heavy reads and analytics on a read replica. It works well, until the day your background workers or analytics dashboards start throwing this:
 
 ```text
 PG::TRSerializationFailure: ERROR: canceling statement due to conflict with recovery
@@ -22,19 +20,19 @@ DETAIL: User query might have needed to see row versions that must be removed.
 
 ```
 
-It’s annoying, it feels random, and if you have load balancers like PgPool in front of your database, it can be downright confusing to debug.
+It's annoying, it feels random, and if you have a load balancer like PgPool in front of the database, it gets confusing fast.
 
-Let’s pull back the curtain on why this happens, why your load balancer might accidentally be hiding it from you, and how to fix it without bringing down production.
+Here's why this happens, why your load balancer might be hiding it from you, and how to fix it without bringing down production.
 
 ---
 
-## The Root Cause: A Story of Multi-Version Concurrency Control (MVCC)
+## The root cause: MVCC across a replica
 
 To understand this error, you have to understand how Postgres deletes data.
 
-When you run a `DELETE` or an `UPDATE` in Postgres, it doesn’t actually erase the data from the disk immediately. Instead, it creates a new version of the row and marks the old one as "dead." Later on, a background process called `VACUUM` comes along, sweeps up those dead rows (tuples), and frees up the disk space.
+When you run a `DELETE` or an `UPDATE` in Postgres, it doesn't erase the data from disk immediately. It creates a new version of the row and marks the old one as dead. Later, a background process called `VACUUM` sweeps up those dead rows (tuples) and frees the disk space.
 
-Now, let’s introduce the Read Replica into the mix.
+Now bring the read replica into the picture:
 
 ```
 [ Primary Database ]                         [ Read Replica ]
@@ -42,77 +40,70 @@ Now, let’s introduce the Read Replica into the mix.
   1. Deletes a row & VACUUMs it                    |
      |                                             |
   2. Sends WAL log (Cleanup) --------------------> | 3. Running a 45-second report
-                                                       (Looking at that deleted row!)
+                                                       (looking at that deleted row)
                                                    |
-                                            🚨 THE CLASH 🚨
-                                     Replication must proceed. 
-                                     Your query gets killed.
+                                          Replication must proceed.
+                                          Your query gets killed.
 
 ```
 
-1. **On the Primary:** A vacuum happens. The primary says, *"Awesome, nobody here is looking at these old rows anymore. Delete them!"*
-2. **The Replication:** The primary writes this cleanup action into the Write-Ahead Log (WAL) and streams it to your replica.
-3. **The Clash on the Replica:** Your replica receives the instruction to delete those old rows. But wait! A user is currently running a heavy, 45-second reporting query on the replica that is *actively looking* at those exact rows.
+1. **On the primary:** a vacuum runs. Nobody is looking at these old rows anymore, so they get deleted.
+2. **Replication:** the primary writes this cleanup into the write-ahead log (WAL) and streams it to the replica.
+3. **The clash on the replica:** the replica receives the instruction to delete those old rows. But a user is currently running a heavy, 45-second reporting query on the replica that is actively reading those exact rows.
 
-The replica is stuck in a hard place. If it waits for your query to finish, replication falls behind, and your replica data becomes stale. If it forces the update, it breaks your query.
+The replica is stuck. If it waits for your query to finish, replication falls behind and the replica's data goes stale. If it applies the update, it breaks your query.
 
-Postgres chooses replication. It waits for a grace period (defined by `max_standby_streaming_delay`, usually 30 seconds). If your query isn’t done by then, Postgres pulls the plug and throws the `conflict with recovery` error.
-
----
-
-## The PgPool Plot Twist: Why You Realized This Late
-
-Some dev teams look at this error and say, *"Wait, we’ve been running a replica for years with feedback turned off, and we've never seen this. Why now?"*
-
-If you use a tool like **PgPool-II** for load balancing, you might have replication gap detection turned on. If the replica falls behind the primary by more than a few seconds, PgPool aggressively stops sending read traffic to the replica and routes it back to the primary.
-
-This acts as an accidental shield! During massive bulk writes or heavy data dumps, the replication gap spikes, PgPool pulls the plug on replica traffic, and your users are kept safely away from the replica while the dangerous cleanup logs are replayed.
-
-**But PgPool doesn’t protect you from long queries.** If the primary deletes just a few rows, the replication lag remains at a perfect 0 or 1 second. PgPool thinks everything is fine. But if a user on the replica happens to be running a 40-second query that touches those exact few rows, the 30-second grace period will tick down, and *bam*—query canceled. PgPool never saw it coming because the overall replication gap was completely normal.
+Postgres chooses replication. It waits for a grace period, defined by `max_standby_streaming_delay` and usually 30 seconds. If your query isn't done by then, Postgres cancels it and throws the `conflict with recovery` error.
 
 ---
 
-## How to Fix It (Without Restarting Production)
+## Why PgPool can hide this from you for years
 
-You don’t have to live with these errors, and you don’t need to schedule a 2:00 AM maintenance window to fix them. Here are the three best ways to handle it.
+Some teams have run a replica for years without ever seeing this error, then hit it out of nowhere.
 
-### 1. The Zero-Downtime Silver Bullet: `hot_standby_feedback`
+If you use **PgPool-II** for load balancing, you might have replication gap detection turned on. If the replica falls behind the primary by more than a few seconds, PgPool stops sending read traffic to it and routes everything back to the primary.
 
-You can tell your replica to actively talk back to the primary database. By turning on `hot_standby_feedback`, the replica whispers to the primary: *"Hey, I'm currently running a query that needs these specific old rows. Hold off on the vacuum for a minute."*
+That acts as an accidental shield. During massive bulk writes or heavy data dumps, the replication gap spikes, PgPool cuts replica traffic, and users never touch the replica while the dangerous cleanup logs replay.
 
-The best part? You can enable this **without restarting the database**.
+But PgPool doesn't protect you from long queries. If the primary deletes just a few rows, replication lag stays at a normal 0 or 1 second. PgPool sees nothing wrong. But if a user on the replica is running a 40-second query that touches those exact rows, the 30-second grace period ticks down and the query gets canceled. PgPool never sees it coming, because the overall replication gap looked completely normal.
+
+---
+
+## How to fix it without restarting production
+
+You don't need a maintenance window for this. Three things fix it in practice.
+
+### 1. `hot_standby_feedback`
+
+Turning this on tells the replica to talk back to the primary: it needs certain old rows, so hold off vacuuming them. You can enable it without restarting the database.
 
 Run this on your replica:
 
 ```sql
 ALTER SYSTEM SET hot_standby_feedback = 'on';
-SELECT pg_reload_conf(); -- Reloads config on the fly!
+SELECT pg_reload_conf(); -- reloads config on the fly
 
 ```
 
-> 💡 **Pro-Tip:** Turn this on at the **Primary** database level too (`ALTER SYSTEM SET hot_standby_feedback = 'on'`). The primary will ignore the setting while acting as master, but whenever you spin up a *new* replica via `pg_basebackup`, the new node will automatically inherit this config and boot up protected.
+Turn it on at the primary level too (`ALTER SYSTEM SET hot_standby_feedback = 'on'`). The primary ignores the setting while acting as master, but any new replica spun up via `pg_basebackup` inherits the config and boots up already protected.
 
-### 2. Pair it with a Safety Net (`statement_timeout`)
+### 2. Pair it with `statement_timeout`
 
-If you turn `hot_standby_feedback` on, you run a new risk: if a developer opens a database console on the replica and leaves a query hanging open for 5 hours, the primary database will stop vacuuming entirely. This causes **table bloat** and eats up disk space on your primary.
+Turning on `hot_standby_feedback` introduces a new risk: if someone opens a console on the replica and leaves a query hanging for five hours, the primary stops vacuuming entirely. That causes table bloat and eats disk space on the primary.
 
-To prevent this, always set a reasonable `statement_timeout` on your replica:
+Set a reasonable `statement_timeout` on the replica to prevent that:
 
 ```ini
-statement_timeout = '5min' # Kills rogue replica queries before they bloat the primary
+statement_timeout = '5min' # kills rogue replica queries before they bloat the primary
 
 ```
 
-### 3. Handle it in App Code (The Retry Mechanism)
+### 3. Retry in application code
 
-Because this is a serialization failure, the error is transient. If you run the exact same query one second later, it will almost certainly succeed because the replica has finished replaying the logs.
+This is a serialization failure, so the error is transient. Run the same query a second later and it will almost certainly succeed, since the replica has finished replaying the logs by then.
 
-If you are using a framework like Ruby on Rails, Laravel, or Django, wrap your heavy replica reads in a basic retry block that catches `PG::TRSerializationFailure` and tries one more time before giving up.
+If you're using Rails, Laravel, or Django, wrap heavy replica reads in a basic retry block that catches `PG::TRSerializationFailure` and tries once more before giving up.
 
----
+## The principle
 
-## Wrap Up
-
-The `conflict with recovery` error isn't a sign that your database is broken; it's a sign that your database is working exactly as designed to keep your data synchronized.
-
-For 90% of production apps, turning **`hot_standby_feedback = on`**, capping it with a reasonable **`statement_timeout`**, and letting your replicas inherit the config from the primary is the sweet spot for a quiet, error-free life.
+The `conflict with recovery` error isn't a sign the database is broken. It's the database working exactly as designed to keep replicated data synchronized. For most production apps, `hot_standby_feedback = on`, capped with a reasonable `statement_timeout`, and inherited by every new replica, is the quiet, error-free default.

@@ -1,23 +1,20 @@
 ---
 layout: post
-title: "The Invisible Bottleneck: How to Audit Your USB-C Cables Using macOS Terminal"
-description: "We’ve all been there: you plug your MacBook into a premium-looking braided cable, but the battery percentage barely moves. In the world of USB-C, looks are"
+title: "Auditing USB-C Cable Quality from macOS Terminal"
+description: "A macOS Terminal script that reads the I/O Kit registry to check negotiated wattage and voltage, so you can tell a fast USB-C cable from a slow one."
 date: 2026-01-21
-categories: [macOS, USB-C, Power Delivery, Terminal]
-tags: [macOS, USB-C, Power Delivery, Terminal, Scripting]
-summary: "Learn how to use a simple macOS Terminal script to audit your USB-C cables and ensure they deliver the power your MacBook deserves."
+categories: [Notes, Engineering]
+tags: [macos, usb-c, terminal, scripting]
 ---
-
-# The Invisible Bottleneck: How to Audit Your USB-C Cables Using macOS Terminal
 
 <audio controls preload="metadata" src="/assets/audio/cache-check-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-We’ve all been there: you plug your MacBook into a premium-looking braided cable, but the battery percentage barely moves. In the world of USB-C, looks are deceiving. A cable might be physically beefy but electronically limited to **60W** or, worse, failing to negotiate **Power Delivery (PD)** protocols.
+Plug a MacBook into a premium-looking braided cable and the battery percentage barely moves. In the world of USB-C, looks are deceiving: a cable can be physically beefy but electronically limited to 60W, or fail to negotiate Power Delivery (PD) at all.
 
-Instead of buying an expensive physical USB-C voltmeter, you can use the macOS **I/O Kit registry** to see exactly what’s happening inside the copper.
+Instead of buying a USB-C voltmeter, you can read the macOS I/O Kit registry to see exactly what's happening inside the copper.
 
 ## The Science of the "Handshake"
 
@@ -104,6 +101,4 @@ Run the script, then gently wiggle the cable near the connectors. Run it again. 
 
 ---
 
-## Conclusion
-
-Data doesn't lie. By using this script, you can sort your "fast" cables from your "trash" cables in seconds. The next time your Mac feels like it's charging slowly, don't guess—check the Terminal.
+Data doesn't lie. This script sorts your fast cables from your trash ones in seconds. Next time the Mac feels like it's charging slowly, don't guess, check the terminal.

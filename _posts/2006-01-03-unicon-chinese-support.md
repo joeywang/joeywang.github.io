@@ -1,11 +1,11 @@
 ---
 layout: post
 title: UNICON安装及中文支持指南
-description: "UNICON是一个用于Linux系统的CJK（中文/日文/韩文）控制台显示系统。请注意，UNICON不支持UTF-8。"
+description: "在 Linux 控制台显示 CJK（中文、日文、韩文）字符：UNICON 的内核补丁、编译配置，以及在 RedHat 和 Gentoo 上的完整安装步骤。"
 date: 2006-01-03 00:00 +0000
+categories: [Notes]
+tags: [linux, kernel, chinese]
 ---
-# UNICON安装及中文支持指南
-
 <audio controls preload="metadata" src="/assets/audio/unicon-chinese-support-summary.ogg">
   Your browser does not support the audio element.
 </audio>

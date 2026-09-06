@@ -1,62 +1,56 @@
 ---
 layout: post
 title:  "Redis in Ruby on Rails: Cache Server and Job Queue"
-description: "Redis is a versatile tool that can be utilized in various ways within Ruby on Rails projects. The two primary uses are as a cache server and as a queue for"
+description: "Redis serves two very different roles in a Rails app, a disposable read cache and a durable job queue, and conflating the two causes real outages."
 date:   2024-05-03 14:41:26 +0100
-categories: [Rails, devops]
+categories: [Rails, DevOps]
+tags: [redis, rails, sidekiq, performance]
 ---
-
-# Redis in Ruby on Rails: Cache Server and Job Queue
 
 <audio controls preload="metadata" src="/assets/audio/redis-for-rails-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-Redis is a versatile tool that can be utilized in various ways within Ruby on Rails projects. The two primary uses are as a cache server and as a queue for background jobs. Understanding the differences between these two roles is crucial for optimizing Redis performance.
+Redis serves two different roles in a Rails app: a cache and a job queue. Treating them the same is where the trouble starts.
 
-## Redis as a Cache Server
+## Redis as a cache server
 
-- **Read-heavy workload**: Ideal for scenarios with frequent read operations.
-- **Regeneration capability**: Non-critical data that can be easily regenerated upon request.
-- **Persistence**: Not required, as the cache can be rebuilt.
+- Read-heavy workload: built for frequent reads.
+- Regenerable data: only cache what you can recreate on a miss.
+- No persistence needed: the cache can be rebuilt from source at any time.
 
-It's important to note that `redis.get` might not always be faster than a PostgreSQL query, depending on the use case.
+`redis.get` is not automatically faster than a PostgreSQL query. Depending on the query and the network hop, a well-indexed Postgres lookup can beat a Redis round trip.
 
-## Redis as a Job Queue
+## Redis as a job queue
 
-- **Persistence**: Essential to ensure job integrity in the event of a crash.
-- **Priority management**: Jobs can be organized into different queues based on priority.
-- **Reliability**: Enhanced job execution can be achieved with tools like Sidekiq Pro.
+- Persistence matters here: a crash should not silently drop queued jobs.
+- Jobs can be split across queues by priority.
+- Sidekiq Pro adds reliability guarantees the open-source version doesn't have.
 
-## Redis Metrics to Monitor
+## Metrics worth watching
 
-- **Memory cost**: Keep track of memory usage.
-- **I/O rate**: Monitor input/output operations per second.
-- **Connections**: The number of active connections to the Redis server.
-- **Hit rate**: The ratio of successful cache lookups.
+- Memory usage.
+- I/O rate.
+- Active connections.
+- Hit rate, for the cache use case specifically.
 
-## Optimization Strategies
+## Getting more out of it
 
-- **Connection Pooling**: Utilize connection pools for both Rails and Sidekiq to enhance performance.
-- **C Implementation**: Employ the C implementation of Redis for faster connections.
-- **High Availability (HA)**: Use Redis Sentinel or cluster mode for HA and scaling.
-- **Cost Consideration**: Evaluate if using cloud solutions might be more cost-effective.
-- **Queue Management**: Organize queues by priority and workload type (CPU-heavy vs. I/O-heavy).
+- Use connection pools on both the Rails and Sidekiq sides.
+- Use Redis's C extension for faster connections.
+- Run Sentinel or cluster mode if you need HA.
+- Check whether a managed Redis is actually cheaper than the ops cost of running your own.
+- Split queues by workload: CPU-heavy jobs separate from I/O-heavy ones.
+- Run separate Redis instances for caching and queuing. A read-heavy cache workload and a write-heavy queue workload fight each other on the same instance.
 
-### Server Separation
+## Tuning under load
 
-- Separate Redis servers for caching (read-heavy) and queuing (CPU-heavy) to optimize performance.
+- Scale Redis capacity ahead of expected load, not after you've seen it fail.
+- Decommission Redis instances that have become unreliable rather than working around them.
+- Fall back to Sidekiq's inline mode if Redis becomes unresponsive, so jobs still run in a degraded state.
+- Tune connection, retry, read, and write timeouts to match what your app can tolerate.
 
-## High Availability and Performance Tuning
+## The part that actually matters
 
-- **Pre-emptive Scaling**: Scale Redis capacity in anticipation of increased load.
-- **Redis Reliability**: Decommission unreliable Redis servers to prevent service degradation.
-- **Sidekiq Inline Mode**: Use inline mode for Sidekiq when Redis is unresponsive.
-- **Timeout Tuning**: Adjust connection, retry, read, and write timeouts as needed.
-
-## Understanding Your System
-
-To effectively troubleshoot and optimize Redis performance, you must have a deep understanding of your application's requests and job characteristics. Even if Redis is not a central component of your system, it's beneficial to be aware of various optimization techniques.
-
-- **Puma Configuration**: Balance the number of processes and threads for optimal performance.
+None of this helps without knowing your own traffic: what your requests look like and what your jobs actually do. Redis is only one lever. Puma's process and thread counts matter just as much for how much load the app can take before Redis becomes the bottleneck.

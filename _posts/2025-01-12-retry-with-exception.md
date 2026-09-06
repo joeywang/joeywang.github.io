@@ -1,25 +1,19 @@
 ---
 layout: post
-title: "Retry Mechanisms in Ruby: Best Practices, Pros, and Cons"
-description: "Handling transient failures in applications is a common requirement, especially when dealing with external services, databases, or network calls. A common"
+title: "Retry Strategies in Ruby: Exceptions vs. Conditional Checks"
+description: "Comparing Ruby retry patterns, exception-based retry, conditional checks, and exponential backoff, and when each keeps performance acceptable."
 date: "2025-01-12"
-categories: ruby retry exception handling
+categories: [Engineering]
+tags: [ruby, performance, debugging]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/retry-with-exception-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-**Retry Mechanisms in Ruby: Best Practices, Pros, and Cons**
+Transient failures, a flaky external service, a database timeout, a dropped network call, need a retry strategy. Ruby's `retry` keyword makes exception-based retry easy to reach for, but exceptions carry a real performance cost, and reaching for them by default isn't always the right call.
 
-### Introduction
-Handling transient failures in applications is a common requirement, especially when dealing with external services, databases, or network calls. A common approach to retrying failed operations in Ruby is through exception handling. However, while exceptions provide a structured way to handle errors, they come with performance costs. This article explores different retry strategies in Ruby, their pros and cons, and best practices for optimizing performance.
-
----
-
-## **Using Exceptions for Retry**
-### **Basic Exception Handling with Retry**
-Ruby provides the `retry` keyword, which allows re-executing a block of code when an exception occurs:
+## Exception-based retry
 
 ```ruby
 def retry_method
@@ -39,19 +33,11 @@ end
 retry_method
 ```
 
-### **Pros**
-✅ **Simple and Readable**: Uses built-in exception handling, reducing the need for manual loop constructs.
-✅ **Encapsulated Error Handling**: Keeps error handling within a single `begin...rescue` block.
+This is simple and keeps the retry logic inside one `begin...rescue` block. The costs: raising and rescuing an exception is slower than a conditional check, since it builds a stack trace every time, and an unguarded `retry` can loop forever if the attempt count isn't checked.
 
-### **Cons**
-❌ **Performance Overhead**: Raising and rescuing exceptions is slower than using condition-based checks.
-❌ **Potential Infinite Loops**: If not properly guarded, `retry` can lead to infinite retries.
+## Conditional checks for expected failures
 
----
-
-## **Optimized Approaches for Retrying**
-### **1️⃣ Avoid Exceptions for Expected Failures**
-Instead of relying on exceptions, use conditional checks when failures are expected:
+When failure is a normal, expected outcome rather than an exceptional one, a loop with a condition avoids the exception overhead entirely:
 
 ```ruby
 def retry_method
@@ -72,13 +58,12 @@ def risky_operation
   rand > 0.8 # Simulates a success/failure scenario
 end
 ```
-✅ **Pros**: No exception overhead, better performance.
-❌ **Cons**: Requires explicit error handling and conditional checks.
 
----
+No exception overhead, at the cost of writing the failure handling explicitly instead of leaning on `rescue`.
 
-### **2️⃣ Using Exponential Backoff to Reduce Load**
-Instead of retrying immediately, introduce exponential delays:
+## Exponential backoff
+
+Retrying immediately just hammers whatever already failed. Backing off the delay reduces load on the thing you're retrying against:
 
 ```ruby
 def retry_method
@@ -95,13 +80,10 @@ def retry_method
   end
 end
 ```
-✅ **Pros**: Reduces pressure on external services.
-❌ **Cons**: Can slow down resolution if failures persist.
 
----
+The tradeoff is resolution time: if the failure is persistent, backoff makes you wait longer to find that out.
 
-### **3️⃣ Using Ruby's `retryable` Gem for Cleaner Code**
-For a more structured approach, the `retryable` gem provides an easy-to-use interface:
+## The `retryable` gem
 
 ```ruby
 require 'retryable'
@@ -112,32 +94,14 @@ Retryable.retryable(tries: 5, sleep: 2) do
   puts "Success!"
 end
 ```
-✅ **Pros**: Clean, configurable retry logic.
-❌ **Cons**: Adds an external dependency.
 
----
+Cleaner and more configurable than hand-rolled retry logic, at the cost of one more dependency.
 
-## **Performance Considerations**
-1. **Exception Handling Overhead**
-   - Raising exceptions triggers stack trace generation, increasing CPU and memory usage.
-   - Frequent exceptions put pressure on the garbage collector.
+## Performance notes
 
-2. **Logging Impact**
-   - Avoid printing full stack traces inside retries.
-   ```ruby
-   rescue => e
-     puts "Error: #{e.message}" # Avoid e.backtrace unless debugging
-   ```
+Raising an exception builds a stack trace every time, which adds CPU cost and GC pressure under frequent failures. Avoid logging `e.backtrace` inside a retry loop unless you're actively debugging, it's expensive and rarely needed for every attempt. And always cap the number of retries, with a circuit breaker if the failure is likely to be persistent rather than transient.
 
-3. **Balancing Retries and Failures**
-   - Use a **maximum retry limit** to prevent infinite loops.
-   - Implement **circuit breakers** to avoid excessive retries on persistent failures.
+## When to use which
 
----
-
-### **Final Verdict: When to Use Exceptions vs. Conditional Checks?**
-- **Use exceptions** for unexpected failures (e.g., network timeouts, DB errors).
-- **Use conditional checks** for expected failures (e.g., API rate limits, status codes).
-- **Combine both** for efficient retries without excessive exception handling.
-
-By carefully selecting the retry strategy, you can improve the reliability of your Ruby applications while maintaining optimal performance.
+Exceptions fit unexpected failures, network timeouts, database errors, the kind of failure that should genuinely interrupt control flow. Conditional checks fit expected failures, rate limits, status codes you already anticipate. Most systems end up using both: exceptions for the genuinely exceptional, checks for the routine, and backoff wrapped around either one once retries start hitting a service under load.
+</content>

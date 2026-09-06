@@ -3,7 +3,7 @@ layout: post
 title: "The CI failures that moved every time you reran them"
 date: 2026-08-07 09:45:00 +0100
 author: "Joey Wang"
-description: "How a moving set of Rails CI flakes exposed shared download state, Chrome/Selenium stale-node retries, and feature specs that asserted before the browser had settled."
+description: "How a moving set of Rails CI flakes exposed shared download state, Selenium stale-node retries, and specs asserting before the browser settled."
 tags: [engineering, testing, ci, ruby, rails, debugging]
 categories: [Engineering]
 ---
@@ -16,7 +16,7 @@ This is the story of a flaky test suite that wasn't one problem. It was a small 
 
 ## The symptom
 
-Our Rails app runs its feature specs in CI with `parallel_tests` — seven RSpec processes sharing one database setup. A normal merge to `main` triggers the full suite.
+Our Rails app runs its feature specs in CI with `parallel_tests`: seven RSpec processes sharing one database setup. A normal merge to `main` triggers the full suite.
 
 After merging a small mailer change, the CI run came back red:
 
@@ -38,7 +38,7 @@ X execution expired
 JUnit Test Report: ./spec/features/admin/programs_spec.rb#167
 ```
 
-Same error. Different lines. None of the three specs had anything to do with the mailer change I had just merged. (I'm deliberately using placeholder spec names and leaving out run IDs here — the numbers and names don't matter, the shape does.)
+Same error. Different lines. None of the three specs had anything to do with the mailer change I had just merged. (I'm deliberately using placeholder spec names and leaving out run IDs here: the numbers and names don't matter, the shape does.)
 
 ## The pattern hiding in the failures
 
@@ -75,7 +75,7 @@ end
 
 Now think about what happens with seven parallel processes. Process 3 clicks "Download" and starts polling for the file. Process 5 starts a feature spec, runs `before(:each)`, and deletes every file in the shared `tmp/downloads` folder. Process 3's file vanishes before the poll sees it. It waits, polls, waits, and dies 60 seconds later with `execution expired`.
 
-It was a race. A shared mutable directory, seven processes, and a cleanup step that assumes it owns the folder. No wonder the failure moved around — it depended entirely on which processes happened to overlap in that window.
+It was a race. A shared mutable directory, seven processes, and a cleanup step that assumes it owns the folder. No wonder the failure moved around: it depended entirely on which processes happened to overlap in that window.
 
 ## Why local runs were always green
 
@@ -116,7 +116,7 @@ One commit, one file changed:
 test: isolate download dir per parallel test process
 ```
 
-CI came back green. The flaky suite stopped failing in that particular way, because it had never really been flaky — it had been a shared-state bug that only existed when the suite ran in parallel.
+CI came back green. The flaky suite stopped failing in that particular way, because it had never really been flaky. It had been a shared-state bug that only existed when the suite ran in parallel.
 
 But that was not the end of the story.
 
@@ -208,7 +208,7 @@ Feature specs should synchronize on what the user can see. If the user-visible p
 
 1. **A different spec failing every rerun is itself a clue.** A broken test fails the same way every time. A moving failure points at shared state, browser timing, or a helper assumption that many tests share.
 
-2. **Check what the tests share before blaming the tests.** Parallel test suites run the same code in the same working directory. Files, folders, ports, Redis keys, environment variables, browser helpers — anything shared is a candidate. In our case the app had already solved this for databases and Redis; the downloads folder was simply the one thing nobody had partitioned yet.
+2. **Check what the tests share before blaming the tests.** Parallel test suites run the same code in the same working directory. Files, folders, ports, Redis keys, environment variables, browser helpers: anything shared is a candidate. In our case the app had already solved this for databases and Redis; the downloads folder was simply the one thing nobody had partitioned yet.
 
 3. **Timeouts that always hit the same limit are a smell.** A 60-second timeout that always burns the full 60 seconds is not a slow test. It is a test waiting for something that will never arrive. Retrying a browser error through the full Capybara wait can create the same problem in a different form.
 

@@ -1,12 +1,11 @@
 ---
 layout: post
-title:  "PostgreSQL Setup on Ubuntu: Installation, User Setup, and Real-world Debugging"
-description: "This article walks through installing the latest PostgreSQL on Ubuntu, setting up users correctly for development, and debugging common authentication"
+title:  "PostgreSQL on Ubuntu: install, user setup, and auth debugging"
+description: "Install PostgreSQL from the PGDG repo on Ubuntu, set up a matching development role, and debug the password authentication failures Rails hits most."
 date:   2025-11-10 10:00:00 +0000
-categories: PostgreSQL
+tags: [postgresql, rails, database, linux, debugging]
+categories: [Database]
 ---
-
-# PostgreSQL Setup on Ubuntu: Installation, User Setup, and Real‑World Debugging
 
 <audio controls preload="metadata" src="/assets/audio/postgresql-setup-on-ubuntu-summary.ogg">
   Your browser does not support the audio element.
@@ -272,11 +271,5 @@ bundle install
 
 ---
 
-## Conclusion
-
-Most PostgreSQL setup issues on Ubuntu are not installation problems — they are **authentication model misunderstandings**.
-
-Once you internalize how `pg_hba.conf`, connection types, and Rails configs interact, PostgreSQL becomes predictable, secure, and pleasant to work with.
-
-Happy hacking 🚀
+Most PostgreSQL setup issues on Ubuntu aren't installation problems, they're authentication model misunderstandings. Once `pg_hba.conf`, connection types, and Rails config line up in your head, PostgreSQL stops being mysterious.
 

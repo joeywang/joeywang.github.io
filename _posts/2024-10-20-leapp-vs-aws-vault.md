@@ -1,188 +1,80 @@
 ---
 layout: post
-title: "Authenticating AWS CLI: A Comparison of Leapp and aws-vault"
-description: "In the world of AWS (Amazon Web Services) development, securely managing credentials for the AWS CLI (Command Line Interface) is crucial. Two popular tools"
+title: "Leapp vs aws-vault: Comparing AWS CLI Credential Tools"
+description: "A practical comparison of Leapp and aws-vault for managing AWS CLI credentials, covering SSO and IAM setup, session tokens, and when each tool fits better."
 date: 2024-10-20 00:00 +0000
-tags: [aws, devops]
+categories: [DevOps]
+tags: [aws, devops, security]
 ---
-
-# Authenticating AWS CLI: A Comparison of Leapp and aws-vault
 
 <audio controls preload="metadata" src="/assets/audio/leapp-vs-aws-vault-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-In the world of AWS (Amazon Web Services) development, securely managing credentials for the AWS CLI (Command Line Interface) is crucial. Two popular tools that help developers streamline this process are Leapp and aws-vault. This article will compare these tools, focusing on their approach to AWS CLI authentication, installation, configuration, and usage.
+Both Leapp and aws-vault solve the same problem: keeping AWS credentials out of plaintext files and generating short-lived session tokens instead of pasting long-term keys into every shell. They differ in scope and interface, not in what problem they're solving.
 
-## Overview
+## What each one is
 
-### Leapp
+Leapp is a cross-platform credential manager with both a GUI and a CLI, and it isn't AWS-specific: it supports several cloud providers through the same account-switching interface.
 
-Leapp is an open-source, cross-platform application that provides secure access management for cloud accounts. It offers both a graphical user interface and a CLI, supporting multiple cloud providers, including AWS.
+aws-vault is command-line only and AWS-specific. It stores credentials in the OS keystore and generates temporary credentials on demand.
 
-### aws-vault
-
-aws-vault is a command-line tool that securely stores and accesses AWS credentials in a development environment. It's designed specifically for AWS and integrates seamlessly with the AWS CLI.
-
-## Installation
-
-### Leapp
-
-Leapp can be installed using various methods:
+## Installing
 
 ```bash
-# Using npm
+# Leapp
 npm install -g @noovolari/leapp-cli
+brew install leapp        # macOS, GUI
+brew install leapp-cli    # macOS, CLI
 
-# Using Homebrew (macOS)
-brew install leapp
-brew install leapp-cli
-
-# For other platforms, visit: https://docs.leapp.cloud/latest/installation/
+# aws-vault
+brew install aws-vault          # macOS
+choco install aws-vault         # Windows
 ```
 
-### aws-vault
+## Configuring an SSO or IAM profile
 
-aws-vault can be installed using package managers or direct download:
+Leapp takes profiles through its own CLI:
 
 ```bash
-# Using Homebrew (macOS)
-brew install aws-vault
-
-# Using Chocolatey (Windows)
-choco install aws-vault
-
-# For other platforms, visit: https://github.com/99designs/aws-vault#installing
+leapp add aws-sso --name "My AWS SSO" --sso-url https://my-sso-portal.awsapps.com/start
+leapp add aws-credentials --name "My AWS Account" --access-key AKIAIOSFODNN7EXAMPLE --secret-key wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
-## Configuration
+aws-vault reads SSO config from the standard AWS config file and stores IAM keys itself:
 
-### Leapp
-
-1. Open the Leapp application or use the CLI.
-2. For AWS SSO:
-   ```bash
-   leapp add aws-sso --name "My AWS SSO" --sso-url https://my-sso-portal.awsapps.com/start
-   ```
-3. For IAM credentials:
-   ```bash
-   leapp add aws-credentials --name "My AWS Account" --access-key AKIAIOSFODNN7EXAMPLE --secret-key wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-   ```
-
-### aws-vault
-
-1. Add a new profile to your AWS config file (`~/.aws/config`):
-   ```
-   [profile my-profile]
-   sso_start_url = https://my-sso-portal.awsapps.com/start
-   sso_region = us-east-1
-   sso_account_id = 123456789012
-   sso_role_name = MyRole
-   region = us-west-2
-   output = json
-   ```
-2. For IAM credentials:
-   ```bash
-   aws-vault add my-profile
-   ```
-   Follow the prompts to enter your access key and secret key.
-
-## Authentication Methods
-
-### Leapp
-
-1. **AWS SSO Integration**: 
-   - Supports AWS Single Sign-On (SSO)
-   - Configurable through GUI or CLI
-   - Stores session tokens securely
-
-2. **IAM User Credentials**:
-   - Can store and manage long-term IAM user credentials
-   - Rotates session tokens automatically
-
-### aws-vault
-
-1. **AWS SSO Support**:
-   - Integrates with AWS SSO
-   - Configurable via command line or config file
-
-2. **IAM User Credentials**:
-   - Stores IAM credentials in the system's secure keystore
-   - Generates temporary credentials on-the-fly
-
-## Ease of Use
-
-### Leapp
-
-- Graphical user interface and CLI options
-- Visual account switching in GUI
-- Built-in terminal for running AWS CLI commands
-
-### aws-vault
-
-- Command-line interface
-- Requires familiarity with terminal commands
-- Integrates seamlessly with existing CLI workflows
-
-## Security Features
-
-### Leapp
-
-- Encryption of stored credentials
-- Automatic session expiration
-- Multi-factor authentication (MFA) support
-
-### aws-vault
-
-- Uses the operating system's secure keystore
-- Supports MFA
-- Generates temporary credentials, reducing exposure of long-term keys
-
-## AWS CLI Integration
-
-### Leapp
+```
+# ~/.aws/config
+[profile my-profile]
+sso_start_url = https://my-sso-portal.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 123456789012
+sso_role_name = MyRole
+region = us-west-2
+output = json
+```
 
 ```bash
-# Run AWS CLI command through Leapp
+aws-vault add my-profile   # prompts for access key and secret key
+```
+
+## Running a command through each
+
+```bash
 leapp session exec --profile <profile-name> -- aws s3 ls
-```
-
-### aws-vault
-
-```bash
-# Run AWS CLI command through aws-vault
 aws-vault exec <profile-name> -- aws s3 ls
 ```
 
-## Pros and Cons
+Functionally identical: both generate temporary credentials and inject them into the child process's environment.
 
-### Leapp
+## Where they actually differ
 
-Pros:
-- User-friendly GUI and CLI options
-- Supports multiple cloud providers
-- Built-in terminal
+Both support SSO, IAM long-term keys, MFA, and automatic session token rotation, so the choice isn't about security, it's about scope and interface:
 
-Cons:
-- May be overkill for AWS-only users
-- Larger installation footprint
+- **Leapp** supports multiple cloud providers behind one GUI and CLI, with visual account switching. That's real value if you're not AWS-only, and overhead if you are.
+- **aws-vault** is AWS-only and CLI-only, which makes it lighter to install and easier to script into existing workflows. It has nothing to offer once you're also managing GCP or Azure credentials.
 
-### aws-vault
+## Which one to use
 
-Pros:
-- Lightweight and fast
-- Deep integration with AWS ecosystem
-- Easy to script and automate
-
-Cons:
-- Command-line only (may be challenging for GUI-oriented users)
-- AWS-specific (not suitable for multi-cloud setups)
-
-## Conclusion
-
-Both Leapp and aws-vault offer robust solutions for managing AWS CLI authentication. Leapp provides a more comprehensive solution with its user-friendly interface and multi-cloud support, making it an excellent choice for teams working across different cloud platforms. aws-vault, with its lightweight design and deep AWS integration, is ideal for AWS-focused developers comfortable with command-line tools.
-
-The choice between Leapp and aws-vault ultimately depends on your specific needs, workflow preferences, and the scope of your cloud interactions. Both tools significantly enhance security and efficiency in managing AWS credentials, addressing the critical need for secure authentication in cloud development environments.
-
-When deciding, consider factors such as your team's technical expertise, the need for multi-cloud support, and your preferred working environment (GUI vs. CLI). Whichever tool you choose, you'll be taking a significant step towards more secure and efficient AWS credential management.
+If AWS is the only cloud you touch and you live in a terminal, aws-vault is the smaller, more scriptable tool; there's no reason to carry Leapp's multi-cloud surface for a single-cloud job. If you're switching between AWS, GCP, or Azure accounts regularly, or you want a GUI for account switching, Leapp's broader scope earns its extra weight.

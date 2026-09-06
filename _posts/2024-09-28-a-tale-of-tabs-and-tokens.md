@@ -1,37 +1,22 @@
 ---
 layout: post
-title: 'A Tale of Tabs and Tokens: My Journey Solving Authentication Puzzles in Single
-"As the lead developer for \"LearnQuest,\" an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless"
-  Page Applications'
+title: "Fixing Multi-Tab Session Bugs with JWT and sessionStorage"
+description: "How cookie-based session state breaks when a user opens multiple tabs in a single-page app, and how splitting auth into JWT plus sessionStorage fixes it."
 date: 2024-09-28 21:37 +0100
-categories: [Web Development, Authentication]
-tags: [SPA, cookie, token]
-description: "As the lead developer for \"LearnQuest,\" an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless"
+categories: [Security]
+tags: [javascript, security, debugging]
 ---
-
-# A Tale of Tabs and Tokens: My Journey Solving Authentication Puzzles in Single Page Applications
 
 <audio controls preload="metadata" src="/assets/audio/a-tale-of-tabs-and-tokens-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## The Curious Case of the Confused Classroom
+A single-page app that keeps session state in cookies breaks in a specific, predictable way: open two tabs on two different lessons, and the second tab's cookie write overwrites the first. Cookies are shared across every tab of the same origin, so whichever tab wrote last wins, and the other tab quietly starts acting on the wrong lesson ID. That was the actual bug on an online course platform I worked on: students opened multiple lessons in separate tabs, and the backend lost track of which tab belonged to which lesson.
 
-As the lead developer for "LearnQuest," an innovative online learning platform, I found myself facing a peculiar challenge. My mission was to create a seamless experience for students eager to absorb knowledge across various subjects. But lately, I'd been losing sleep over a bizarre phenomenon...
+## Why cookies are the wrong tool here
 
-Students were reporting a curious issue: They'd open multiple tabs to juggle between different lessons, but LearnQuest seemed to get... well, confused. It was as if the platform couldn't keep track of which student was studying what, leading to a chaotic learning experience. I started calling it "The Curious Case of the Confused Classroom."
-
-As I dove deeper into this digital dilemma, I realized the culprit behind this confusion: cookies. Those small bits of data that were supposed to make life easier had become the very source of my troubles. It was time to embark on a quest to find a better solution!
-
-## The Cookie Conundrum
-
-Initially, LearnQuest relied on cookies to keep track of essential information:
-- Lesson ID: What the student is currently studying
-- Course ID: Which course the lesson belongs to
-- Session ID: To keep the student logged in
-
-Here's what my cookie-setting code looked like:
+The original code stored three things in cookies:
 
 ```javascript
 // Setting cookies for session management
@@ -40,111 +25,88 @@ document.cookie = `courseId=${currentCourseId}; path=/`;
 document.cookie = `sessionId=${userSessionId}; path=/; HttpOnly`;
 ```
 
-At first glance, cookies seemed like the perfect choice. They're easy to implement, widely supported, and can persist information across page reloads. But as I discovered, they came with their own set of challenges:
+Cookies are easy to set and survive reloads, but for this use case they have four real problems:
 
-1. **The Tab Tango**: Cookies don't know how to dance between tabs. They share information across all tabs of the same origin, leading to a confusing waltz of data.
+- They are shared across every tab of the same origin, so tab-specific state (which lesson is open) gets clobbered by whichever tab wrote last.
+- Anything in a non-`HttpOnly` cookie is readable by client-side script, which makes them a bad place for identifiers you don't want tampered with.
+- The practical size limit is around 4KB, tight once you need more than a few fields.
+- Every cookie is sent with every request to the same domain, adding overhead you don't need on most calls.
 
-2. **The Security Samba**: Storing sensitive information in cookies can be like doing the samba on a tightrope - one misstep, and you could fall into a security vulnerability.
+## Splitting session identity from tab context
 
-3. **The Storage Salsa**: With a limit of usually 4KB, cookies can quickly run out of dance floor space when you need to store more complex session data.
+The fix was to stop treating "who is logged in" and "what is this tab looking at" as the same kind of state.
 
-4. **The Performance Polka**: Cookies join every request to the server in a lively polka, but this can slow down the tempo of your application's performance.
+Auth token in `localStorage`, shared across tabs because logging in is genuinely a per-user, not per-tab, fact:
 
-It was clear that while cookies had been faithful partners, it was time to explore other dance partners for my authentication ball.
+```javascript
+function setAuthToken(token) {
+  localStorage.setItem('authToken', token);
+}
 
-## Choreographing the Perfect Solution
+function getAuthToken() {
+  return localStorage.getItem('authToken');
+}
 
-After considering all the options, I decided to create a new, fusion dance style. Here's the choreography I developed for LearnQuest's authentication ballet:
+fetch('/api/user-data', {
+  headers: {
+    'Authorization': `Bearer ${getAuthToken()}`
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
 
-1. **The Token Tango, with a Twist**:
-   I implemented JWT for the main authentication dance.
+Lesson and course context in `sessionStorage`, which is scoped per tab by design:
 
-   ```javascript
-   // Function to set JWT in localStorage
-   function setAuthToken(token) {
-     localStorage.setItem('authToken', token);
-   }
+```javascript
+function setLessonContext(lessonId, courseId) {
+  sessionStorage.setItem('currentLessonId', lessonId);
+  sessionStorage.setItem('currentCourseId', courseId);
+}
 
-   // Function to get JWT from localStorage
-   function getAuthToken() {
-     return localStorage.getItem('authToken');
-   }
+function getLessonContext() {
+  return {
+    lessonId: sessionStorage.getItem('currentLessonId'),
+    courseId: sessionStorage.getItem('currentCourseId')
+  };
+}
+```
 
-   // Using the token in API calls
-   fetch('/api/user-data', {
-     headers: {
-       'Authorization': `Bearer ${getAuthToken()}`
-     }
-   })
-   .then(response => response.json())
-   .then(data => console.log(data));
-   ```
+Every API call that depends on lesson context now reads from `sessionStorage` and sends it explicitly, instead of relying on a cookie to imply it:
 
-2. **The Session Storage Sidestep**:
-   I used sessionStorage for tab-specific moves (lesson ID, course ID).
+```javascript
+function fetchLessonProgress() {
+  const { lessonId, courseId } = getLessonContext();
+  fetch(`/api/progress?lessonId=${lessonId}&courseId=${courseId}`, {
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`,
+      'X-Lesson-Id': lessonId,
+      'X-Course-Id': courseId
+    }
+  })
+    .then(response => response.json())
+    .then(data => updateProgressUI(data));
+}
+```
 
-   ```javascript
-   // When loading a lesson
-   function setLessonContext(lessonId, courseId) {
-     sessionStorage.setItem('currentLessonId', lessonId);
-     sessionStorage.setItem('currentCourseId', courseId);
-   }
+## Tagging errors with the same context
 
-   // Getting lesson context
-   function getLessonContext() {
-     return {
-       lessonId: sessionStorage.getItem('currentLessonId'),
-       courseId: sessionStorage.getItem('currentCourseId')
-     };
-   }
-   ```
+Once lesson and course IDs are explicit values instead of implicit cookie state, they can go straight into error tracking:
 
-3. **The API Allemande**:
-   I modified the API to expect specific dance instructions (session context) in request headers or parameters.
+```javascript
+function logContextToSentry() {
+  const { lessonId, courseId } = getLessonContext();
+  Sentry.configureScope(scope => {
+    scope.setTag('lessonId', lessonId);
+    scope.setTag('courseId', courseId);
+  });
+}
 
-   ```javascript
-   // Making an API call with lesson context
-   function fetchLessonProgress() {
-     const { lessonId, courseId } = getLessonContext();
-     fetch(`/api/progress?lessonId=${lessonId}&courseId=${courseId}`, {
-       headers: {
-         'Authorization': `Bearer ${getAuthToken()}`,
-         'X-Lesson-Id': lessonId,
-         'X-Course-Id': courseId
-       }
-     })
-     .then(response => response.json())
-     .then(data => updateProgressUI(data));
-   }
-   ```
+logContextToSentry();
+```
 
-4. **The Troubleshooting Twist**:
-   To make debugging easier, I added tracking for query strings and headers in our Sentry-like bug tracking system.
+That one change made debugging noticeably faster: an error report now names the lesson and course it came from, instead of a session ID you have to cross-reference against logs by hand.
 
-   ```javascript
-   // Logging context to Sentry (or similar error tracking service)
-   function logContextToSentry() {
-     const { lessonId, courseId } = getLessonContext();
-     Sentry.configureScope(scope => {
-       scope.setTag('lessonId', lessonId);
-       scope.setTag('courseId', courseId);
-     });
-   }
+## The actual lesson
 
-   // Call this function before making API requests
-   logContextToSentry();
-   ```
-
-   This additional step allows us to correlate errors and issues with specific lessons and courses, making troubleshooting much more efficient.
-
-## The Grand Finale
-
-With this new choreography in place, LearnQuest was ready for its grand performance. Students could now open as many tabs as they liked, each one maintaining its own lesson context while staying in sync with the overall learning journey.
-
-The backend was no longer confused - it knew exactly which lesson each student was focusing on at any given moment. The days of the "Confused Classroom" were over, replaced by a harmonious learning symphony across multiple tabs.
-
-As the lead developer, I could finally get a good night's sleep, knowing that our students were engaged in a seamless, secure, and sensational learning experience.
-
-The addition of context logging to our error tracking system proved invaluable. When issues did arise, I could quickly identify which lesson or course was involved, significantly reducing debugging time and improving our ability to provide support to students.
-
-Remember, in the ever-evolving world of web development, today's perfect solution might be tomorrow's legacy system. I keep my dancing shoes on, stay curious, and always be ready to learn new steps in the authentication tango!
+Cookies are the wrong default for per-tab state, not because they're insecure but because they're scoped to the origin, not the tab. If two tabs need to disagree about what they're looking at, that state has to live somewhere tab-scoped, `sessionStorage`, not somewhere origin-scoped, a cookie. Authentication is a different kind of state, genuinely shared across tabs, and a bearer token in `localStorage` models that correctly. Keeping those two categories separate fixed the bug; everything else was plumbing.

@@ -3,12 +3,10 @@ layout: post
 title: "Tiny Puzzles for Testing and Debugging AI Agents"
 date: 2026-04-21
 author: "Joey Wang"
-description: "A practical guide to building small probe tasks to test function calling, skill awareness, prompt length, cache behavior, and runtime debugging for local AI agents."
-tags: [ai, llm, agents, debugging, testing, lm-studio, pi, opencode, local-llm]
+description: "Small probe tasks for testing local AI agents: function calling, skill awareness, prompt-length pressure, cache behavior, and layer-by-layer debugging."
+tags: [ai, llm, agents, debugging, testing, local-llm]
 categories: [AI, Engineering]
 ---
-
-# Tiny Puzzles for Testing and Debugging AI Agents
 
 <audio controls preload="metadata" src="/assets/audio/agent-debugging-puzzles-summary.ogg">
   Your browser does not support the audio element.

@@ -1,33 +1,22 @@
 ---
 layout: post
-title: "Migrating from Kaminari to will_paginate in Rails: A Complete Guide"
-description: "Pagination is a crucial feature in web applications, helping manage large datasets by breaking them into manageable chunks. While both Kaminari and"
+title: "Migrating from Kaminari to will_paginate in Rails"
+description: "A step-by-step guide to migrating a Rails app's pagination from Kaminari to will_paginate, covering models, controllers, views, and API responses."
 date: 2024-10-20 10:00 +0000
-tags: ["kaminari", "will_paginate", "rails", "pagination"]
+categories: [Rails]
+tags: [kaminari, will_paginate, rails, pagination]
 ---
-
-# Migrating from Kaminari to will_paginate in Rails: A Complete Guide
 
 <audio controls preload="metadata" src="/assets/audio/migrate-kaminari-to-will-paginate-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-Pagination is a crucial feature in web applications, helping manage large datasets by breaking them into manageable chunks. While both Kaminari and will_paginate are excellent pagination libraries for Rails, you might find yourself needing to migrate from one to the other. This guide walks through the complete process of migrating from Kaminari to will_paginate, covering all aspects from basic setup to handling complex scenarios.
+Pagination breaks large datasets into manageable chunks, and both Kaminari and will_paginate do that job well for Rails. Migrating from one to the other touches models, controllers, views, and anywhere pagination metadata gets serialized into an API response. Here's the full path.
 
-## Table of Contents
-1. [Basic Setup](#basic-setup)
-2. [Model Changes](#model-changes)
-3. [Controller Updates](#controller-updates)
-4. [View Modifications](#view-modifications)
-5. [API Response Adjustments](#api-response-adjustments)
-6. [Handling Advanced Features](#handling-advanced-features)
-7. [Common Challenges](#common-challenges)
-8. [Testing Considerations](#testing-considerations)
+## Basic setup
 
-## Basic Setup
-
-First, update your Gemfile by replacing Kaminari with will_paginate:
+Replace Kaminari with will_paginate in the Gemfile:
 
 ```ruby
 # Gemfile
@@ -40,17 +29,13 @@ gem 'will_paginate'
 gem 'will_paginate-bootstrap-style' # if using Bootstrap
 ```
 
-Run bundle to install the new gem:
-
 ```bash
 bundle install
 ```
 
-## Model Changes
+## Model changes
 
-### Basic Pagination Configuration
-
-Kaminari and will_paginate have different approaches to configuring pagination defaults. Here's how to migrate:
+### Basic pagination configuration
 
 ```ruby
 # Before (Kaminari)
@@ -64,9 +49,9 @@ class Post < ApplicationRecord
 end
 ```
 
-### Maximum Page Size Limits
+### Maximum page size limits
 
-Kaminari's `max_paginates_per` doesn't have a direct equivalent in will_paginate. Here's how to implement it:
+Kaminari's `max_paginates_per` has no direct equivalent in will_paginate; a small concern reproduces it:
 
 ```ruby
 # app/models/concerns/pagination_limiter.rb
@@ -104,9 +89,7 @@ class Post < ApplicationRecord
 end
 ```
 
-## Controller Updates
-
-Update your controller pagination calls:
+## Controller updates
 
 ```ruby
 # Before (Kaminari)
@@ -120,7 +103,7 @@ def index
 end
 ```
 
-For more complex scenarios, like handling collections:
+For paginating a plain array:
 
 ```ruby
 # Before (Kaminari)
@@ -134,11 +117,7 @@ For more complex scenarios, like handling collections:
 end
 ```
 
-## View Modifications
-
-### Basic Pagination Links
-
-The simplest change is updating your view helpers:
+## View modifications
 
 ```erb
 <%# Before (Kaminari) %>
@@ -148,9 +127,7 @@ The simplest change is updating your view helpers:
 <%= will_paginate @posts %>
 ```
 
-### Custom Pagination Template
-
-If you have custom Kaminari templates, you'll need to create a custom renderer for will_paginate. Here's how to migrate a Bootstrap-style paginator:
+A custom Kaminari template needs a matching will_paginate renderer. Here's a Bootstrap-style example:
 
 ```ruby
 # app/lib/custom_pagination_renderer.rb
@@ -193,8 +170,6 @@ class CustomPaginationRenderer < WillPaginate::ActionView::LinkRenderer
 end
 ```
 
-Use the custom renderer in your views:
-
 ```slim
 = will_paginate @collection,
   renderer: CustomPaginationRenderer,
@@ -204,9 +179,7 @@ Use the custom renderer in your views:
   outer_window: 1
 ```
 
-## API Response Adjustments
-
-When using pagination in API responses, you'll need to update your pagination metadata:
+## API response adjustments
 
 ```ruby
 # Before (Kaminari)
@@ -232,11 +205,9 @@ def pagination_metadata(collection)
 end
 ```
 
-## Handling Advanced Features
+## Handling advanced features
 
-### AJAX Pagination
-
-Update your JavaScript handlers:
+### AJAX pagination
 
 ```javascript
 // Using jQuery
@@ -248,9 +219,7 @@ $(document).on('click', '.pagination a', function(e) {
 });
 ```
 
-### Infinite Scrolling
-
-Adjust your infinite scrolling implementation:
+### Infinite scrolling
 
 ```ruby
 # Controller
@@ -284,23 +253,9 @@ document.addEventListener('scroll', function() {
 });
 ```
 
-## Common Challenges
+## Common challenges
 
-### Method Name Differences
-
-Be aware of these key method name changes:
-
-```ruby
-# Kaminari          # will_paginate
-total_count         total_entries
-num_pages           total_pages
-prev_page           previous_page
-limit_value        per_page
-```
-
-### Handling Empty Collections
-
-will_paginate handles empty collections differently:
+### Handling empty collections
 
 ```ruby
 # Before (Kaminari)
@@ -312,9 +267,7 @@ will_paginate handles empty collections differently:
 @empty.total_entries # => 0
 ```
 
-## Testing Considerations
-
-Update your test helpers and expectations:
+## Testing considerations
 
 ```ruby
 # spec/support/pagination_helper.rb
@@ -338,13 +291,14 @@ RSpec.describe PostsController, type: :controller do
 end
 ```
 
-## Conclusion
+## Method names differ throughout
 
-Migrating from Kaminari to will_paginate requires careful attention to detail, but the process is straightforward if you follow these steps. Remember to:
+```
+# Kaminari          # will_paginate
+total_count         total_entries
+num_pages           total_pages
+prev_page           previous_page
+limit_value         per_page
+```
 
-1. Update all pagination calls in your models and controllers
-2. Migrate any custom templates to will_paginate's renderer system
-3. Update your tests to use will_paginate's methods
-4. Test thoroughly, especially edge cases and custom implementations
-
-By following this guide, you should be able to successfully migrate your Rails application from Kaminari to will_paginate while maintaining all your pagination functionality.
+Chase down every occurrence of these before considering the migration done; they're the failures that don't show up until a page renders one count short or a spec compares against a method that no longer exists.

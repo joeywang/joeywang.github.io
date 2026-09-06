@@ -1,40 +1,22 @@
 ---
 layout: post
-title: Resolving Sequence Conflicts After Upgrading PostgreSQL
-description: "Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise"
+title: "PostgreSQL Sequence Conflicts After an Upgrade: How to Fix Them"
+description: "Upgrading PostgreSQL can leave sequences out of sync with table max values, causing duplicate-key errors and blocked sign-ins, fixed here with SQL and bash."
 date: 2024-08-15 14:01 +0100
-description:
-image:
-category:
-tags:
-published: false
-sitemap: false
-description: "Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise"
+categories: [Database]
+tags: [postgresql, database, devops]
 ---
-# Title: Resolving Sequence Conflicts After Upgrading PostgreSQL
-
 <audio controls preload="metadata" src="/assets/audio/resolving-sequence-conflicts-after-upgrading-postgresql-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+After upgrading from PostgreSQL 15 to 16, some sequences no longer matched the max value in their table: duplicate-key errors on insert, and in one case, blocked sign-ins. Here's the SQL function and the bash script I used to find and fix every misaligned sequence.
 
-## Introduction
+## Why sequences drift after an upgrade
 
-Upgrading a database management system like PostgreSQL is a critical task that often comes with its own set of challenges. One common issue that can arise post-upgrade is the misalignment of sequences, which can lead to significant problems such as blocking user sign-ins. In this article, we will explore the nature of sequence issues, why they occur during an upgrade, and how to effectively resolve them using custom SQL functions and scripts.
+A PostgreSQL sequence is a database object that generates integer values, most often used for primary keys. During a major-version upgrade, sequence state doesn't always carry over in step with the data in the tables it feeds, so a sequence can end up behind the actual max value already in use, and the next insert collides with an existing key.
 
-## Understanding Sequences in PostgreSQL
-
-Before diving into the solutions, it's important to understand what sequences are and why they're important. In PostgreSQL, a sequence is a database object that generates a sequence of integer values, commonly used for primary key generation. When upgrading PostgreSQL, the sequence values may not synchronize correctly with the new version, leading to conflicts.
-
-## The Problem: Sequence Misalignment Post-Upgrade
-
-When upgrading from PostgreSQL 15 to 16, you might encounter a scenario where sequences do not align with the actual maximum values in the tables they are associated with. This misalignment can cause issues such as duplicate key errors, preventing new records from being inserted and, in some cases, blocking user sign-ins.
-
-## Solution 1: Custom PL/pgSQL Function to Reset Sequences
-
-To address this issue, we can create a PL/pgSQL function that resets sequences to the maximum value of their associated tables. Here's how you can do it:
-
-### Step 1: Create the Function
+## A function that resets sequences to match table data
 
 ```sql
 CREATE OR REPLACE FUNCTION reset_sequences_to_max(schema varchar default 'public', dry_run bool default true)
@@ -66,23 +48,15 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-This function loops through all tables within a specified schema, constructs a dynamic SQL query for each sequence, and either executes the query or outputs it for review, depending on the `dry_run` parameter.
-
-### Step 2: Use the Function
-
-You can now call this function for the schema(s) affected by the sequence misalignment:
+It loops through every table in the given schema, builds a `setval` call for each sequence, and either prints the query for review or runs it, depending on `dry_run`.
 
 ```sql
-SELECT reset_sequences_to_max('public', false); -- Replace 'public' with your schema and set dry_run to false to execute
+SELECT reset_sequences_to_max('public', false); -- set dry_run to false to execute
 ```
 
-## Solution 2: Bash Script for Bulk Sequence Reset
+## A bash script for resetting sequences across many databases
 
-For a more hands-on approach, especially when dealing with multiple databases, you can use a Bash script to generate and execute SQL commands that reset sequences.
-
-### Step 1: Generate the SQL Script
-
-Create a Bash script that constructs an SQL script with the necessary `SETVAL` commands:
+For multiple databases at once, generate the `setval` statements directly from the catalog and run them per database:
 
 ```bash
 cat > /tmp/reset.sql << EOL
@@ -109,10 +83,6 @@ cat > /tmp/reset.sql << EOL
 EOL
 ```
 
-### Step 2: Export and Run the SQL Commands
-
-Loop through your databases and execute the generated SQL script to reset the sequences:
-
 ```bash
 for db in $databases; do
     psql -Atq -f /tmp/reset.sql -d $db -o /tmp/$db.sql
@@ -120,12 +90,6 @@ for db in $databases; do
 done
 ```
 
-## Conclusion
+## The principle
 
-Sequence misalignment is a common pitfall when upgrading PostgreSQL. By using the custom PL/pgSQL function or the Bash script provided, you can effectively resolve these issues and ensure that your database operates smoothly post-upgrade. Always remember to back up your database before performing any operations that modify its structure or data.
-
-## Additional Tips
-
-- Always perform upgrades in a test environment before applying them to production.
-- Keep your database backups up-to-date to prevent data loss.
-- Test the function and script in a non-production environment to ensure they work as expected.
+Back up before running either of these against anything real, and use the function's `dry_run` default to see the generated `setval` statements before you execute them. Sequence drift after an upgrade is common enough to check for by default, not just when sign-ins start failing.

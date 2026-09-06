@@ -1,78 +1,31 @@
 ---
 layout: post
-title: "Transactions, Touches, and Async Rollups in Ruby on Rails"
-description: "In real-world Rails applications, not all data is equal."
+title: "Transactions, touch, and async rollups for derived data in Rails"
+description: "Keeping counters and summaries accurate in Rails without slowing down writes means separating core data in a transaction from derived data updated after commit."
 date: 2025-12-20
-tags: [ruby-on-rails, database, architecture, async-jobs, data-consistency]
+tags: [rails, database, architecture, performance]
 ---
-
-# Transactions, Touches, and Async Rollups in Ruby on Rails
 
 <audio controls preload="metadata" src="/assets/audio/transactions-touches-async-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+In real-world Rails applications, not all data is equal. Some columns are core truth: the values your business logic actually depends on. Others exist for convenience, performance, or observability: counters, summaries, snapshots, caches. The problem is keeping those derived fields accurate without slowing down writes or introducing correctness bugs, especially once async jobs and transactions are both in the picture.
 
-### Designing Consistent, Performant Derived Data
-
-In real-world Rails applications, not all data is equal.
-
-Some columns represent **core truth** — the values your business logic fundamentally depends on.
-Others exist for **convenience, performance, or observability** — counters, summaries, snapshots, and caches.
-
-The challenge is keeping these *derived* fields accurate **without slowing down writes or creating correctness bugs**, especially when async jobs and transactions are involved.
-
-This article explores:
-
-* Why naïve approaches fail
-* How Rails’ `touch` pattern fits into the picture
-* Multiple strategies for derived data
-* Trade-offs between sync vs async updates
-* Practical patterns that scale
-
----
-
-## 1. The Core Problem
-
-Consider a common example:
+## The core problem
 
 ```text
 Student has_many Addresses
 Student has summary fields derived from Addresses
 ```
 
-Examples of derived data:
+Examples of derived data: `addresses_count`, `has_verified_address`, `latest_country`, `address_summary_json`, `addresses_updated_at`. Whenever an `Address` changes, the `Student` should reflect that, but you don't want to scan every address on each read, recompute expensive summaries on every write, or let a retried or rolled-back job corrupt the count. That's a consistency-versus-performance problem, not just a syntax question.
 
-* `addresses_count`
-* `has_verified_address`
-* `latest_country`
-* `address_summary_json`
-* `addresses_updated_at`
+## Separate core writes from derived writes
 
-Whenever an `Address` changes, the `Student` **should reflect that change**, but:
+The core principle: only write core data inside the transaction. Derived data gets updated after commit. Transactions can roll back, jobs can retry, and a side effect like a counter or cache should never reflect data that never actually landed.
 
-* We don’t want to scan all addresses on every read
-* We don’t want to recompute expensive summaries on every write
-* We don’t want async jobs to corrupt data due to retries or rollbacks
-
-This is fundamentally a **data consistency vs performance** problem.
-
----
-
-## 2. First Principle: Separate Core Writes from Derived Writes
-
-A crucial design principle:
-
-> **Only write core data inside the transaction.
-> Derived data should be updated *after commit*.**
-
-Why?
-
-* Transactions can roll back
-* Jobs can retry
-* Side effects (stats, caches, summaries) should never reflect uncommitted data
-
-### ❌ Anti-pattern
+Anti-pattern:
 
 ```rb
 ActiveRecord::Base.transaction do
@@ -81,17 +34,9 @@ ActiveRecord::Base.transaction do
 end
 ```
 
-If this transaction retries, deadlocks, or partially fails, you risk:
+If this transaction retries, deadlocks, or partially fails, you get incorrect counters, expensive queries held inside a lock, and contention you didn't need.
 
-* incorrect counters
-* expensive queries inside locks
-* unnecessary contention
-
----
-
-## 3. Rails `touch`: A Lightweight Change Signal
-
-Rails’ `touch` exists for a reason.
+## Rails touch: a lightweight change signal
 
 ```rb
 class Address < ApplicationRecord
@@ -99,40 +44,11 @@ class Address < ApplicationRecord
 end
 ```
 
-This gives you:
+`touch` gives you a cheap, automatic "something under me changed" signal without scanning associations to detect it, which plays well with HTTP caching, fragment caching, and snapshots. It's good for cache invalidation, change detection, and dependency tracking. It is not a summary calculator, a counter manager, or a guarantee that derived data is correct. Treat it as a notification, not a computation.
 
-* A cheap, automatic signal: *“something under me changed”*
-* No need to scan associations to detect changes
-* Natural compatibility with HTTP caching, fragment caching, and snapshots
+## Strategy 1: delta-based updates
 
-### What `touch` is good at
-
-* Cache invalidation
-* Change detection
-* Dependency tracking
-
-### What `touch` is **not**
-
-* A summary calculator
-* A counter manager
-* A guarantee that derived data is correct
-
-Think of `touch` as **a notification, not a computation**.
-
----
-
-## 4. Strategy 1: Increment / Decrement (Delta-Based Updates)
-
-### Idea
-
-When a change happens, apply a small delta:
-
-```text
-Address created  → +1
-Address deleted  → -1
-```
-
-### Example
+Apply a small delta on each change instead of recomputing:
 
 ```rb
 class Address < ApplicationRecord
@@ -151,33 +67,11 @@ class Address < ApplicationRecord
 end
 ```
 
-### Pros
+Fast reads, no full-table scans, atomic SQL updates. The cost: updates are awkward (what happens when an address becomes invalid rather than created or destroyed?), retries can double-count without careful idempotency, and drift accumulates over time. Good fit for append-only data, simple counts, and hot read paths, provided you also run reconciliation.
 
-✅ Very fast reads
-✅ No full-table scans
-✅ Atomic SQL updates
+## Strategy 2: recompute on change
 
-### Cons
-
-❌ Hard to handle updates (what if an address becomes invalid?)
-❌ Easy to double-count with job retries
-❌ Requires idempotency discipline
-❌ Drift accumulates over time
-
-### When to use
-
-* Append-only data
-* Simple counts
-* Extremely hot read paths
-* You have reconciliation jobs
-
----
-
-## 5. Strategy 2: Recompute on Change (Snapshot-Based)
-
-### Idea
-
-Every meaningful change triggers a rebuild:
+Every meaningful change triggers a full rebuild:
 
 ```rb
 class Address < ApplicationRecord
@@ -189,9 +83,7 @@ class Address < ApplicationRecord
     StudentAddressRollupJob.perform_later(student_id)
   end
 end
-```
 
-```rb
 class StudentAddressRollupJob < ApplicationJob
   def perform(student_id)
     student = Student.find(student_id)
@@ -204,43 +96,15 @@ class StudentAddressRollupJob < ApplicationJob
 end
 ```
 
-### Pros
+Naturally idempotent, safe with retries, handles edits and deletes without special-casing. It costs more per update and can spam jobs under bursty writes unless you throttle or dedupe. Use it when the derived logic is complex, edits can change prior state, and correctness matters more than write cost.
 
-✅ Naturally idempotent
-✅ Easy to reason about
-✅ Safe with retries
-✅ Handles edits, deletes, complex logic
+## Strategy 3: touch plus a dirty flag
 
-### Cons
-
-❌ More expensive
-❌ Can spam jobs under burst updates
-❌ Requires throttling or deduping
-
-### When to use
-
-* Complex derived logic
-* Edits affect prior state
-* Correctness > write performance
-* Async processing is acceptable
-
----
-
-## 6. Strategy 3: Touch + Dirty Flag (Debounced Rebuild)
-
-This is where things get interesting.
-
-### Idea
-
-Separate **change detection** from **work execution**.
+Separate change detection from the work itself. Mark the parent dirty on every child change:
 
 ```rb
-class Student < ApplicationRecord
-  # needs_address_rollup :boolean
-end
-```
+# students.needs_address_rollup :boolean
 
-```rb
 class Address < ApplicationRecord
   belongs_to :student
 
@@ -253,7 +117,7 @@ class Address < ApplicationRecord
 end
 ```
 
-A worker periodically processes only dirty students:
+A worker then processes only dirty students on its own schedule:
 
 ```rb
 Student.where(needs_address_rollup: true).find_each do |student|
@@ -262,36 +126,15 @@ Student.where(needs_address_rollup: true).find_each do |student|
 end
 ```
 
-### Pros
+This coalesces bursts of updates into one rebuild instead of one job per change, at the cost of some staleness and an extra background sweeper. It scales well precisely because it decouples "something changed" from "do the work now."
 
-✅ Coalesces bursts of updates
-✅ Avoids job spam
-✅ Avoids repeated recomputes
-✅ Still avoids scanning associations for detection
+## Strategy 4: versioned touch
 
-### Cons
-
-❌ Slightly stale data
-❌ Requires background sweeper
-❌ More moving parts
-
-This pattern scales *extremely well*.
-
----
-
-## 7. Strategy 4: Versioned Touch (Modern & Powerful)
-
-A more advanced evolution of `touch`.
-
-### Idea
-
-Instead of just “something changed”, track **how many times** it changed.
+Instead of "something changed," track how many times it changed:
 
 ```rb
 # students.addresses_version :integer
-```
 
-```rb
 class Address < ApplicationRecord
   after_commit do
     Student.where(id: student_id)
@@ -300,11 +143,7 @@ class Address < ApplicationRecord
 end
 ```
 
-Now:
-
-* Cache keys can include `addresses_version`
-* Jobs can carry the version they observed
-* Old jobs can safely no-op
+Cache keys can include `addresses_version`, and jobs can carry the version they observed so a stale, out-of-order job safely no-ops instead of overwriting newer data:
 
 ```rb
 def perform(student_id, version)
@@ -315,85 +154,19 @@ def perform(student_id, version)
 end
 ```
 
-### Pros
+More moving parts than a plain dirty flag, but it's the strategy that actually prevents stale writes under concurrent, out-of-order job execution, which makes it a good default for anything cache-adjacent running async.
 
-✅ Excellent for async safety
-✅ Prevents stale writes
-✅ Ideal for caches & rollups
-✅ Minimal locking
+## Performance considerations
 
-### Cons
+`touch` updates the parent row on every child write, and under frequent child updates that becomes row-lock contention and replication lag. Debouncing, batching imports, and preferring a dirty flag or version counter over raw `touch` all reduce that. On the job side, one job per child update doesn't scale; dedupe by parent ID and let bursts collapse into a single run. Whatever strategy you pick, keep a periodic full rebuild job around: it fixes drift, catches bugs in the incremental path early, and gives you the confidence to optimize the hot path aggressively.
 
-❌ Slightly more complex mental model
-❌ Requires discipline in usage
+| Use case | Recommended strategy |
+| --- | --- |
+| Simple counter | Delta or counter_cache |
+| Editable or deletable rows | Recompute |
+| Cache invalidation | touch |
+| Burst-heavy writes | Dirty flag |
+| Async correctness | Versioned touch |
+| High-read system | Hybrid |
 
-This pattern is **underused** and very effective.
-
----
-
-## 8. Performance Considerations
-
-### Write amplification
-
-* `touch` updates parent rows
-* Frequent child updates → row lock contention
-* Replication lag on replicas
-
-Mitigations:
-
-* Debounce updates
-* Batch imports
-* Use dirty flags or versions instead of raw `touch`
-
-### Async job storms
-
-* One change → one job does not scale
-* Prefer deduplication by `(student_id)`
-* Delay execution slightly to collapse bursts
-
-### Reconciliation
-
-No matter the strategy:
-
-> **Have a periodic full rebuild job**
-
-It:
-
-* Fixes drift
-* Detects bugs early
-* Lets you optimize aggressively elsewhere
-
----
-
-## 9. A Practical Decision Matrix
-
-| Use case                  | Recommended strategy   |
-| ------------------------- | ---------------------- |
-| Simple counter            | Delta or counter_cache |
-| Editable / deletable rows | Recompute              |
-| Cache invalidation        | touch                  |
-| Burst-heavy writes        | Dirty flag             |
-| Async correctness         | Versioned touch        |
-| High-read system          | Hybrid                 |
-
----
-
-## 10. Final Takeaway
-
-Derived data is **not free** — you pay either:
-
-* at write time (sync updates)
-* at read time (scans)
-* or in complexity (async + reconciliation)
-
-Rails gives you powerful primitives (`transactions`, `after_commit`, `touch`), but **architecture choices matter more than syntax**.
-
-The best systems:
-
-* Keep transactions small
-* Treat derived data as rebuildable
-* Use async thoughtfully
-* Accept eventual consistency where possible
-* Reconcile periodically
-
-If you design with those principles, your app will stay both **fast and correct** as it grows.
+Derived data is never free. You pay for it at write time with synchronous updates, at read time with scans, or in complexity with async processing and reconciliation. Rails gives you the primitives, transactions, `after_commit`, `touch`, but which of these strategies you pick is the architecture decision that actually matters. Keep transactions small, treat derived data as rebuildable, and reconcile periodically, and the system stays both fast and correct as it grows.

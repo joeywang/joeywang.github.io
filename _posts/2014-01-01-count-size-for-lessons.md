@@ -1,10 +1,10 @@
 ---
 layout: post
 title: count file size from json
-description: "set -o nounset # Treat unset variables as an error"
+description: "A bash one-liner that uses jq to pull resource IDs out of lesson JSON files, then du to total their file sizes on disk."
 date: 2014-01-01 00:00 +0000
-categories: Bash
-tags: script
+categories: [DevOps]
+tags: [bash, jq, automation]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/count-size-for-lessons-summary.ogg">

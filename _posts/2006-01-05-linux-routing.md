@@ -1,21 +1,17 @@
 ---
 layout: post
 title: Linux下实现路由功能
-description: "路由是网络通信中非常关键的功能，Linux系统提供了强大的路由功能，可以分为静态路由和动态路由两种。"
+description: "Linux 下的路由配置：静态路由与动态路由的区别，以及用 route 命令管理内核路由表的选项、示例和输出字段说明。"
 date: 2006-01-05 00:00 +0000
+categories: [Notes]
+tags: [linux, networking, routing]
 ---
-以下是关于Linux下实现路由功能的Markdown格式文档：
-
----
-
-# Linux下实现路由功能
-
 <audio controls preload="metadata" src="/assets/audio/linux-routing-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-路由是网络通信中非常关键的功能，Linux系统提供了强大的路由功能，可以分为静态路由和动态路由两种。
+路由是网络通信中关键的功能，Linux 提供了静态路由和动态路由两种方式。
 
 ## 1. 路由分类
 
@@ -33,12 +29,12 @@ date: 2006-01-05 00:00 +0000
 - 管理Linux内核中的路由表。
 - 设置静态路由表项。
 
-#### 命令格式
+### 命令格式
 ```
 route 选项 参数 目标地址
 ```
 
-#### 选项说明
+### 选项说明
 - `-v`: 详细输出模式。
 - `-A`: 指定地址簇。
 - `-n`: 使用IP地址，不进行域名解析。
@@ -52,7 +48,7 @@ route 选项 参数 目标地址
 - `gw`: 指定网关。
 - `reject`: 安装阻塞路由。
 
-#### 示例
+### 示例
 ```shell
 route add -net 192.168.1.0 netmask 255.255.255.0 dev eth0
 ```
@@ -86,8 +82,4 @@ route add kk s/o
 - `mss`: TCP最大尺寸。
 - `window`: TCP窗口尺寸。
 - `irtt`: TCP回路时间。
-
----
-
-以上是Linux系统下实现路由功能的简要介绍，包括静态路由和动态路由的基本概念，以及`route`命令的使用和输出信息的解释。希望对您有所帮助。
 

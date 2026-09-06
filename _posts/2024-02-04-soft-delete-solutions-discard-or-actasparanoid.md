@@ -1,41 +1,22 @@
 ---
 layout: post
-title: 'Soft Delete Solutions: Discard or ActAsParanoid?'
-description: "Soft delete, also known as logical delete, is a data management strategy that allows for the preservation of data in a database while marking it as \"deleted\""
+title: 'Soft Delete in Rails: Discard vs ActsAsParanoid'
+description: "A comparison of Discard and ActsAsParanoid, the two common Rails soft-delete gems, and the query and unscope pitfalls each one introduces."
 date: 2024-02-04 00:00 +0000
+categories: [Rails, Database]
+tags: [rails, ruby, database, debugging]
 ---
-# Soft Delete Solutions: Discard or ActAsParanoid?
-
 <audio controls preload="metadata" src="/assets/audio/soft-delete-solutions-discard-or-actasparanoid-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## What is Soft Delete and Why It is Used a Lot
+Soft delete flags a record as gone instead of removing it: a `discarded_at` or `deleted_at` column that regular queries filter out but that a restore action or an audit trail can still reach. It survives accidental deletes, keeps foreign keys intact, and gives you a "trash" feature for free. Rails has two common gems for it, Discard and ActsAsParanoid, and they solve the same problem differently enough that picking the wrong one costs you later.
 
-Soft delete, also known as logical delete, is a data management strategy that allows for the preservation of data in a database while marking it as "deleted" to the application. This is achieved by adding a flag or timestamp column (such as `deleted_at` or `is_deleted`) to the database table. When a record is soft deleted, it is not actually removed from the database; instead, it is hidden from regular queries but can still be accessed and restored if necessary.
+## Discard
 
-Soft delete is widely used for several reasons:
+Discard adds a `discarded_at` column and otherwise stays out of the way.
 
-1. **Data Recovery**: It allows for the recovery of data in case of accidental deletion or if the information needs to be reinstated.
-2. **Audit Trails**: It helps maintain a history of changes for compliance and auditing purposes, providing a clear record of when data was "deleted" and potentially by whom.
-3. **Data Integrity**: It preserves foreign key relationships and avoids orphan records, ensuring that related data remains consistent.
-4. **Legal and Regulatory Compliance**: In some industries, retaining data for a certain period is mandatory, even after it's no longer actively used.
-5. **User Experience**: It allows for features like "trash" or "recycle bin" in applications, giving users the ability to restore their own deleted data.
-
-## Implementations: Discard and ActAsParanoid
-
-### Discard
-
-Discard is a Ruby on Rails gem that facilitates soft deleting by adding a `discarded_at` column to the model. Key features include:
-
-- When a record is discarded, the `discarded_at` column is set to the current time, effectively hiding the record from standard queries.
-- To restore a discarded record, the `undiscard` method is used.
-- Discard respects `dependent: :destroy` associations, ensuring that associated records are softly deleted as well.
-- It provides scopes like `kept` and `discarded` for easy filtering of records.
-- Discard can be configured to use callbacks, allowing custom logic to be executed before or after discard/undiscard operations.
-
-Example usage:
 ```ruby
 class User < ApplicationRecord
   include Discard::Model
@@ -43,91 +24,42 @@ class User < ApplicationRecord
 end
 
 user = User.create(name: "John")
-user.discard  # Sets discarded_at to current time
-user.discarded?  # Returns true
-User.kept  # Returns all non-discarded users
-user.undiscard  # Restores the user
+user.discard        # sets discarded_at
+user.discarded?     # => true
+User.kept           # non-discarded users
+user.undiscard
 ```
 
-### ActAsParanoid
+It respects `dependent: :destroy`, so associated records get discarded too, and it gives you `kept`/`discarded` scopes. It does not add a default scope: nothing is hidden from you unless you explicitly query `kept`.
 
-ActAsParanoid is another Rails plugin that implements soft deletes by adding a `deleted_at` column. Its features include:
+## ActsAsParanoid
 
-- When a record is marked for destruction, ActAsParanoid sets the `deleted_at` field to the current time instead of removing the record from the database.
-- To permanently delete a record, the `really_destroy!` method is used, which bypasses the soft delete logic.
-- It provides methods like `only_deleted` and `with_deleted` for querying soft-deleted records.
-- ActAsParanoid can be configured to use a boolean flag instead of a timestamp for marking deleted records.
-- It supports custom column names and can handle multiple paranoid columns.
+ActsAsParanoid adds a `deleted_at` column and, unlike Discard, applies a default scope that hides discarded records everywhere unless you say otherwise.
 
-Example usage:
 ```ruby
 class Post < ActiveRecord::Base
   acts_as_paranoid
 end
 
 post = Post.create(title: "Hello")
-post.destroy  # Sets deleted_at to current time
-Post.only_deleted  # Returns only soft-deleted posts
-post.recover  # Restores the post
-post.really_destroy!  # Permanently deletes the post
+post.destroy          # sets deleted_at
+Post.only_deleted      # only soft-deleted posts
+post.recover
+post.really_destroy!   # actually gone
 ```
 
-## Idea Behind the Design
+`really_destroy!` bypasses soft delete entirely. `with_deleted` and `only_deleted` reach past the default scope when you need to.
 
-The design behind soft delete implementations like Discard and ActAsParanoid is to provide a safety net against accidental data loss while maintaining the appearance of a clean database state to the application. By keeping the data in the database but marking it as deleted, developers can:
+## The default scope is the real decision
 
-1. Recover data if needed, reducing the risk of permanent data loss.
-2. Maintain data integrity by preserving relationships between records.
-3. Implement features like "undo" or "restore" in their applications.
-4. Meet regulatory requirements for data retention.
-5. Improve query performance by not having to check for orphaned records.
+The API differences are minor. The default scope is not. ActsAsParanoid hides deleted records everywhere unless you opt out; Discard hides nothing unless you opt in with `kept`. That single choice explains most of the bugs people hit with soft delete:
 
-## Developer's Concerns
+- `User.delete_all` does nothing special under Discard: it's a plain ActiveRecord method that never learned about `discarded_at`, so it deletes the rows for real. Only `.discard_all` behaves the way the name suggests.
+- Under ActsAsParanoid, `unscoped` removes the soft-delete scope along with every other scope on the relation, so `User.where.not(address: nil).unscoped.first` can hand you back a discarded record with a nil address. `unscoped` doesn't know it was only supposed to touch the paranoid scope.
+- Row counts and volume estimates go wrong under either gem if nobody accounts for the soft-deleted rows still sitting in the table.
 
-### Hide Information from the Developer
+## The trade-off
 
-One of the concerns with using soft delete gems is that they can hide the actual state of the data from the developer. This can lead to several issues:
+Soft delete looks free once it's wired up, but every table with a `deleted_at` column is a table where every future query, index, and migration has to remember it. Indexes need the deleted flag in their `WHERE` clause or they stop being selective. The rows never leave, so the table keeps growing until someone writes a job to purge old soft-deleted records. And the audit trail soft delete implies is only as good as the discipline behind it: a flag with no record of who set it isn't an audit trail, it's just a hidden column.
 
-1. Misunderstanding of data volume: Developers might underestimate the amount of data in the database if they don't account for soft-deleted records.
-2. Unexpected query results: Commands like `User.delete_all` do not actually delete all records but mark them as discarded, which can lead to confusion.
-3. Complexity in data management: Developers need to be aware of the soft delete mechanism and adjust their queries and data handling accordingly.
-
-### Incorrect Use of Unscoped
-
-Another concern is the improper use of the `unscoped` method. `Unscoped` is intended to temporarily remove all scoped conditions, but if not used correctly, it can lead to unintended consequences:
-
-1. Loss of intended filtering: For example, `User.where.not(address: nil).unscoped.first.address` might return a record that should have been excluded.
-2. Performance issues: Removing all scopes can lead to unnecessarily large result sets.
-3. Security risks: Unscoped queries might expose soft-deleted data that should remain hidden.
-
-## Trade-offs When Using Such Gems and Why Need to Be Very Careful
-
-When using soft delete gems like Discard or ActAsParanoid, there are several trade-offs to consider:
-
-1. **Performance Overhead**:
-   - Soft deletes can introduce performance overhead due to the need for additional columns and conditions in queries to filter out soft-deleted records.
-   - Indexes may need to be adjusted to maintain query performance.
-
-2. **Increased Complexity**:
-   - The use of soft deletes adds complexity to the application, as developers must remember to account for soft-deleted records in their queries and logic.
-   - It can complicate data migrations and schema changes.
-
-3. **Data Bloat**:
-   - Over time, soft-deleted records can accumulate, leading to data bloat and potentially affecting database performance.
-   - This may necessitate periodic purging of old soft-deleted records.
-
-4. **Consistency Challenges**:
-   - Ensuring consistent behavior across all parts of the application, including third-party integrations, can be challenging.
-
-5. **Potential for Data Leaks**:
-   - If not properly managed, soft-deleted data might be accidentally exposed or included in reports.
-
-Developers need to be very careful when using such gems to ensure that they:
-
-1. Understand the implications of soft deletes on their application's data management and performance.
-2. Have clear guidelines and tests in place to ensure that soft deletes are used correctly and do not lead to unintended data loss or integrity issues.
-3. Implement proper access controls to prevent unauthorized access to soft-deleted data.
-4. Consider the long-term impact on database size and performance, and plan for data archiving or permanent deletion strategies.
-5. Educate all team members about the use of soft deletes to prevent misunderstandings and incorrect data handling.
-
-By carefully considering these factors and implementing soft delete mechanisms thoughtfully, developers can leverage the benefits of data preservation while mitigating the potential drawbacks and risks associated with soft delete solutions.
+Pick Discard when you want soft delete to be explicit and rare. Pick ActsAsParanoid when you want deleted records to disappear from the whole app by default. Either way, write the test that proves `delete_all` and `unscoped` do what you think they do, because that's where soft delete quietly breaks.

@@ -1,20 +1,19 @@
 ---
 layout: post
-title:  "Mastering Redis Memory Management with Microserver and Sidekiq"
+title: "Redis Memory Spikes: Tracking Down a Runaway Sidekiq Queue"
 date:   2024-07-01 14:41:26 +0100
 pin: true
 categories: Rails
+description: "How I traced a Redis memory jump from 130MB to 800MB back to an unthrottled Sidekiq integration, and the maxmemory, eviction, and unique-job fixes that followed."
+tags: [redis, sidekiq, rails, debugging, performance]
 ---
-**Mastering Redis Memory Management with Microserver and Sidekiq**
 
-**Introduction:**
-Microservers have become increasingly popular due to their flexibility and ease of deployment and testing. However, they also present challenges, particularly with memory management in services like Redis. In this article, we'll explore a real-world scenario where Redis memory usage spiked dramatically and the steps taken to regain control.
+Redis memory on one of our services jumped from 130MB to 800MB. My first suspect was the Rails cache. It wasn't. This is the trail from the symptom to the actual cause, an unthrottled Sidekiq integration, and what I changed afterwards.
 
-**The Challenge: Redis Memory Surge**
-Recently, I encountered a significant increase in Redis memory usage, jumping from 130MB to 800MB. Initially, I suspected the Redis cache was the culprit.
+## Confirming the surge
 
-**Redis Memory Inspection**
-Upon inspection with the `INFO memory` command, the memory usage was as follows:
+`INFO memory` confirmed the numbers:
+
 ```plaintext
 used_memory:843019880
 used_memory_human:803.97M
@@ -22,8 +21,10 @@ used_memory_rss:902520832
 used_memory_rss_human:860.71M
 ```
 
-**Redis Configuration Review**
-I referred to the Redis documentation on eviction policies and found that the `maxmemory` and `maxmemory-policy` were not configured properly:
+## The configuration problem underneath
+
+Before hunting for the source, I checked how Redis was configured to behave under memory pressure. Badly, as it turned out:
+
 ```bash
 CONFIG GET maxmemory
 1) "maxmemory"
@@ -34,49 +35,47 @@ CONFIG GET maxmemory-policy
 2) "noeviction"
 ```
 
-**Setting Memory Limits**
-To prevent further memory overruns, I set a memory limit and an eviction policy:
+No memory ceiling and no eviction policy. Redis would grow until the host ran out of RAM. I set a limit and an eviction policy:
+
 ```bash
 CONFIG SET maxmemory 1024m
 CONFIG SET maxmemory-policy volatile-lru
 ```
-*Note: Never set `maxmemory` to a value less than the current usage, as it can cause immediate service denial.*
 
-**Digging Deeper**
-A deeper investigation using `info keyspace` revealed a staggering number of keys, particularly in one database:
+One warning here: never set `maxmemory` below current usage. With `noeviction`, or with nothing evictable, Redis starts refusing writes immediately and you have turned a slow leak into an outage.
+
+## Finding the source
+
+`INFO keyspace` showed where the memory actually lived:
+
 ```plaintext
 db0:keys=34,expires=0,avg_ttl=0
 db1:keys=754,expires=719,avg_ttl=0
 db2:keys=8924,expires=8864,avg_ttl=0
 db3:keys=117156,expires=117140,avg_ttl=0
 ```
-This pointed to an excess of Sidekiq jobs.
 
-**The Sidekiq Overflow**
-A month prior, an integration between App A and App B was implemented, which indexed active users and updated details. Lack of Sidekiq concurrency control led to thousands of requests, causing a memory spike.
+Over 117,000 keys in db3, the database Sidekiq uses. This was not a cache problem. It was a job queue problem.
 
-**Strategies for Avoidance**
-To prevent such overflows, consider the following:
-1. **Sidekiq Limit**: Control the number of concurrent jobs per queue.
-2. **Sidekiq Throttle**: Restrict the number of jobs processed within a given period.
+## The Sidekiq overflow
 
-I opted for throttling but underestimated the impact, leading to an ever-growing queue and increased memory consumption.
+A month earlier we had shipped an integration between two of our apps: App A indexed active users and App B pulled their details and updated records. There was no concurrency control on the Sidekiq side, so the integration enqueued thousands of jobs at once, and every queued job sits in Redis until it runs.
 
-**Lessons Learned**
-1. Sidekiq is powerful, but indiscriminate use is not a solution.
-2. Sidekiq jobs require intelligent management.
-3. Sidekiq queues need better orchestration.
+The obvious options were:
 
-**The Solution**
-1. Adjust parameters to suit the workload.
-2. Prevent duplicate jobs to ensure only necessary user information is processed.
-3. Utilize Sidekiq's unique-job feature to avoid redundancies.
+1. Limit concurrent jobs per queue.
+2. Throttle how many jobs run within a given period.
 
-**Further Considerations**
-1. Implement circuit breakers for future resilience.
-2. Optimize data retrieval to pull only updated information.
-3. Ensure App A returns only essential data.
-4. Consider using webhooks from App A to push changes to App B, eliminating the need for pulls.
+I chose throttling and underestimated the consequence: jobs were enqueued faster than the throttled workers could drain them, so the queue kept growing and Redis memory grew with it. Throttling the workers does nothing if you do not also throttle the producer.
 
-**Conclusion:**
-Proper management of Redis and Sidekiq is crucial for maintaining performance and preventing memory overflows. By understanding and applying the right configurations, limits, and strategies, you can ensure a smoother and more efficient operation of your microservices architecture.
+## What actually fixed it
+
+1. Tuned the throttle parameters against the real enqueue rate, not a guess.
+2. Deduplicated: only users whose details had actually changed get a job.
+3. Used Sidekiq's unique-jobs support so the same user cannot be queued twice.
+
+Longer term, the pull model itself is the weak point. Webhooks from App A pushing changes to App B would remove most of these jobs entirely, and a circuit breaker would stop a bad deploy from filling the queue again.
+
+## The lesson
+
+Sidekiq makes it trivially cheap to enqueue work, and that is exactly the danger: every queued job is memory in Redis, and an unbounded producer with a throttled consumer is a memory leak with extra steps. Set `maxmemory` and an eviction policy before you need them, and treat enqueue rate as something you design, not something that happens to you.

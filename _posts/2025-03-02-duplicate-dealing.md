@@ -1,19 +1,17 @@
 ---
 layout: post
-title: "Avoiding Duplicate Record Errors in Rails: Handling Concurrent Requests Gracefully"
-description: "Handling duplicate record errors in a Ruby on Rails application is a common challenge, especially when dealing with concurrent client requests. This article"
+title: "Avoiding Duplicate Record Errors in Rails Under Concurrency"
+description: "Two concurrent requests can both pass an exists? check and race to insert the same row; here is why, and how to write idempotent Rails controllers."
 date: "2025-03-02"
-categories: rails duplicate unique
+categories: [Rails]
+tags: [rails, database, testing]
 ---
-
-# Avoiding Duplicate Record Errors in Rails: Handling Concurrent Requests Gracefully
 
 <audio controls preload="metadata" src="/assets/audio/duplicate-dealing-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-Handling duplicate record errors in a Ruby on Rails application is a common challenge, especially when dealing with concurrent client requests. This article walks through the problem, its root causes, and best practices for writing safe, idempotent Rails controller actions that avoid unnecessary exceptions and race conditions.
+Handling duplicate record errors in a Rails app is a common problem the moment concurrent client requests enter the picture. Here's the failure mode, its root cause, and the pattern for writing controller actions that stay idempotent under race conditions instead of raising exceptions.
 
 ## The Problem: Duplicate Requests, Duplicate Keys
 
@@ -43,7 +41,7 @@ rescue ActiveRecord::RecordNotUnique => e
 end
 ```
 
-This code seems fine at first glance, but it is **not atomic**. Two simultaneous requests with the same `uuid` can both pass the `exists?` check and try to insert a row — only one succeeds, and the other raises a `PG::UniqueViolation`, which Rails wraps as `ActiveRecord::RecordNotUnique`.
+This code seems fine at first glance, but it is **not atomic**. Two simultaneous requests with the same `uuid` can both pass the `exists?` check and try to insert a row: only one succeeds, and the other raises a `PG::UniqueViolation`, which Rails wraps as `ActiveRecord::RecordNotUnique`.
 
 ### Why Two Exceptions?
 
@@ -113,7 +111,7 @@ rescue ActiveRecord::RecordNotUnique => e
 end
 ```
 
-This helps if your error tracker shows both errors — which is expected and normal.
+This helps if your error tracker shows both errors, which is expected and normal.
 
 ---
 
@@ -128,7 +126,7 @@ This helps if your error tracker shows both errors — which is expected and nor
 
 ---
 
-## Final Thoughts
+## The principle
 
-Rails provides robust tools for building safe, concurrent web applications — but it's essential to write your controller logic with **concurrent clients** in mind. Trust your database constraints, write atomic code, and use idempotency tokens from the client to keep your APIs fast, safe, and resilient.
+Rails gives you the tools to build safe, concurrent controllers, but it won't write the logic for you. Trust the database's unique constraint over an `exists?` check, keep transactions small, and use a client-provided idempotency token so a retried request is a no-op instead of a second row.
 

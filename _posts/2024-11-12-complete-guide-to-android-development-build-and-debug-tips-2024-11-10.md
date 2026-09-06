@@ -1,132 +1,75 @@
 ---
 layout: post
-title: 'Complete Guide to Android Development: Build and Debug Tips 2024-11-10'
-description: "This comprehensive guide covers essential tips and techniques for Android development, including Java environment setup, USB debugging, wireless debugging, and"
+title: "Android build and debug tips: jenv, ADB, and wireless debugging"
+description: "Practical notes on Android build and debug workflow: managing Java versions with jenv, wireless ADB debugging, release signing, and logcat filtering."
 date: 2024-11-12 22:26 +0000
-categories: Android
-tags: [android, build, debug]
+categories: [Engineering]
+tags: [android, debugging, productivity]
 ---
-
-# Complete Guide to Android Development: Build and Debug Tips
 
 <audio controls preload="metadata" src="/assets/audio/complete-guide-to-android-development-build-and-debug-tips-2024-11-10-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-This comprehensive guide covers essential tips and techniques for Android development, including Java environment setup, USB debugging, wireless debugging, and build management.
+A few of the environment quirks that come up repeatedly in Android development: juggling JDK versions, getting ADB to talk to a device over WiFi instead of a cable, and building release APKs without recreating the signing setup from memory each time.
 
-## Setting Up Your Development Environment
+## Java version management with jenv
 
-### Java Version Management with jenv
+Android tooling is picky about JDK version, and juggling that against whatever else needs a different JDK is easier with jenv than with manually edited `JAVA_HOME` exports:
 
-Managing multiple Java versions is crucial for Android development. Here's how to set it up:
-
-1. Install OpenJDK and jenv:
 ```bash
-# Install OpenJDK 11 (recommended for Android development)
 brew install openjdk@11
-
-# Install jenv for Java version management
 brew install jenv
 ```
 
-2. Configure your shell environment (add to `~/.zshrc` or `~/.bashrc`):
 ```bash
+# ~/.zshrc or ~/.bashrc
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 ```
 
-3. Add Java versions to jenv:
 ```bash
-# Add OpenJDK 11
 jenv add /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home
-
-# Verify installation
 jenv versions
-
-# Set global Java version
 jenv global 11.0
-
-# Set local version for a specific project
-jenv local 11.0
+jenv local 11.0   # per-project override
 ```
 
-## Android Debugging Options
+## USB and wireless debugging
 
-### USB Debugging
+Enable Developer Options (Settings → About Phone → tap Build Number seven times), then USB Debugging under Developer Options. Confirm the device shows up:
 
-1. Enable Developer Options on your Android device:
-   - Go to Settings → About Phone
-   - Tap "Build Number" seven times
-   - Developer Options will appear in Settings
-
-2. Enable USB Debugging:
-   - Go to Settings → Developer Options
-   - Enable "USB Debugging"
-   - Connect your device via USB
-   - Accept the debugging authorization prompt on your device
-
-3. Verify connection:
 ```bash
-# List connected devices
 adb devices
-
-# Check detailed device information
 adb shell getprop ro.product.model
 ```
 
-### Wireless Debugging (Over WiFi)
+Wireless debugging still needs a USB cable for the initial handshake:
 
-1. Connect via USB first, then enable wireless debugging:
 ```bash
-# Ensure device and computer are on same network
-# Connect device via USB
-
-# Enable TCP/IP mode on default port (5555)
 adb tcpip 5555
-
-# Get device IP address
 adb shell ip addr show wlan0
-
-# Connect to device wirelessly
 adb connect <device-ip>:5555
-
-# Verify connection
 adb devices
 ```
 
-2. For React Native development:
-```bash
-# Start Metro bundler
-npx react-native start
+For React Native, forward Metro's port back to the device instead of relying on the WiFi connection for bundle serving:
 
-# Forward connection from mobile to local
+```bash
+npx react-native start
 adb reverse tcp:8081 tcp:8081
 ```
 
-## Build Management
+## Debug and release builds
 
-### Debug Builds
-
-1. Using Android Studio:
-   - Open your project in Android Studio
-   - Select "Debug" configuration
-   - Click "Run" (⌘R on Mac, F5 on Windows)
-
-2. Using Command Line:
 ```bash
-# Build debug APK
 ./gradlew assembleDebug
-
-# Install on connected device
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Release Builds
+Release builds need signing configured once, in `android/app/keystore.properties`:
 
-1. Configure signing:
-   - Create `android/app/keystore.properties`:
 ```properties
 storeFile=your-key.keystore
 storePassword=your-store-password
@@ -134,79 +77,41 @@ keyAlias=your-key-alias
 keyPassword=your-key-password
 ```
 
-2. Build release version:
 ```bash
-# Generate release APK
 ./gradlew assembleRelease
-
-# Location of generated APK
 cd android/app/build/outputs/apk/release
-```
-
-3. Test release build:
-```bash
-# Install release version
 adb install app-release.apk
 ```
 
-## Common Debugging Tips
-
-### Logcat Filtering
+## Logs and common failures
 
 ```bash
-# View logs for specific package
 adb logcat | grep "com.yourpackage"
-
-# Filter by log level
-adb logcat *:E  # Show only errors
-
-# Save logs to file
+adb logcat *:E                        # errors only
 adb logcat > logfile.txt
 ```
 
-### Common Issues and Solutions
+Two failure modes come up often enough to have a standard fix. Metro serving stale bundles:
 
-1. Metro Bundler Issues:
 ```bash
-# Clear Metro bundler cache
 npx react-native start --reset-cache
-
-# Clear Gradle cache
 cd android && ./gradlew clean
 ```
 
-2. Device Connection Issues:
+And ADB losing the device after a sleep/wake cycle:
+
 ```bash
-# Reset ADB
 adb kill-server
 adb start-server
-
-# Restart device USB debugging
-# Toggle USB debugging off and on in device settings
 ```
 
-## Performance Optimization
+## Memory profiling
 
-### Memory Profiling
+Android Studio's Profiler (View → Tool Windows → Profiler) covers most of this visually. From the command line:
 
-1. Using Android Studio:
-   - Open Android Studio
-   - Go to View → Tool Windows → Profiler
-   - Select your running app
-   - Monitor memory usage in real-time
-
-2. Using Command Line:
 ```bash
-# Dump memory info
 adb shell dumpsys meminfo <package-name>
-
-# Capture heap dump
 adb shell am dumpheap <process-name> /data/local/tmp/heap.hprof
 ```
 
-## Additional Resources
-
-- [Android Developer Documentation](https://developer.android.com/)
-- [React Native Documentation](https://reactnative.dev/)
-- [Android Studio Guide](https://developer.android.com/studio/intro)
-- [ADB Command Line Tools](https://developer.android.com/studio/command-line/adb)
+None of these are exotic. They're just the handful of commands that are easy to forget between the times you actually need them.

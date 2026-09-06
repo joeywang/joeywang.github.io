@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Rails Style Guide: Transactions, Touch, and Async Derived Data"
-description: "This document defines official patterns and anti-patterns for handling transactions, derived data, touch, and async updates in Rails services at Reallyenglish."
+description: "This document defines official patterns and anti-patterns for handling transactions, derived data, touch, and async updates in Rails services at my company."
 date: 2025-12-21
 draft: false
 categories:
@@ -14,8 +14,6 @@ tags:
   - best-practices
 ---
 
-# Rails Style Guide
-
 <audio controls preload="metadata" src="/assets/audio/rails-styles-summary.ogg">
   Your browser does not support the audio element.
 </audio>
@@ -23,7 +21,7 @@ tags:
 
 ## Transactions, Touch, and Async Derived Data
 
-This document defines **official patterns and anti-patterns** for handling transactions, derived data, `touch`, and async updates in Rails services at Reallyenglish.
+This document defines **official patterns and anti-patterns** for handling transactions, derived data, `touch`, and async updates in Rails services at my company.
 
 The goal is to keep the system:
 
@@ -50,13 +48,13 @@ All data MUST be classified before implementation.
 
 ## 2. Transactions: What Is Allowed
 
-### ✅ Allowed inside transactions
+### Allowed inside transactions
 
 * Creating/updating core records
 * Enforcing invariants
 * Validations that affect correctness
 
-### ❌ Forbidden inside transactions
+### Forbidden inside transactions
 
 * Aggregate queries (`count`, `sum`, `exists?` on associations)
 * Cache updates
@@ -75,7 +73,7 @@ end
 
 ## 3. Timeline Diagram: Transaction vs Async
 
-### ❌ Bad (Derived work inside transaction)
+### Bad: derived work inside the transaction
 
 ```
 Request
@@ -97,7 +95,7 @@ Problems:
 
 ---
 
-### ✅ Good (Core write + async)
+### Good: core write, then async
 
 ```
 Request
@@ -152,7 +150,7 @@ Use `touch` to answer:
 
 ## 5. Derived Data Strategies (Choose One Explicitly)
 
-### Strategy A — Delta-based updates
+### Strategy A: delta-based updates
 
 **Use when:**
 
@@ -170,7 +168,7 @@ end
 
 ---
 
-### Strategy B — Full recompute
+### Strategy B: full recompute
 
 **Use when:**
 
@@ -188,7 +186,7 @@ end
 
 ---
 
-### Strategy C — Dirty flag (recommended default)
+### Strategy C: dirty flag (recommended default)
 
 ```rb
 # students.needs_address_rollup :boolean
@@ -204,7 +202,7 @@ A worker periodically rebuilds flagged rows.
 
 ---
 
-### Strategy D — Versioned touch (advanced, preferred for async)
+### Strategy D: versioned touch (advanced, preferred for async)
 
 ```rb
 # students.addresses_version :integer
@@ -228,14 +226,14 @@ All async jobs MUST be:
 * Safe to retry
 * Safe to run out of order
 
-### ❌ Forbidden
+### Forbidden
 
 ```rb
 # blindly overwriting
 student.update!(addresses_count: value)
 ```
 
-### ✅ Approved
+### Approved
 
 ```rb
 return if student.addresses_version > version_seen

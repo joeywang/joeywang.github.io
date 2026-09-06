@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "A Portable Workflow for Testing Small Local LLMs on Modest Hardware"
+title: "Testing Small Local LLMs on Modest Hardware: A Portable Workflow"
 description: "A repeatable way to download, serve, benchmark, and choose small GGUF models for Hermes and coding-agent work across different CPU and memory budgets."
 date: 2026-08-12 18:00:00 +0100
 author: "Joey Wang"
-tags: [local-ai, llm, gguf, llama-cpp, hermes, coding-agent, benchmarking]
+tags: [llm, local-llm, hermes, agents, performance]
 categories: [AI, Engineering]
 ---
-
-# A Portable Workflow for Testing Small Local LLMs on Modest Hardware
 
 <audio controls preload="metadata" src="/assets/audio/portable-local-llm-benchmark-summary.ogg">
   Your browser does not support the audio element.

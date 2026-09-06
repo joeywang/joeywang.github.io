@@ -1,13 +1,11 @@
 ---
 layout: post
-title: "Faster Rails Docker Feedback Loop: Runtime Bundler, Yarn Cache, and HMR"
+title: "Faster Rails Docker Feedback Loop: Runtime Deps and HMR"
 date: 2026-02-05
-tags: [rails, docker, docker-compose, webpacker, hmr, bundler, yarn, productivity]
-categories: [Development, DevOps]
+tags: [rails, docker, devops, productivity]
+categories: [Rails, DevOps]
 description: "How I reduced Docker development friction across three Rails apps by removing rebuild-heavy steps, adding runtime dependency sync, and enabling webpack HMR."
 ---
-
-# Faster Rails Docker Feedback Loop: Runtime Bundler, Yarn Cache, and HMR
 
 <audio controls preload="metadata" src="/assets/audio/faster-rails-docker-feedback-loop-summary.ogg">
   Your browser does not support the audio element.
@@ -288,4 +286,4 @@ Practical impact:
 2. Yarn reuse is significantly better with persisted caches and install gating.
 3. Frontend edits get immediate feedback through dedicated webpack HMR service.
 
-For Rails teams using Docker as the default dev runtime, this pattern is low-risk and high-impact.
+For Rails teams using Docker as the default dev runtime, this pattern is low-risk and pays for itself quickly.

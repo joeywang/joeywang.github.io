@@ -1,75 +1,65 @@
 ---
 layout: post
-title: Mastering GitHub Action Variables for Powerful Workflows
-description: "GitHub Actions provide an extensive set of features to automate your software development workflows. One of the most powerful aspects of GitHub Actions is the"
+title: "GitHub Actions Variables: env, Contexts, Secrets, and Matrix"
+description: "How GitHub Actions variables work in practice: env blocks, context variables, secrets, matrix strategies, and passing step outputs between steps."
 date: 2024-08-18 00:00 +0000
-categories: [GitHub, Actions]
-tags: [GitHub, Actions, Variables]
+categories: [DevOps]
+tags: [github-actions, ci, devops]
 ---
-
-# Mastering GitHub Action Variables for Powerful Workflows
 
 <audio controls preload="metadata" src="/assets/audio/mastering-github-action-variables-for-powerful-workflows-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction
+Most GitHub Actions workflows I review misuse variables in one of two ways: hardcoding values that should be dynamic, or reaching for a context expression where a plain shell variable would do. The distinction matters because each kind of variable lives in a different place and is resolved at a different time. Here is how they fit together.
 
-GitHub Actions provide an extensive set of features to automate your software development workflows. One of the most powerful aspects of GitHub Actions is the ability to use variables to dynamically control your workflow. This article will explore the different types of variables available in GitHub Actions and how to use them effectively.
+## Environment variables
 
-## Understanding GitHub Action Variables
-
-Variables in GitHub Actions can be categorized into several types, including environment variables, secrets, and matrix variables. Each serves a specific purpose and can be utilized to customize your workflow.
-
-### Environment Variables
-
-Environment variables are key-value pairs that are available to all steps in a job. They can be defined at the workflow level or within a job or step.
+Environment variables are key-value pairs available to all steps in a job. They can be defined at the workflow, job, or step level.
 
 ```yaml
 env:
   MY_ENV: myenv
 ```
 
-You can access these variables using the `${{ env.MY_ENV }}` syntax.
+You can access these variables using the `${{ env.MY_ENV }}` syntax in expressions, or as `$MY_ENV` inside a `run` script.
 
-### Repository Context Variables
+## Repository context variables
 
-Repository context variables provide information about the GitHub repository. For example:
+Context variables provide information about the repository and the event that triggered the run. For example:
 
-- `github.repository_owner`: The owner of the repository.
-- `github.repository`: The name of the repository.
-- `github.actor`: The username of the person or app that initiated the workflow.
+- `github.repository_owner`: the owner of the repository.
+- `github.repository`: the owner and repository name, as `owner/repo`.
+- `github.actor`: the username of the person or app that initiated the workflow.
 
-These variables can be used to dynamically set environment variables or pass data between steps.
+These are resolved by GitHub before the step runs, so they are useful for setting environment variables dynamically or passing data between steps.
 
 ```yaml
 ${{ github.actor }} # usage example
 ```
 
-### Secrets
+## Secrets
 
-Secrets are encrypted environment variables that you can use to store sensitive information, such as tokens or passwords. They are defined in the repository settings and can be accessed in the workflow.
+Secrets are encrypted values for sensitive information such as tokens or passwords. They are defined in the repository settings and referenced with the `${{ secrets.GITHUB_TOKEN }}` syntax. When calling a reusable workflow, you pass them through explicitly:
 
 ```yaml
 secrets:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-You can reference a secret using the `${{ secrets.GITHUB_TOKEN }}` syntax.
+## Shell parameter expansion on GITHUB_REPOSITORY
 
-### ENV and GITHUB_CONTEXT
-
-The `GITHUB_REPOSITORY` environment variable contains the owner and repository name. You can extract the owner or the repository name using shell parameter expansion:
+The `GITHUB_REPOSITORY` environment variable contains the owner and repository name. Inside a `run` script, shell parameter expansion splits it without any extra action:
 
 ```yaml
 ${GITHUB_REPOSITORY%/*} # extract owner
 ${GITHUB_REPOSITORY#*/} # extract repo name
 ```
 
-### Matrix Strategy
+## Matrix strategy
 
-The matrix strategy allows you to run a job with different sets of environment variables. This is particularly useful when you need to run tests against multiple versions of a dependency or build multiple configurations.
+The matrix strategy runs a job once per combination of values. This is the standard way to test against multiple versions of a dependency or build multiple configurations.
 
 ```yaml
 matrix:
@@ -78,24 +68,22 @@ matrix:
 
 You can access the matrix variables using the `${{ matrix.version }}` syntax.
 
-## Using Variables in Steps
+## Passing values between steps
 
-Variables can be used within the steps of your workflow to customize the behavior of each step. For example, you can set a variable within a step and then reference it later in the same step or in subsequent steps.
+A shell variable set inside a `run` script dies with that script. To make a value visible to later steps, write it to `$GITHUB_OUTPUT` and read it back through the `steps` context:
 
 ```yaml
 steps:
   - id: "my_step"
     run: |
-      my_var="Hello World"
+      echo "my_var=Hello World" >> "$GITHUB_OUTPUT"
       echo ${{ matrix.version }}
-      echo ${{steps.my_step.outputs.my_var}}
+  - run: |
+      echo "${{ steps.my_step.outputs.my_var }}"
 ```
 
-In the above example, `my_var` is set within a step and can be accessed using the `${{steps.my_step.outputs.my_var}}` syntax.
+The `id` on the producing step is what makes `steps.my_step.outputs.my_var` addressable. Forgetting the `id`, or setting a plain shell variable and expecting it to survive, are the two most common failure modes here.
 
-## Conclusion
+## The short version
 
-Mastering the use of variables in GitHub Actions can greatly enhance the flexibility and power of your CI/CD pipelines. By understanding and utilizing environment variables, secrets, matrix strategies, and context variables, you can create workflows that are not only efficient but also adaptable to various development scenarios.
-
-Whether you're managing sensitive information with secrets, customizing builds with matrix variables, or dynamically setting environment variables, GitHub Actions provides a robust set of tools to automate and streamline your development process.
-
+Use `env` for values shared within a job, contexts for anything GitHub already knows, secrets for credentials, matrix for fan-out, and `$GITHUB_OUTPUT` for step-to-step data. Once you know which layer a value belongs to, the workflow syntax mostly writes itself.

@@ -8,8 +8,6 @@ tags: [ai, agents, engineering, infrastructure, hermes]
 categories: [AI, Engineering]
 ---
 
-# Agent 基建的三层爆发：电脑、运行时、技能方法论
-
 这几天 GitHub 上一批 Agent 相关项目突然变得很热。表面上看，它们都在讲 “AI coding agent” 或 “agent skills”。但放在一起看，我觉得更准确的判断是：
 
 **Agent 正在从聊天框，变成一种有工作台、有运行时、有工程方法论的执行系统。**

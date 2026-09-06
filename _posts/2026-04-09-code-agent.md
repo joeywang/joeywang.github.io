@@ -1,12 +1,11 @@
 ---
 layout: post
-title: "Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma"
-description: "Last week I spent an evening trying to get Gemma 4 (26B) to run a simple coding task through my own agent: \"find all the Ruby files in this directory and"
+title: "Building a Local Coding Agent (Codex/Claude Code Style) in Gemma"
+description: "Building a local coding agent around Gemma 4 26B taught me the model wasn't the problem: my agent loop was, and fixing the loop is what made it work."
 date: 2026-04-09
-categories: AI LLM Gemma Ollama coding-agent
+categories: [AI]
+tags: [ai, llm, agents, local-llm]
 ---
-
-# Building a Local Coding Agent (Codex/Claude-Code Style) with Gemma
 
 <audio controls preload="metadata" src="/assets/audio/code-agent-summary.ogg">
   Your browser does not support the audio element.
@@ -93,23 +92,23 @@ This is the most common bug I see in custom agents. The stream arrives in chunks
 
 ### Message Roles and Format
 
-**What the model does:** Expects messages in a specific format. Different models have different expectations. OpenAI models expect `system`, `user`, `assistant`, and `tool` roles. Gemma 4 works better with fewer role types — mainly `user` and `model` — with system instructions flattened into the conversation context.
+**What the model does:** Expects messages in a specific format. Different models have different expectations. OpenAI models expect `system`, `user`, `assistant`, and `tool` roles. Gemma 4 works better with fewer role types, mainly `user` and `model`, with system instructions flattened into the conversation context.
 
 **What the agent must build:** A message format adapter that translates between your internal representation and what the model expects. If you're using Ollama's OpenAI-compatible endpoint, the adapter is built in. If you're talking to the model directly (llama.cpp, or Ollama's native API), you need to handle this yourself.
 
-The thing that tripped me up: I was appending tool results with a `tool` role, but my Ollama setup expected them as part of a `user` turn. The model received messages in a format it didn't recognize, and the tool loop silently broke — no error, just the model ignoring the result and generating something else.
+The thing that tripped me up: I was appending tool results with a `tool` role, but my Ollama setup expected them as part of a `user` turn. The model received messages in a format it didn't recognize, and the tool loop silently broke: no error, just the model ignoring the result and generating something else.
 
 ### Context Window Management
 
-**What the model does:** Has a fixed context window (e.g., 8K, 16K tokens). Everything in the message history — user prompts, model responses, tool results — consumes tokens. When you exceed the window, older tokens get truncated.
+**What the model does:** Has a fixed context window (e.g., 8K, 16K tokens). Everything in the message history, user prompts, model responses, tool results, consumes tokens. When you exceed the window, older tokens get truncated.
 
-**What the agent must build:** A strategy for managing context growth. Tool results can be large — a `grep -r` across a codebase might return thousands of lines. If you dump every tool result into the message history without thinking, you'll burn through your context window in three turns.
+**What the agent must build:** A strategy for managing context growth. Tool results can be large: a `grep -r` across a codebase might return thousands of lines. If you dump every tool result into the message history without thinking, you'll burn through your context window in three turns.
 
 Common approaches: summarize tool results before appending, truncate output that exceeds a threshold, or maintain a separate "memory" that the model can query instead of keeping everything in the active context. For coding tasks, I've had good luck truncating file contents to relevant sections and summarizing long shell output.
 
 ### Parallel Tool Calls
 
-**What the model does:** Can emit multiple tool calls in a single response when it determines they're independent — for example, reading five files at once. The model expects these to be executed and the results returned in the same turn.
+**What the model does:** Can emit multiple tool calls in a single response when it determines they're independent, for example, reading five files at once. The model expects these to be executed and the results returned in the same turn.
 
 **What the agent must build:** Logic to detect multiple tool calls, decide whether to run them in parallel or sequentially, and collect all results before feeding them back to the model. Running independent file reads in parallel is a nice optimization, but running dependent tool calls in parallel (read a file, then write to it) is a bug.
 
@@ -158,7 +157,7 @@ type Message =
   | { role: "tool"; tool_call_id: string; content: string }
 ```
 
-A tool schema — nothing fancy:
+A tool schema, nothing fancy:
 
 ```json
 {
@@ -204,7 +203,7 @@ async function runAgent(messages: Message[]): Promise<string> {
 
 ## Planner and Executor Split
 
-One thing I picked up from watching how Claude Code behaves: it doesn't use a single model call for everything. There's a planning phase (which may involve tool calls) and an execution phase (which produces the final answer). You can approximate this by using one pass of the model to decide on steps and call tools, then a second pass — sometimes even with temperature set to 0 — to synthesize the result.
+One thing I picked up from watching how Claude Code behaves: it doesn't use a single model call for everything. There's a planning phase (which may involve tool calls) and an execution phase (which produces the final answer). You can approximate this by using one pass of the model to decide on steps and call tools, then a second pass, sometimes even with temperature set to 0, to synthesize the result.
 
 It's not strictly necessary for simple tasks, but once you're doing multi-step refactoring work, the split makes the agent more predictable. The planner can wander through tool calls without worrying about producing a clean final answer. The executor gets a complete set of tool results and just needs to summarize.
 
@@ -231,6 +230,6 @@ You don't need a complex session system. You don't need the full Ollama API. You
 - **Context:** 8K (16K if the task needs it, but it burns memory fast)
 - **Temperature:** 0.1 for tool-heavy tasks, 0.3 for planning
 
-26B fits in unified memory alongside everything else I'm running, and the tool calling is reliable enough that I actually use it for real tasks now — not just experiments.
+26B fits in unified memory alongside everything else I'm running, and the tool calling is reliable enough that I actually use it for real tasks now, not just experiments.
 
 The thing I keep coming back to is that model quality matters less than people think once your loop is correct. A good agent loop makes a mediocre model feel capable. A broken agent loop makes a great model feel useless.

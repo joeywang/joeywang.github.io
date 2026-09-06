@@ -1,24 +1,23 @@
 ---
 layout: post
-title: "Whisper: Speech-to-Text"
-description: "![IMAGE ALT TEXT HERE](https://www.youtube.com/watch?v=4pHfPe50x0)"
+title: "Whisper: An Open-Source Alternative to Cloud Speech-to-Text"
+description: "OpenAI's Whisper is a self-hostable alternative to Google's Speech-to-Text API, with a Flask wrapper and a C++ port covered here alongside the original model."
 date: 2024-08-13 14:41:26 +0100
-categories: [Python]
-tags: AI
+categories: [AI]
+tags: [ai, python, automation]
 pin: true
 ---
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/4pH_fPe50x0/0.jpg)](https://www.youtube.com/watch?v=4pH_fPe50x0)
-
-# OpenAPI Whisper: A Robust Alternative to Google's Speech-to-Text API
+[![Whisper demo video](https://img.youtube.com/vi/4pH_fPe50x0/0.jpg)](https://www.youtube.com/watch?v=4pH_fPe50x0)
 
 <audio controls preload="metadata" src="/assets/audio/whisper-speech-to-text-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-OpenAPI Whisper is an innovative project that aims to provide a powerful, open-source alternative to Google's Speech-to-Text API. This article will explore the features, capabilities, and potential use cases of OpenAPI Whisper, highlighting its advantages and how it can be integrated into various applications.
+OpenAI's Whisper is a real alternative to Google's Speech-to-Text API when self-hosting or avoiding per-request billing matters more than managed convenience. Three links worth having: the model itself, a Flask wrapper that puts it behind an API, and a C++ port for running it without a Python runtime.
 
 [OpenAI Whisper](https://github.com/openai/whisper)
+
 [Whisper API Flask](https://github.com/lablab-ai/whisper-api-flask)
+
 [Whisper.cpp](https://github.com/ggerganov/whisper.cpp)

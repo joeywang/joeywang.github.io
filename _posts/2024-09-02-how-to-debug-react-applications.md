@@ -1,19 +1,16 @@
 ---
 layout: post
-title: How to debug React Applications
-description: "Debugging React applications can be a complex task, but with the right tools and techniques, you can streamline the process and quickly identify and fix"
+title: "How to Debug React Applications"
+description: "A rundown of debugging React apps: React Developer Tools in the browser, inspecting React Native, and running Jest tests under a real debugger."
 date: 2024-09-02 00:00 +0000
-categories: [Debugging]
-tags: [debugging, react, frontend]
+categories: [Engineering]
+tags: [debugging, react, javascript]
 ---
-# How to Debug React Applications
-
 <audio controls preload="metadata" src="/assets/audio/how-to-debug-react-applications-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-Debugging React applications can be a complex task, but with the right tools and techniques, you can streamline the process and quickly identify and fix issues. In this article, we'll explore various methods to debug both React web and React Native applications.
+Component inspection, prop and state edits, test debugging: here's what actually gets used for debugging React web and React Native applications.
 
 ## Debugging with React Developer Tools
 
@@ -134,6 +131,4 @@ You can also debug tests directly from an IDE like Visual Studio Code or WebStor
 
 2. **Debugging**: With the configurations in place, you can start debugging tests directly from the IDE. Set breakpoints beforehand or use the `debugger` statement in your test code.
 
-## Conclusion
-
-Debugging React applications doesn't have to be a daunting task. With the right tools and methods, you can efficiently identify and resolve issues. Whether you're using React Developer Tools for component inspection or debugging tests with `react-scripts`, these techniques will help you maintain and improve the quality of your React applications.
+React Developer Tools covers component inspection for both web and native; the `--inspect-brk` flag and an IDE launch config cover everything that happens inside a test run. Between the two, most React bugs are visible without adding a single `console.log`.

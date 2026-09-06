@@ -1,27 +1,23 @@
 ---
 layout: post
-title: "Monkey-Patching: A Tale of Two Languages"
-description: "Monkey-patching—also known as runtime method override or class reopening—is a technique that allows modifying or augmenting existing classes or modules at"
+title: "Monkey-Patching in PHP vs Ruby: Why One Is an Anti-Pattern"
+description: "Runtime method overrides work very differently in PHP and Ruby: one has no rollback mechanism, the other builds aliasing and scoping in from the start."
 date: 2025-03-03 14:41:26 +0100
-categories: [PHP, Ruby]
+categories: [Engineering]
+tags: [php, ruby, testing]
 ---
-
-# Monkey-Patching: A Tale of Two Languages
 
 <audio controls preload="metadata" src="/assets/audio/class-override-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-## Introduction
-
-Monkey-patching—also known as runtime method override or class reopening—is a technique that allows modifying or augmenting existing classes or modules at runtime. While it’s a powerful feature in some languages, it can be an anti-pattern in others. In this article, we explore why overriding class methods in PHP is risky and hard to revert, and contrast that with Ruby’s built-in, manageable approach.
+Monkey-patching, also called runtime method override or class reopening, lets you modify an existing class or module after it's already defined. In Ruby it's a supported, manageable feature. In PHP it's closer to an anti-pattern, mostly because the language gives you no way to undo it cleanly.
 
 ---
 
 ## Thinking Critically about Overriding Class Methods
 
-Before diving into language-specific mechanics, it’s useful to ask: why do developers override class methods at runtime in the first place—and when does it slip from a handy trick into an anti-pattern?
+Before getting into language-specific mechanics, it's worth asking why developers override class methods at runtime in the first place, and when it slips from a handy trick into an anti-pattern.
 
 1. **Breaking Encapsulation:** By reaching inside and altering a class’s behavior post-definition, you violate its encapsulation. A class’s internal logic was designed to process inputs in a certain way; overriding methods circumvents that intent, making behavior unpredictable.
 
@@ -31,7 +27,7 @@ Before diving into language-specific mechanics, it’s useful to ask: why do dev
 
 4. **Encouraging Poor Design:** Reliance on runtime overrides can discourage proper design patterns (like dependency injection or interface-based architecture), since it offers a shortcut past designing flexible, testable classes.
 
-5. **Test Isolation Issues:** As a special case of global state, method-level patches can leak between tests, making suites order-dependent and brittle—one of the hallmarks of an anti-pattern.
+5. **Test Isolation Issues:** As a special case of global state, method-level patches can leak between tests, making suites order-dependent and brittle: one of the hallmarks of an anti-pattern.
 
 ## 1. PHP: The Hidden Cost of Runtime Overrides
 
@@ -106,55 +102,6 @@ This inevitably leads to process isolation via `@runInSeparateProcess`, impairin
       }
   }
   ```
-
----
-
-### 1.1 Why It Feels Like a Shortcut
-
-Developers sometimes reach for extensions like **runkit** or **uopz** to override methods directly on a loaded class:
-
-```php
-// Using runkit to redefine a method
-runkit_method_redefine(
-    'User',
-    'greet',
-    '',
-    'return "Hello from mock!";'
-);
-```
-
-At first glance, this seems to allow precise control over internal behavior without changing production code. But it introduces significant drawbacks.
-
-### 1.2 Fragile Tests and Global State
-
-1. **Persistent overrides per request**: Once runkit redefines `User::greet()`, the override persists for the remainder of the PHP process. Subsequent tests or code will see the mock unless the process is restarted.
-2. **Order-dependent failures**: Tests that assume a fresh environment can pass or fail unpredictably based on which earlier test ran the override.
-
-### 1.3 No Built-in Rollback Mechanism
-
-PHP’s core engine compiles classes and loads them into memory without tracking original method definitions. Extensions like runkit do not store the original body by default, so there is no straightforward `runkit_method_restore()` counterpart. Any rollback logic must manually alias and remove methods:
-
-```php
-// Manual aliasing workaround
-class User {
-    public function greet() { return "Hello!"; }
-}
-
-// Save original
-User::class_alias('User', 'OriginalUser');
-
-// Override
-runkit_method_redefine('User', 'greet', '', 'return "Mocked!";');
-
-// Restore by reloading class definitions (requires separate process)
-```
-
-This inevitably leads to process isolation via `@runInSeparateProcess`, impairing test suite performance.
-
-### 1.4 Better Alternatives in PHP
-
-* **Dependency Injection**: Define interfaces and inject collaborators via constructors.
-* **PHPUnit Mocks**: Use `$this->getMockBuilder(User::class)` to create proxy objects that override methods only on the mock instance.
 
 ---
 
@@ -259,8 +206,6 @@ end
 
 ---
 
-## Conclusion
+## The difference that matters
 
-While both PHP and Ruby support runtime method overrides, Ruby’s language design—open classes, aliasing, refinements, and integrated test-framework cleanup—makes monkey-patching a manageable tool rather than a dangerous hack. In PHP, by contrast, the lack of a built-in rollback facility and reliance on heavy extensions turns overrides into brittle anti-patterns.
-
-Whenever possible, favor dependency injection and test doubles at the object level to keep your codebase clean, maintainable, and testable across both worlds.
+Both languages support runtime method overrides. Ruby's open classes, `alias_method`, refinements, and test-framework cleanup make monkey-patching a manageable tool with a clear way back. PHP's lack of a built-in rollback means the same trick, done with runkit or uopz, turns into a brittle hack that leans on process isolation to stay safe. In either language, dependency injection and object-level test doubles are the better default; reach for a runtime override only when there's genuinely no other way in.

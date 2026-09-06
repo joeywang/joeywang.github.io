@@ -1,12 +1,11 @@
 ---
 layout: post
-title: Power of unscope
-description: "In Ruby on Rails, scopes are a convenient way to encapsulate common query patterns, making it easier to write clean and reusable code. However, there are times"
+title: "Rails unscope: removing default scope conditions"
+description: "How ActiveRecord's unscope method selectively removes where and order conditions from default scopes, with examples and alternatives like merge and unscoped."
 date: 2023-03-04 00:00 +0000
-categories: Rails
+categories: [Rails]
+tags: [rails, ruby, activerecord, database]
 ---
-# The Power of Unscope in Ruby on Rails
-
 <audio controls preload="metadata" src="/assets/audio/power-of-unscope-summary.ogg">
   Your browser does not support the audio element.
 </audio>
@@ -115,8 +114,6 @@ Post.where(:published).merge(Post.order(:title))
 - **Testing**: When using `unscope`, it's important to ensure that your tests cover the scenarios where the default scopes are bypassed to prevent unexpected behavior in production.
 - **Merging**: When merging scopes, be aware that certain keys will be overwritten, while `where` and `include` will be merged. This can lead to complex query logic if not managed properly.
 
-### Conclusion
+### The principle
 
-The `unscope` method is a powerful tool in Ruby on Rails that allows developers to have granular control over their queries. It's especially useful when you need to perform operations that don't align with your predefined scopes. By understanding and utilizing `unscope`, along with `only`, `with`, and `merge`, you can write more flexible and dynamic queries in your Rails applications.
-
-Remember, while these methods provide flexibility, it's important to use them judiciously to maintain the integrity and consistency of your application's data handling.
+`unscope` gives you granular control when a query needs to break from its predefined scopes. Used alongside `only`, `with`, and `merge`, it covers most cases where the default scope gets in the way. Use it deliberately: it bypasses conditions your models rely on to keep data consistent.

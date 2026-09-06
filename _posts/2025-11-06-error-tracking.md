@@ -1,20 +1,18 @@
 ---
-title: 'When Your Crucial Scripts Go Dark: Demystifying "Blocked:Other"$ and the Power of Proxying'
-description: "This is one of those browser problems that looks vague until you have seen it a few times."
+title: 'Chrome''s "blocked:other": why analytics scripts go silent'
+description: "Chrome's \"blocked:other\" status silently kills analytics and error-tracking scripts, and proxying those requests through your own server is the fix."
 date: 2025-11-06
 tags:
-  - web-development
+  - javascript
   - analytics
   - error-tracking
   - privacy
-  - proxying
+  - debugging
 ---
 
 <audio controls preload="metadata" src="/assets/audio/error-tracking-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-## When Your Crucial Scripts Go Dark: Demystifying "Blocked:Other" and the Power of Proxying
 
 This is one of those browser problems that looks vague until you have seen it a few times.
 
@@ -90,12 +88,4 @@ That server-to-server hop is usually invisible to client-side blockers, which is
 *   **More control:** You can validate, enrich, or reshape data before it reaches the vendor.
 *   **Potential performance benefits:** You may also cache or serve certain assets more efficiently.
 
-### Conclusion
-
-`"blocked:other"` is usually the browser telling you that something on the client side decided the request should never happen.
-
-That does not mean your app is broken. It does mean your current integration path is fragile.
-
-If analytics and error tracking matter to you, proxying those requests through your own server is often the most dependable way to stop flying blind.
-
----
+`"blocked:other"` is usually the browser telling you that something on the client side decided the request should never happen. That does not mean your app is broken. It means your current integration path is fragile, and proxying those requests through your own server is the most dependable way to stop flying blind.

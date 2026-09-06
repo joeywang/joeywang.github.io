@@ -3,9 +3,9 @@ layout: post
 title: 最令PHP初学者头痛的十四个问题及解决方案
 description: "PHP是一门强大且流行的服务器端脚本语言，但初学者在学习过程中可能会遇到一些常见问题。本文将列举并提供这些问题的解决方案。"
 date: 2006-01-08 00:00 +0000
+categories: [Notes]
+tags: [php, mysql, debugging]
 ---
-# 最令PHP初学者头痛的十四个问题及解决方案
-
 <audio controls preload="metadata" src="/assets/audio/php-beginner-problems-summary.ogg">
   Your browser does not support the audio element.
 </audio>

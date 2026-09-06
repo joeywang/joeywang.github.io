@@ -1,31 +1,29 @@
 ---
 layout: page
-title: Migrate GCP Classic Load Balancer
-description: "The Global External Application Load Balancer is the latest evolution of Google Cloud's Layer 7 load balancing service. It provides a modern control plane with"
+title: Migrating a GCP Classic Load Balancer to Global External
+description: "GCP lets you migrate a Classic Application Load Balancer to the Global External Load Balancer with a staged, four-state rollout that avoids downtime."
 permalink: /migrate-gcp-classic-load-balancer/
 date: 2025-08-09
-categories: [ gcp ]
-tags: [ gcp, load balancer ]
+categories: [DevOps]
+tags: [gcp, load-balancer, networking, devops]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/migrate-gcp-load-balancer-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-## The Essential Guide to Migrating Your GCP Classic Load Balancer to the Global External Load Balancer
-
-The Global External Application Load Balancer is the latest evolution of Google Cloud's Layer 7 load balancing service. It provides a modern control plane with enhanced traffic management, security, and global reach. If your applications are still running behind a **Classic Application Load Balancer**, it's time to upgrade to take advantage of these new capabilities. This guide provides a step-by-step walkthrough of the migration process using the `gcloud` command-line tool, following a safe, staged approach to ensure zero downtime.
+If you're still running a **Classic Application Load Balancer** on GCP, moving to the Global External Application Load Balancer gets you a modern control plane with better traffic management, security, and global reach. GCP handles the migration itself, and it's designed to be non-disruptive: you shift traffic from the old infrastructure to the new one in stages, with a rollback available at every step. This is the `gcloud` walkthrough for doing that safely.
 
 -----
 
-### Understanding the Migration Strategy
+### The Two-Part Migration
 
-The migration process is a managed operation handled by GCP. It's designed to be non-disruptive, allowing you to gracefully shift traffic from the old infrastructure to the new. The core strategy involves a two-part phased migration:
+The migration has two parts, run in order:
 
-1.  **Backend Service Migration:** This prepares your backend resources (like Managed Instance Groups or NEGs) to serve traffic from the new load balancer infrastructure.
-2.  **Forwarding Rule Migration:** This updates the frontend, which handles incoming traffic, to use the new control plane.
+1.  **Backend service migration:** prepares your backend resources (Managed Instance Groups or NEGs) to serve traffic from the new load balancer infrastructure.
+2.  **Forwarding rule migration:** updates the frontend, the part that handles incoming traffic, to use the new control plane.
 
-For each of these steps, you'll progress through four distinct states: `PREPARE`, `TEST_BY_PERCENTAGE`, `TEST_ALL_TRAFFIC`, and `MIGRATE`. This staged approach gives you full control and allows for testing at each stage.
+Each part moves through the same four states: `PREPARE`, `TEST_BY_PERCENTAGE`, `TEST_ALL_TRAFFIC`, and `MIGRATE`.
 
 -----
 
@@ -119,11 +117,11 @@ gcloud beta compute forwarding-rules update [FORWARDING_RULE_NAME] \
 
 -----
 
-### The Importance of Rollback ↩️
+### Rolling Back
 
-GCP's managed migration process includes a built-in **rollback** capability, which is crucial for safety. If you encounter any issues during the migration, you can revert the state.
+GCP's managed migration process includes a built-in rollback for each stage. If you see problems during the migration, you can revert to the prior state instead of pushing forward.
 
-  * To roll back to the previous state, you would use the same `update` command but change the `--external-managed-migration-state` flag to the desired prior state. For example, to revert from `TEST_ALL_TRAFFIC` back to `TEST_BY_PERCENTAGE`:
+  * To roll back, use the same `update` command but change the `--external-managed-migration-state` flag to the desired prior state. For example, to revert from `TEST_ALL_TRAFFIC` back to `TEST_BY_PERCENTAGE`:
 
     ```bash
     gcloud beta compute forwarding-rules update [FORWARDING_RULE_NAME] \
@@ -132,6 +130,6 @@ GCP's managed migration process includes a built-in **rollback** capability, whi
     --global
     ```
 
-  * For a full rollback to the classic load balancer, you would change the load balancing scheme of the forwarding rule back to `EXTERNAL`. The rollback functionality is available for a limited time (90 days) after the migration is completed.
+  * For a full rollback to the classic load balancer, change the load balancing scheme of the forwarding rule back to `EXTERNAL`. This is only available for 90 days after the migration completes, so don't let a "we'll clean it up later" backend or forwarding rule sit in `MIGRATE` state indefinitely.
 
-By following this controlled, staged process, you can upgrade your load balancer with confidence, unlocking a new level of performance and features while minimizing any risk to your application's availability.
+The staged states exist because backend migration and forwarding rule migration are two separate blast radii: you can validate the backend under real traffic before you ever touch the frontend that clients connect to. That separation is the whole reason this process is safe to run against production.

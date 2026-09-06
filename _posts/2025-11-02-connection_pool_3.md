@@ -1,12 +1,11 @@
 ---
-title: "Rails 8.1.1 + Ruby 3.4 + connection_pool 3.x: RedisCacheStore boot crash and a safe monkey-patch"
-description: "Upgrading to Ruby 3.4 and pulling in connectionpool 3.x can break a Rails 8.1.1 app at boot with:"
+title: "Rails 8.1.1 + connection_pool 3.x: RedisCacheStore boot crash"
+description: "A keyword-argument mismatch between Ruby 3.4 and connection_pool 3.x breaks RedisCacheStore at Rails 8.1.1 boot, fixed with a patch loaded before initializers run."
 layout: post
 date: 2025-11-02
-categories: [rails, ruby, debugging, caching]
+tags: [rails, ruby, redis, debugging, performance]
+categories: [Rails, Engineering]
 ---
-
-# Rails 8.1.1 + Ruby 3.4 + connection_pool 3.x: RedisCacheStore boot crash and a safe monkey-patch
 
 <audio controls preload="metadata" src="/assets/audio/connection_pool_3-summary.ogg">
   Your browser does not support the audio element.
@@ -44,7 +43,7 @@ This blocks any task that loads the Rails environment.
 
 ### 1) Ruby 3.x keyword arguments are strict
 
-Since Ruby 3.0, a trailing Hash is no longer automatically treated as keyword arguments. You must explicitly splat keywords with `**`. This tightening is continued in Ruby 3.4. ([Stack Overflow][1])
+Since Ruby 3.0, a trailing Hash is no longer automatically treated as keyword arguments. You must explicitly splat keywords with `**`. Ruby 3.4 keeps that tightening.
 
 ### 2) connection_pool 3.x expects keywords
 
@@ -52,13 +51,13 @@ Since Ruby 3.0, a trailing Hash is no longer automatically treated as keyword ar
 
 ### 3) Rails 8.1.1 passes a positional Hash
 
-Rails 8.1.1’s `RedisCacheStore` wraps a pool like:
+Rails 8.1.1's `RedisCacheStore` wraps a pool like:
 
 ```ruby
 ConnectionPool.new(pool_options) { … }
 ```
 
-where `pool_options` is a Hash derived from your `pool:` config. Rails’ Redis cache store supports pooling this way. ([Ruby on Rails API][2])
+where `pool_options` is a Hash derived from your `pool:` config.
 
 Under Ruby 3.4 + connection_pool 3.x:
 
@@ -226,13 +225,4 @@ boots cleanly.
 
 ## Takeaways
 
-* Ruby keyword-arg strictness + gem API tightening can surface as “wrong number of arguments” deep in framework boot.
-* When a failure happens during Rails bootstrap, patches must load **before initializers**.
-* `prepend` is great for targeted overrides **as long as you don’t re-call the buggy method**.
-
----
-
-If you want, I can help turn this into a PR template note (with links to the upstream Rails fix once it lands) so it’s easy to sunset.
-
-[1]: https://stackoverflow.com/questions/75617085/ruby-3-0-wrong-number-of-arguments-given-3-expected-1-2?utm_source=chatgpt.com "Ruby 3.0 - wrong number of arguments (given 3, expected 1..2)"
-[2]: https://api.rubyonrails.org/classes/ActiveSupport/Cache/RedisCacheStore.html?utm_source=chatgpt.com "ActiveSupport::Cache::RedisCacheStore - Ruby on Rails"
+Ruby's keyword-arg strictness combined with a gem's API tightening can surface as a plain "wrong number of arguments" deep inside framework boot, with no obvious link to either change. When the failure happens during Rails bootstrap, a normal initializer patch is too late; it has to load before `rails/all`. And `prepend` works well for targeted overrides, as long as you never call `super` into the method you just patched around.

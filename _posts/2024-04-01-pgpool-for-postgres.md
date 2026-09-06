@@ -1,19 +1,18 @@
 ---
 layout: post
-title:  "Pgpool-II: Middleware for PostgreSQL"
-description: "Pgpool-II is a middleware solution that operates between PostgreSQL servers and a PostgreSQL database client. It is particularly useful for managing scenarios"
+title: "Pgpool-II: Middleware for PostgreSQL"
+description: "Pgpool-II sits between PostgreSQL and its clients as a connection pooler and load balancer, and this covers the Kubernetes setup that keeps writes consistent."
 date:   2024-04-01 14:41:26 +0100
-categories: PostgreSQL
+categories: [Database]
+tags: [postgresql, kubernetes, devops]
 ---
-
-# Pgpool-II: Middleware for PostgreSQL
 
 <audio controls preload="metadata" src="/assets/audio/pgpool-for-postgres-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-Pgpool-II is a middleware solution that operates between PostgreSQL servers and a PostgreSQL database client. It is particularly useful for managing scenarios where PostgreSQL may not handle concurrent connections as efficiently as needed. In such cases, Pgpool-II serves as an effective load balancer between the application server and the database servers.
+Pgpool-II is middleware that sits between PostgreSQL servers and a PostgreSQL client. It earns its keep when PostgreSQL can't handle the number of concurrent connections you're throwing at it directly: Pgpool-II pools and load-balances those connections across your database servers instead.
 
 For more information, you can visit the official repository: [Pgpool-II on Kubernetes](https://github.com/pgpool/pgpool2_on_k8s).
 
@@ -81,7 +80,7 @@ We have configured Pgpool-II to always disable load balancing on write operation
 ```ini
 disable_load_balance_on_write = always
 ```
-This ensures that after a write operation, all subsequent read operations are directed to the primary server instead of a standby. This is crucial because there may be a slight delay as the standby server catches up with the WAL logs from the primary. If a query is directed to a standby that has not yet applied the changes, it will not reflect the recent write operation.
+This ensures that after a write operation, all subsequent read operations are directed to the primary server instead of a standby. That matters because there is often a slight delay as the standby catches up with the WAL logs from the primary; a query directed to a standby that hasn't yet applied the change will not reflect the recent write.
 
 For example:
 ```sql

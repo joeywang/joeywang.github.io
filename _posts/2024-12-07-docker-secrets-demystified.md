@@ -1,25 +1,17 @@
 ---
 layout: post
-title: 'Docker Secrets Demystified: A Practical Guide to Managing Sensitive Information'
-description: "Let's dive into the world of Docker secrets and environment variables. Have you ever wondered how different types of key declarations behave in a Docker"
+title: "ARG, ENV, and BuildKit secrets: how each behaves in Docker"
+description: "ARG, ENV, exported shell variables, and BuildKit secret mounts each persist differently in a Docker image, and only one of them is actually safe for tokens."
 date: 2024-12-07 00:00 +0000
-categories: [Docker, DevOps]
-tags: [docker, security, secrets, environment-variables]
+categories: [DevOps, Security]
+tags: [docker, security, devops]
 ---
-# Docker Secrets Demystified: A Practical Guide to Managing Sensitive Information
-
 <audio controls preload="metadata" src="/assets/audio/docker-secrets-demystified-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Understanding Secret Management in Docker
-
-Let's dive into the world of Docker secrets and environment variables. Have you ever wondered how different types of key declarations behave in a Docker container? Let's explore this together with a practical example.
-
-## Decoding Different Key Declarations
-
-Consider this Dockerfile that demonstrates various ways of handling secrets and environment variables:
+The same Dockerfile can declare a value four different ways, `ARG`, `ENV`, an exported shell variable, or a BuildKit secret mount, and each one persists differently. Only one of them is actually safe to put a token in.
 
 ```dockerfile
 FROM alpine
@@ -30,96 +22,39 @@ RUN INLINE_KEY=123456 ls
 RUN echo $arg_key
 RUN --mount=type=secret,id=github_key,required=true \
     export GITHUB_KEY="$(cat /run/secrets/github_key)" && echo 'this is safe'
-RUN --mount=type=secret,id=github_key,required=true \
-    GITHUB_KEY="$(cat /run/secrets/github_key)" echo 'this is safe without export'
 ```
 
-### Breaking Down Key Types
+## What each one actually does
 
-#### 1. Build-Time Arguments (`ARG`)
-```dockerfile
-ARG arg_key
-```
-- Passed during build time
-- Accessible only during image build
-- Not persistent in the final image's runtime environment
+**`ARG`** exists only at build time. It's accessible while the image is being built, and gone from the runtime environment, but it still shows up in `docker history` and the build cache, so it's not safe for anything sensitive.
 
-#### 2. Environment Variables (`ENV`)
-```dockerfile
-ENV env_key=45678
-```
-- Persists in the final image
-- Available throughout the container's lifecycle
-- Can be overridden at runtime
+**`ENV`** persists into the final image and stays there for the container's whole lifecycle. Anyone who can run the image, or pull its layers, can read it. Fine for configuration, wrong for secrets.
 
-#### 3. Exported Variables
-```dockerfile
-RUN export EXPORT_KEY=123455 ls
-```
-- Temporary and shell-specific
-- Exists only for the duration of the RUN command
-- Not preserved in subsequent layers
+**`export EXPORT_KEY=... ls`** and **`INLINE_KEY=... ls`** are both scoped to that one `RUN` command. Neither survives into the next layer. Useful for one-off shell logic, not a substitute for real secret handling.
 
-#### 4. Inline Variables
-```dockerfile
-RUN INLINE_KEY=123456 ls
-```
-- Similar to exported variables
-- Scoped to a single command
-- Does not persist between build steps
-
-### Secure Secret Handling with BuildKit
-
-The most secure method involves using BuildKit's secret mounting:
+**BuildKit's `--mount=type=secret`** is the one built for this. The value is mounted into the step at build time and never written to a layer:
 
 ```dockerfile
 RUN --mount=type=secret,id=github_key,required=true \
     export GITHUB_KEY="$(cat /run/secrets/github_key)" && echo 'this is safe'
 ```
 
-Key benefits:
-- Secrets are not stored in image layers
-- Temporary access during build
-- `required=true` ensures the build fails if the secret is missing
+`required=true` fails the build outright if the secret isn't provided, which is better than a build that silently proceeds with an empty token.
 
-## Practical Implications
+| Type | Persistence | Safe for secrets |
+|------|-------------|-------------------|
+| `ARG` | Build-time only, but visible in history | No |
+| `ENV` | Full container runtime | No |
+| exported / inline var | Single `RUN` command | No, but fine for non-sensitive one-off logic |
+| BuildKit secret mount | Temporary, never in a layer | Yes |
 
-| Variable Type | Persistence | Security Level | Use Case |
-|--------------|-------------|---------------|----------|
-| ARG | Build-time only | Low | Temporary build configurations |
-| ENV | Container runtime | Medium | Configuration that needs to persist |
-| export | Command-level | Low | Temporary shell operations |
-| BuildKit Secrets | Temporary | High | Sensitive data like tokens |
+## Where this shows up in practice
 
-## Pro Tips
-
-1. **Never Commit Secrets**: Always use environment-specific secret management.
-2. **Use Secret Managers**: Leverage tools like HashiCorp Vault for production.
-3. **Minimize Exposure**: Keep secret handling to a minimum in Dockerfiles.
-
-## Common Pitfalls to Avoid
-
-- Hardcoding sensitive information
-- Leaving secrets in intermediate layers
-- Using environment variables for highly sensitive data
-
-## Real-World Scenario
-
-Imagine you're building an application that needs to clone a private GitHub repository during the build process. Instead of embedding the token, you'd use:
+Cloning a private repository during a build is the case that comes up most:
 
 ```dockerfile
 RUN --mount=type=secret,id=github_token \
     git clone https://token:$(cat /run/secrets/github_token)@github.com/org/repo.git
 ```
 
-## Final Thoughts
-
-Docker's secret management has evolved significantly. By understanding these nuances, you can build more secure and efficient containerized applications.
-
-## Quick Reference
-
-- **BuildKit Secrets**: Most secure method for handling sensitive information
-- **Environment Variables**: Use for non-sensitive configuration
-- **Build Arguments**: Temporary build-time configurations
-
-Happy containerizing! 🐳🔒
+Baking the token into an `ARG` or `ENV` instead would leave it sitting in the image's layer history indefinitely, readable by anyone who can pull the image or inspect its layers, long after the token itself has been rotated.

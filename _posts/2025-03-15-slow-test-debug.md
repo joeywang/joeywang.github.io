@@ -1,12 +1,11 @@
 ---
 layout: post
 title: "Debugging Transaction Deadlocks in Rails Tests: A Case Study"
-description: "This was one of those Rails test failures that wastes hours because it does not fail in a satisfying way."
+description: "A Rails test suite hung intermittently until transactional tests, ActiveJob, and ActiveStorage turned out to be racing over the same locked rows."
 date: "2025-03-15"
-categories: rails deadlock queue jobs
+categories: [Rails, Engineering]
+tags: [rails, testing, debugging, sidekiq]
 ---
-
-# Debugging Transaction Deadlocks in Rails Tests: A Case Study
 
 <audio controls preload="metadata" src="/assets/audio/slow-test-debug-summary.ogg">
   Your browser does not support the audio element.
@@ -114,12 +113,7 @@ ActiveStorage adds its own fun here because attachments can trigger extra intern
 
 The practical rule is simple: keep jobs simple, defer heavy DB writes until after commit when you can, or make the side effects happen inline in tests.
 
-## Best Practices
-
-1. **Use `:inline` queue adapter for tests** unless you're explicitly testing async behavior.
-2. **Avoid enqueuing jobs in tests that use `use_transactional_tests = true`** unless the jobs are safe.
-3. **Use logs and backtraces to track where the DB gets locked**.
-4. **Isolate external effects** (e.g., file attachments, API calls) in jobs or services that are easy to test.
+Outside of tests that specifically exercise async behavior, default to `:inline` and keep jobs out of any test that relies on `use_transactional_tests = true` unless you know they're safe. When it happens again, the database logs and a backtrace at the transaction boundary will get you to the answer faster than guessing.
 
 ## Conclusion
 

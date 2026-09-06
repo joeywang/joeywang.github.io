@@ -3,11 +3,10 @@ layout: post
 title: "Production Ruby Debugging: A Progressive Escalation Guide"
 date: 2026-05-29
 author: "Joey Wang"
-description: "Comprehensive guide to debugging Ruby applications in Kubernetes production without restarting: rbspy, kubectl debug, signals, puma handlers, rbtrace, and gdb"
-tags: [Ruby, Kubernetes, Debugging, Production, rbspy, rbtrace, gdb, DevOps, SRE]
+description: "A progressive escalation guide to debugging Ruby applications in Kubernetes production without restarting: rbspy, kubectl debug, signals, rbtrace, and gdb."
+categories: [Engineering, DevOps]
+tags: [ruby, kubernetes, debugging, devops, performance, linux]
 ---
-
-# Production Ruby Debugging: A Progressive Escalation Guide
 
 <audio controls preload="metadata" src="/assets/audio/production-ruby-debugging-guide-summary.ogg">
   Your browser does not support the audio element.
@@ -18,11 +17,11 @@ tags: [Ruby, Kubernetes, Debugging, Production, rbspy, rbtrace, gdb, DevOps, SRE
 
 It's 2 AM. Your API latency just spiked from 200ms to 30 seconds. Customer support is getting complaints. The on-call dashboard is a sea of red.
 
-Your first instinct? Restart the pods. But wait—this is the third spike this week. Restarting buys you an hour before it happens again. You need answers, not temporary relief.
+Your first instinct is to restart the pods. But this is the third spike this week: restarting buys you an hour before it happens again. You need answers, not temporary relief.
 
 The problem: your Ruby application is running in Kubernetes, handling real traffic, with real customer data. You can't just attach a debugger or start printing to stdout. You need to investigate *without disrupting service*.
 
-This guide documents six levels of Ruby debugging techniques, organized from least to most invasive. Each level gives you progressively more power—and more risk. Learn when to use each tool, how to use it safely, and when to escalate to the next level.
+This guide documents six levels of Ruby debugging techniques, organized from least to most invasive. Each level gives you progressively more power, and more risk. Learn when to use each tool, how to use it safely, and when to escalate to the next level.
 
 ## The Escalation Principle
 
@@ -30,12 +29,12 @@ Start with the safest, least invasive tool. If it doesn't give you enough inform
 
 **The Six Levels:**
 
-1. **Level 1: rbspy** 🔍 - Non-invasive sampling profiler
-2. **Level 2: kubectl debug** 🔍 - Infrastructure access via ephemeral containers  
-3. **Level 3: kill signals** ⚡ - Unix signal-based stack traces
-4. **Level 4: puma signal handlers** 🎯 - Application-level diagnostics
-5. **Level 5: rbtrace** ⚠️ - Runtime code injection
-6. **Level 6: gdb** 🚨 - System-level C debugging
+1. **Level 1: rbspy** - non-invasive sampling profiler
+2. **Level 2: kubectl debug** - infrastructure access via ephemeral containers
+3. **Level 3: kill signals** - Unix signal-based stack traces
+4. **Level 4: puma signal handlers** - application-level diagnostics
+5. **Level 5: rbtrace** - runtime code injection
+6. **Level 6: gdb** - system-level C debugging
 
 ## How to Use This Guide
 
@@ -45,7 +44,7 @@ Start with the safest, least invasive tool. If it doesn't give you enough inform
 
 Each level is self-contained with installation, usage, examples, and safety guidelines. Let's begin.
 
-## Prerequisites & Safety First 🛡️
+## Prerequisites and Safety First
 
 Before diving into debugging, ensure you have the right setup and understand the risks.
 
@@ -115,17 +114,17 @@ Minimum RBAC permissions for debugging:
 
 Now let's dig into the tools, starting with the safest option.
 
-## Level 1: Non-Invasive Observation 🔍
+## Level 1: Non-Invasive Observation
 
 ### What is rbspy?
 
 rbspy is a sampling profiler for Ruby that works by reading process memory without attaching to the process or requiring any instrumentation. Unlike traditional profilers that inject code or use debugging APIs, rbspy observes from the outside, making it completely safe for production use.
 
-Think of rbspy as looking through a window into your Ruby process—you can see what's happening, but you're not interfering with its operation. This makes it the perfect starting point for any production debugging session.
+Think of rbspy as looking through a window into your Ruby process: you can see what's happening, but you're not interfering with its operation. That makes it the natural starting point for any production debugging session.
 
 **How it works:** rbspy reads the Ruby process's stack from `/proc/<pid>/mem` (Linux) or equivalent system APIs. It samples the stack at regular intervals (default: 100Hz) and aggregates the results into a profile.
 
-### 🎯 When to Use rbspy
+### When to Use rbspy
 
 Start here for:
 - **CPU usage investigations** - See which methods are consuming CPU time
@@ -274,7 +273,7 @@ kubectl cp slow-pod-xyz:/tmp/slow.svg ./slow.svg
 - Color = randomly assigned for visibility (no meaning)
 - Click boxes to zoom into subgraphs
 
-### 🚨 Common Gotchas
+### Common Gotchas
 
 **Issue 1: "Permission denied" error**
 
@@ -325,7 +324,7 @@ Two options:
    kubectl exec <pod> -- /tmp/rbspy snapshot --pid $(pgrep ruby)
    ```
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** Low (non-invasive observation)  
 **Overhead:** <1% CPU, minimal memory  
@@ -345,7 +344,7 @@ rbspy is the safest tool in this guide. It can't crash your process, slow it dow
 - Memory: ~10MB for rbspy process itself
 - I/O: Minimal (reading process memory)
 
-### ⏭️ When to Escalate to Level 2
+### When to Escalate to Level 2
 
 Move to kubectl debug when:
 - rbspy isn't installed in your container and you can't easily add it
@@ -358,23 +357,19 @@ Move to Level 3+ when:
 - rbspy shows time in native code (C extensions) that you need to debug
 - You need more than statistical sampling (need precise traces)
 
-**Level 1 Key Takeaways:**
-- ✅ When to use: CPU investigation, first-pass profiling, safe observability
-- ⚡ Impact: <1% CPU overhead, zero risk
-- 📊 Info gained: Statistical CPU profile, method call frequency
-- ⏭️ Escalate when: rbspy unavailable, need filesystem access, or need deeper inspection
+rbspy is where every investigation should start: near-zero risk, a statistical CPU profile, and a fast answer to whether the problem is even CPU-bound. Escalate once it's unavailable, you need filesystem access, or the profile doesn't explain what you're seeing.
 
-## Level 2: Safe Infrastructure Access 🔍
+## Level 2: Safe Infrastructure Access
 
 ### What is kubectl debug?
 
 `kubectl debug` (Kubernetes 1.18+) creates ephemeral containers that share the process namespace and filesystem with your application pod. This lets you add debugging tools without modifying your production container image.
 
-Think of it as spawning a diagnostic sidecar that can see everything your app sees—processes, filesystems, network—but lives in a separate container that you can delete without touching your application.
+Think of it as spawning a diagnostic sidecar that can see everything your app sees (processes, filesystems, network) but lives in a separate container that you can delete without touching your application.
 
 **How it works:** kubectl debug creates a new container in an existing pod with `shareProcessNamespace: true`. This new container sees all processes from the original container, including their memory maps and file descriptors.
 
-### 🎯 When to Use kubectl debug
+### When to Use kubectl debug
 
 Use this when:
 - rbspy or other debug tools aren't in your production container
@@ -592,7 +587,7 @@ kubectl get networkpolicies -n <namespace>
 
 **Result:** Found Kubernetes NetworkPolicy blocking egress to that external API. Policy fix, not app fix.
 
-### 🚨 Common Gotchas
+### Common Gotchas
 
 **Issue 1: "Ephemeral containers not supported"**
 
@@ -636,7 +631,7 @@ Large debug image (ubuntu) competes with app for resources. Solutions:
     -- /bin/bash
   ```
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** Low (separate container, shared view)  
 **Overhead:** Sidecar resources (typically 100m CPU, 128Mi memory)  
@@ -662,7 +657,7 @@ The ephemeral container is automatically removed when you exit the shell. Howeve
 kubectl delete pod <pod-name>-debug
 ```
 
-### ⏭️ When to Escalate to Level 3
+### When to Escalate to Level 3
 
 Move to kill signals when:
 - You need stack traces for ALL threads, not just CPU samples
@@ -675,13 +670,9 @@ Move to Level 4+ when:
 - You want to inject code for live inspection
 - rbspy shows time in unexpected methods and you need more detail
 
-**Level 2 Key Takeaways:**
-- ✅ When to use: Debug tools not in container, filesystem inspection, network debugging
-- ⚡ Impact: Sidecar resource overhead (~100m CPU, 128Mi memory)
-- 📊 Info gained: Full filesystem access, ability to run any tool, network inspection
-- ⏭️ Escalate when: Need thread dumps, built-in signal handlers, or custom diagnostics
+kubectl debug earns its cost, roughly 100m CPU and 128Mi memory for the sidecar, whenever the tool you need isn't in your production image: filesystem inspection, network debugging, or running rbspy itself. Escalate once you need thread dumps, built-in signal handlers, or custom diagnostics.
 
-## Level 3: Signal-Based Introspection ⚡
+## Level 3: Signal-Based Introspection
 
 ### What are Kill Signals?
 
@@ -693,11 +684,11 @@ Unix signals are software interrupts that let you communicate with running proce
 - **SIGUSR2** - User-defined signal 2 (custom handlers)
 - **SIGQUIT** - Dump stack and exit (last resort)
 
-Think of signals as knocking on your application's door with different patterns—each knock triggers a different response.
+Think of signals as knocking on your application's door with different patterns: each knock triggers a different response.
 
 **How it works:** When Ruby receives a signal, it interrupts the current execution and runs the registered signal handler. By default, Ruby prints stack traces for some signals. You can also register custom handlers (Level 4).
 
-### 🎯 When to Use Kill Signals
+### When to Use Kill Signals
 
 Use signals when:
 - You need stack traces RIGHT NOW (faster than installing rbspy)
@@ -864,7 +855,7 @@ Ruby has built-in handlers for some signals:
 
 **Note:** If your application registers custom handlers (Level 4), these defaults may be overridden.
 
-### 🚨 Common Gotchas
+### Common Gotchas
 
 **Issue 1: Signal does nothing**
 
@@ -921,7 +912,7 @@ SIGINFO is BSD/macOS only. Linux doesn't support it.
 
 **Fix:** Use SIGUSR1 or SIGUSR2 instead, and register a custom handler (Level 4) to print stack traces.
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** Medium (interrupts execution briefly)  
 **Overhead:** Minimal (< 1ms to handle signal)  
@@ -946,7 +937,7 @@ Signals are generally safe, but with caveats:
 - Stack trace printing: 10-50ms (depends on thread count)
 - No ongoing overhead (signal is one-time)
 
-### ⏭️ When to Escalate to Level 4
+### When to Escalate to Level 4
 
 Move to custom puma handlers when:
 - Default signal behavior doesn't give you enough information
@@ -959,15 +950,11 @@ Move to Level 5+ when:
 - You need to run Ruby code inside the process to check state
 - Signals reveal a problem but you need live debugging to fix it
 
-**Level 3 Key Takeaways:**
-- ✅ When to use: Quick stack traces, thread dumps, deadlock detection
-- ⚡ Impact: <1ms to handle signal, no ongoing overhead
-- 📊 Info gained: All threads' current stack traces, including I/O-blocked threads
-- ⏭️ Escalate when: Need custom diagnostics, variable inspection, or live debugging
+Signals cost under a millisecond to handle and leave no ongoing overhead, and unlike rbspy they show every thread's state, including ones blocked on I/O or a lock, which is exactly what you need for deadlocks and hangs. Escalate once you need custom diagnostics, variable inspection, or live debugging.
 
 *(Continuing in next message due to length...)*
 
-## Level 4: Application-Level Handlers 🎯
+## Level 4: Application-Level Handlers
 
 ### What are Puma Signal Handlers?
 
@@ -977,7 +964,7 @@ Think of this as teaching your application new tricks: "When I send USR1, dump t
 
 **How it works:** In `config/puma.rb`, you register Ruby code to run when specific signals arrive. This code has full access to your application's runtime state.
 
-### 🎯 When to Use Custom Signal Handlers
+### When to Use Custom Signal Handlers
 
 Use custom handlers when:
 - You need application-specific diagnostics (connection pools, cache hit rates, job queue depth)
@@ -987,7 +974,7 @@ Use custom handlers when:
 
 **Advantage over default signals:** You control exactly what information is gathered and how it's formatted.
 
-###Prerequisites
+### Prerequisites
 
 **Requires:**
 - Access to `config/puma.rb` or equivalent application server config
@@ -1078,7 +1065,7 @@ rescue => e
 end
 ```
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** Medium (runs custom code in production)  
 **Overhead:** Depends on handler code (keep it <100ms)  
@@ -1092,30 +1079,26 @@ end
 - Test handlers in staging first
 - Avoid mutating state (just observe and log)
 
-### ⏭️ When to Escalate to Level 5
+### When to Escalate to Level 5
 
 Move to rbtrace when:
 - Signal handlers show the problem area, but you need to inspect actual variable values
 - You need to dynamically run Ruby code without redeploying
 - You want to trace method calls in real-time
 
-**Level 4 Key Takeaways:**
-- ✅ When to use: Application-specific diagnostics, structured output, on-demand actions
-- ⚡ Impact: Depends on handler code; keep under 100ms
-- 📊 Info gained: Custom metrics (connection pools, job queues, cache stats, anything you code)
-- ⏭️ Escalate when: Need variable inspection, dynamic code execution, or C-level debugging
+Custom handlers turn a signal into whatever diagnostic you code: connection pool stats, job queue depth, structured JSON output. Keep handler execution under 100ms; impact beyond that is on you. Escalate once you need to inspect variable values directly, run code dynamically, or debug at the C level.
 
-## Level 5: Runtime Code Injection ⚠️
+## Level 5: Runtime Code Injection
 
 ### What is rbtrace?
 
 rbtrace is a Ruby gem that attaches to a running Ruby process and lets you execute arbitrary Ruby code inside it. Unlike signals (which trigger predefined handlers) or profilers (which only observe), rbtrace gives you a REPL-like interface into your production process.
 
-Think of it as SSH-ing directly into your Ruby VM. You can inspect variables, call methods, trace function calls, and gather any information you can express in Ruby code—all while the process continues handling requests.
+Think of it as SSH-ing directly into your Ruby VM. You can inspect variables, call methods, trace function calls, and gather any information you can express in Ruby code, all while the process continues handling requests.
 
 **⚠️ Warning:** This is powerful and dangerous. You're running arbitrary code in production. Use with extreme caution.
 
-### 🎯 When to Use rbtrace
+### When to Use rbtrace
 
 Use rbtrace when:
 - Stack traces show WHERE the problem is, but you need to see variable VALUES
@@ -1156,7 +1139,7 @@ rbtrace -p <PID> -e 'puts Thread.list.size'
 rbtrace -p <PID> -m User#authenticate
 ```
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** High (injects and executes code)  
 **Overhead:** Depends on injected code (can be negligible or catastrophic)  
@@ -1168,7 +1151,7 @@ rbtrace -p <PID> -m User#authenticate
 - Always wrap in begin/rescue
 - Have rollback plan (restart pod)
 
-### ⏭️ When to Escalate to Level 6
+### When to Escalate to Level 6
 
 Move to gdb when:
 - Problem is in C extensions (Nokogiri, JSON gem, database drivers)
@@ -1176,23 +1159,19 @@ Move to gdb when:
 - Ruby process segfaults
 - rbtrace can't attach
 
-**Level 5 Key Takeaways:**
-- ✅ When to use: Variable inspection, live state debugging, method tracing
-- ⚡ Impact: Depends on injected code; can crash process
-- 📊 Info gained: Anything you can express in Ruby code; full introspection
-- ⏭️ Escalate when: Problem is in C extension, memory corruption, or segfaults
+rbtrace gives you full Ruby introspection, variable values, live state, method tracing, at the cost of running arbitrary code in a production process that can crash from a bad injection. Escalate once the problem is in a C extension, looks like memory corruption, or the process segfaults.
 
-## Level 6: System-Level Debugging 🚨
+## Level 6: System-Level Debugging
 
 ### What is gdb?
 
 gdb (GNU Debugger) is a system-level debugger that operates at the C level. When debugging Ruby with gdb, you're inspecting the Ruby VM itself: C structs, memory addresses, stack frames at the machine level.
 
-This is the deepest you can go. You're no longer in Ruby-land—you're in the C implementation of Ruby (CRuby/MRI).
+This is the deepest you can go. You're no longer in Ruby-land: you're in the C implementation of Ruby (CRuby/MRI).
 
 **⚠️ DANGER:** gdb can CRASH YOUR PROCESS with incorrect commands. This is truly a last resort.
 
-### 🎯 When to Use gdb
+### When to Use gdb
 
 Use gdb when:
 - Your Ruby process segfaults (signal 11)
@@ -1226,7 +1205,7 @@ gdb -p <PID>
 (gdb) quit
 ```
 
-### 🛡️ Production Safety
+### Production Safety
 
 **Invasiveness:** Very High (pauses process, inspects memory)  
 **Overhead:** Process is STOPPED while attached  
@@ -1237,7 +1216,7 @@ gdb -p <PID>
 - **Can crash:** Wrong command can kill the process
 - **No undo:** Once you modify memory, there's no rollback
 
-### 🆘 When You've Reached the End
+### When You've Reached the End
 
 If Level 6 doesn't solve your problem:
 
@@ -1245,13 +1224,9 @@ If Level 6 doesn't solve your problem:
 2. **Restart the process:** You've exhausted debugging options
 3. **Post-incident analysis:** Review with team, file bug reports
 
-**Level 6 Key Takeaways:**
-- ✅ When to use: Segfaults, C extension bugs, memory corruption, last resort
-- ⚡ Impact: Process STOPS while attached; can crash
-- 📊 Info gained: C-level stack traces, memory inspection, VM internals
-- ⏭️ Escalate when: Restart and collect artifacts for post-mortem
+gdb is the last resort for segfaults, C extension bugs, and memory corruption. It stops the process while attached and can crash it outright, so treat every session as one you might not walk back from. If it doesn't resolve things, collect artifacts and restart.
 
-## Decision Matrix: Quick Reference 📊
+## Decision Matrix: Quick Reference
 
 ### Symptom → Tool Mapping
 
@@ -1316,60 +1291,24 @@ Check code and find `ImageCache` class with unbounded `@cache` class variable.
 
 **Tools used:** rbspy → rbtrace → code fix (progressive escalation)
 
-## Conclusion & Best Practices ✨
+## Conclusion and Building a Toolkit
 
-### Key Takeaways
+The principle behind all six levels is the same: start with the safest tool, rbspy, and escalate only when it stops giving you answers. rbspy is your first line of defense, safe, fast, informative. kubectl debug fills in when the tool you need isn't in your container. Kill signals get you quick stack traces for anything that looks blocked. Puma handlers give you diagnostics tailored to your own app. rbtrace gets you live variable inspection. gdb is the last resort for crashes and memory corruption, not a starting point.
 
-**The Progressive Escalation Principle:**
-- Start with the safest tool (rbspy)
-- Escalate only when necessary
-- Know when to stop and restart
+For a team, that principle is worth turning into infrastructure rather than tribal knowledge: bake rbspy into production images so it's always available,
 
-**The Six Levels at a Glance:**
-1. **rbspy**: Your first line of defense - safe, fast, informative
-2. **kubectl debug**: When you need tools not in your container
-3. **kill signals**: Quick stack traces for blocking issues
-4. **puma handlers**: Custom diagnostics tailored to your app
-5. **rbtrace**: Live variable inspection when you need it
-6. **gdb**: Last resort for crashes and memory corruption
+```dockerfile
+RUN wget https://github.com/rbspy/rbspy/releases/download/v0.12.0/rbspy-x86_64-unknown-linux-musl.tar.gz \
+    && tar xf rbspy*.tar.gz \
+    && mv rbspy /usr/local/bin/
+```
 
-### Building Your Debugging Toolkit
+add custom signal handlers for the diagnostics you actually reach for, write a runbook that links to this escalation order, and set up monitoring that catches problems before someone has to attach a debugger at all.
 
-**For your team:**
+Further reading: [rbspy documentation](https://rbspy.github.io/), [kubectl debug guide](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/), [rbtrace GitHub](https://github.com/tmm1/rbtrace), [Ruby Under a Microscope](http://patshaughnessy.net/ruby-under-a-microscope), and the [Ruby Hacking Guide](https://ruby-hacking-guide.github.io/).
 
-1. **Enable rbspy in production images** (Level 1)
-   ```dockerfile
-   RUN wget https://github.com/rbspy/rbspy/releases/download/v0.12.0/rbspy-x86_64-unknown-linux-musl.tar.gz \
-       && tar xf rbspy*.tar.gz \
-       && mv rbspy /usr/local/bin/
-   ```
+## The principle
 
-2. **Add custom signal handlers** (Level 4)
-3. **Create debugging runbook** linking to this guide
-4. **Set up monitoring** to detect issues early
+Production debugging is part science, part art. The six levels here are the science, the systematic approach to uncovering an issue without making it worse. The art comes from experience: knowing which tool to reach for, reading between the lines of a stack trace, and developing intuition for what "normal" looks like in your own application.
 
-### Further Reading
-
-**Tools:**
-- [rbspy documentation](https://rbspy.github.io/)
-- [kubectl debug guide](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/)
-- [rbtrace GitHub](https://github.com/tmm1/rbtrace)
-
-**Ruby internals:**
-- [Ruby Under a Microscope](http://patshaughnessy.net/ruby-under-a-microscope)
-- [Ruby Hacking Guide](https://ruby-hacking-guide.github.io/)
-
----
-
-## Final Thoughts
-
-Production debugging is part science, part art. The tools in this guide give you the science—the systematic approach to uncovering issues. The art comes from experience: knowing which tool to reach for, reading between the lines of stack traces, and developing intuition for what "normal" looks like in your application.
-
-**Remember these principles:**
-- Debuggability is a feature, not an afterthought
-- Observability prevents debugging
-- The best debugging session is the one you don't need
-
-Stay curious. Stay safe. And may your production deployments be ever stable.
-
-**Happy debugging!** 🎯
+Debuggability is a feature, not an afterthought, and good observability is what turns most incidents into a five-minute rbspy snapshot instead of a two-hour gdb session. The best debugging session is still the one you never needed to run.

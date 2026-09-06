@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "When a Rails or LMS Platform Becomes Hard to Change"
-description: "A practical way for small education and SaaS teams to diagnose platform friction before committing to a rewrite."
+description: "A practical way for small education and SaaS teams to diagnose Rails or LMS platform friction and decide whether a rewrite is actually justified."
 date: 2026-08-13 06:00:00 +0100
 author: "Joey Wang"
-tags: [ruby-on-rails, lms, software-architecture, performance, reliability]
+tags: [rails, lms, software-architecture, performance, reliability]
 categories: [Engineering]
 ---
 
@@ -105,7 +105,7 @@ Learning platforms often combine course content, assessment, reporting, users, i
 
 That does not mean every concern should immediately become a separate service. It does mean the team should identify which boundaries are causing real delivery or operational pain.
 
-A good first boundary may be a reporting workflow, an integration, or a clearly owned domain module—not a wholesale migration to microservices.
+A good first boundary may be a reporting workflow, an integration, or a clearly owned domain module, not a wholesale migration to microservices.
 
 ## Modernization should reduce uncertainty
 
@@ -153,4 +153,4 @@ If a Rails or LMS platform is becoming slow, fragile, or difficult to extend, st
 
 That short exercise often reveals whether the next step should be a focused technical investigation, a product decision, an operational improvement, or no major change at all.
 
-I am developing a fixed-scope [Rails/LMS Reliability and Modernization Audit](/consulting/) for teams that need this kind of evidence-led first review. The aim is to understand the system and produce a practical roadmap—not to sell a rewrite before the problem is understood.
+I am developing a fixed-scope [Rails/LMS Reliability and Modernization Audit](/consulting/) for teams that need this kind of evidence-led first review. The aim is to understand the system and produce a practical roadmap, not to sell a rewrite before the problem is understood.

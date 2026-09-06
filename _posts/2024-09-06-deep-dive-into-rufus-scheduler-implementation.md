@@ -1,23 +1,16 @@
 ---
 layout: post
-title: Deep Dive into Rufus Scheduler Implementation
-description: "In the world of Ruby programming, job scheduling is a crucial aspect of many applications. Let's take a closer look at one of the most popular"
+title: "Rufus Scheduler: How Its Main Loop Actually Works"
+description: "How rufus-scheduler's single-threaded main loop triggers, times out, and runs jobs, and where a timer-based rewrite would scale better."
 date: 2024-09-06 00:00 +0000
+categories: [Engineering]
+tags: [ruby, performance, automation]
 ---
-# Deep Dive into Rufus Scheduler Implementation
-
 <audio controls preload="metadata" src="/assets/audio/deep-dive-into-rufus-scheduler-implementation-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-In the world of Ruby programming, job scheduling is a crucial aspect of
-many applications. Let's take a closer look at one of the most popular
-schedulers in the Ruby ecosystem.
-
-Rufus-scheduler is a pure Ruby gem that allows you to schedule jobs (blocks of code) for later execution. It's a standalone scheduler that doesn't require any external dependencies.
-
-This article explores its implementation, focusing on its core mechanisms, handling of long-running jobs, and potential improvements.
+Rufus-scheduler is a pure Ruby gem for scheduling blocks of code to run later, with no external dependencies. What's less obvious from the README is how it actually decides a job is due: a plain loop that wakes up on a fixed interval and checks. That design has real consequences for how well it scales, worth walking through alongside the core mechanism, how it handles long-running jobs, and where it would need to change to scale further.
 
 ## Core Implementation
 
@@ -155,8 +148,6 @@ While Rufus Scheduler is effective for many use cases, its implementation has so
 
 5. **System Integration**: For long-running applications, consider integrating with system-level schedulers like systemd timers or cron.
 
-## Conclusion
+## Where this breaks down
 
-Rufus Scheduler's implementation is straightforward and effective for many scenarios. Its use of a main loop with work threads allows for concurrent job execution and handling of long-running tasks. However, for high-performance or large-scale applications, considering alternative approaches or improvements could lead to more efficient scheduling and execution of jobs.
-
-Understanding these implementation details not only helps in effectively using Rufus Scheduler but also provides insights into designing efficient job scheduling systems in Ruby.
+The main loop with worker threads is fine for a handful of jobs on a fixed cadence. It stops being fine once you have enough jobs, or infrequent enough jobs, that constant polling wastes cycles waiting for nothing to be due. A sorted job list and a dynamic sleep duration, sleeping until the next actual due time instead of a fixed interval, fixes that without changing the public API. It's a useful design to have read once, since the same tradeoff (poll on a fixed interval vs. wake on the next known event) shows up in most schedulers you'll build or evaluate.

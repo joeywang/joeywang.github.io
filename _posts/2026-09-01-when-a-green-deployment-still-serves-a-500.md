@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "When a Green Deployment Still Serves a 500"
-description: "A REX production incident exposed the gap between a successful Kubernetes rollout and a working application. Here is what failed, how we recovered, and what we changed."
+description: "A REX production incident exposed the gap between a successful Kubernetes rollout and a working application, and what we changed to close it."
 date: 2026-09-01 14:00:00 +0100
 author: "Joey Wang"
-tags: [ruby-on-rails, ci, deployment, reliability, webpacker, incident-response]
+tags: [rails, ci, deployment, reliability, webpacker, incident-response]
 categories: [Engineering]
 ---
 

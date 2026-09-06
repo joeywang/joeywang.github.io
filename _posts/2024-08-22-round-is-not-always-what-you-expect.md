@@ -1,19 +1,16 @@
 ---
 layout: post
-title: Round Is Not Always What You Expect
-description: "Rounding numbers is a common task in programming, but it's not always as straightforward as it seems. Different programming languages handle rounding in"
+title: "Round Is Not Always What You Expect"
+description: "Rounding the same float, 2.675, to two decimal places gives different answers in C#, PHP, Go, Python, JavaScript, and Ruby, for concrete reasons."
 date: 2024-08-22 10:58 +0100
-categories: [math, programming, rounding]
-tags: ruby
+categories: [Engineering]
+tags: [ruby, javascript, debugging]
 ---
-# Round Is Not Always What You Expect
-
 <audio controls preload="metadata" src="/assets/audio/round-is-not-always-what-you-expect-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-Rounding numbers is a common task in programming, but it's not always as straightforward as it seems. Different programming languages handle rounding in various ways, which can lead to unexpected results. Let's explore how some popular languages round the same number, `2.675`, to two decimal places.
+Rounding looks like a solved problem until you compare languages. Take the same float, `2.675`, round it to two decimal places, and you get three different answers depending on which language you're using and which rounding rule it defaults to.
 
 ## CSharp
 
@@ -118,6 +115,6 @@ When you run this Ruby code, the result is:
 2.675.round(2) = 2.68
 ```
 
-## Conclusion
+## The takeaway
 
-As we've seen, the same rounding operation can yield different results in different programming languages. Understanding the default rounding behavior and available rounding modes is crucial when performing precise arithmetic operations. Always consult the documentation for the language you're using to ensure your rounding operations behave as expected.
+C#, PHP, Go, and Ruby all land on `2.68` here. Python's `round` and JavaScript's `toFixed` both land on `2.67`, and neither is "wrong": `2.675` cannot be represented exactly in binary floating point, so which side of the boundary you end up on depends on the language's rounding algorithm as much as on the number itself. The rule that matters isn't "which language rounds correctly," it's "what rounding mode does this language default to, and can I override it." Check the docs before you assume, especially in code that touches money.

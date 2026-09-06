@@ -3,12 +3,10 @@ layout: post
 title: "How an LLM Coding Agent Actually Builds Software"
 date: 2026-04-16
 author: "Joey Wang"
-description: "A practical breakdown of how coding agents work: model, tool loop, context management, patching, and verification."
-tags: [ai, llm, agents, coding-agent, gemma, opencode, software-engineering]
+description: "How LLM coding agents actually build software: the model, the tool loop, context management, precise patching, and verification against real tests."
+tags: [ai, llm, agents, gemma, opencode, software-engineering]
 categories: [AI, Engineering]
 ---
-
-# How an LLM Coding Agent Actually Builds Software
 
 <audio controls preload="metadata" src="/assets/audio/llm-agent-building-summary.ogg">
   Your browser does not support the audio element.
@@ -173,7 +171,7 @@ while True:
     return response.final_text
 ```
 
-The crucial line is `continue`.
+The line that matters is `continue`.
 
 After each tool result, the model needs another turn. That is how it moves from:
 

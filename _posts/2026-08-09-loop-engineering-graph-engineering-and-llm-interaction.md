@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "Loop Engineering, Graph Engineering, and the Nature of Working with LLMs"
+title: "Loop Engineering and Graph Engineering: Working With LLMs"
 date: 2026-08-09 18:37:00 +0100
 author: "Joey Wang"
-description: "A practical reflection on prompt engineering, context engineering, loop engineering, graph engineering, and what they reveal about the shape of human interaction with LLMs."
+description: "A practical reflection on prompt, context, memory, loop, and graph engineering, and what each layer reveals about working with LLMs day to day."
 tags: [ai, llm, agents, loop-engineering, graph-engineering, hermes]
 categories: [AI, Engineering]
 ---
-
-# Loop engineering, graph engineering, and the nature of working with LLMs
 
 When people first meet an LLM, the interaction looks simple.
 

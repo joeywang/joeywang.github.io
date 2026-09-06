@@ -1,21 +1,19 @@
 ---
 layout: post
-title:  "Navigating Network Bindings: Understanding `localhost`, `127.0.0.1`, `0.0.0.0`, and `*`"
-description: "When you run multiple services on your local machine that need to listen on network ports, understanding network binding addresses is crucial for avoiding"
+title:  "localhost vs 127.0.0.1 vs 0.0.0.0: Network Binding Explained"
+description: "Why localhost, 127.0.0.1, 0.0.0.0, and * behave differently for MySQL clients and services, and how to find and fix a local port conflict between Docker and SSH."
 date:   2025-09-14 14:41:26 +0100
-categories: MySQL
+categories: [Database]
+tags: [mysql, networking, docker, ssh]
 ---
-
-# Navigating Network Bindings: Understanding `localhost`, `127.0.0.1`, `0.0.0.0`, and `*`
 
 <audio controls preload="metadata" src="/assets/audio/binding-localhost-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Running a Dockerized database alongside an SSH tunnel to a remote one, both on the same local port, produces confusing failures: the wrong service answers, or one client works while another times out. That comes down to what address each service actually binds to and which one your client resolves to.
 
-When you run multiple services on your local machine that need to listen on network ports, understanding network binding addresses is crucial for avoiding conflicts and ensuring your applications connect to the correct service.
-
-## Step 1: Demystifying Localhost vs. 127.0.0.1
+## Localhost vs. 127.0.0.1
 
 | Term | Type | IP Address | MySQL Client Behavior |
 | :--- | :--- | :--- | :--- |
@@ -29,7 +27,7 @@ These addresses specify *which network interfaces* a service should listen on.
 | Term | Meaning | Interfaces Covered |
 | :--- | :--- | :--- |
 | **`0.0.0.0`** | **IPv4 Wildcard** | Listens on **all available IPv4 interfaces**, including `127.0.0.1` and your external network IP. |
-| **`*`** | **Shorthand Wildcard** | Acts the same as `0.0.0.0` or `::` (IPv6 wildcard) in most contexts—listens on **all interfaces**. |
+| **`*`** | **Shorthand Wildcard** | Acts the same as `0.0.0.0` or `::` (IPv6 wildcard) in most contexts: listens on **all interfaces**. |
 
 ## Step 3: The Port Conflict Scenario & Identifying the Full Command
 
@@ -77,7 +75,7 @@ Use the **`-h`** (host) and **`-P`** (port) flags on the `mysql` client to conne
     mysql -h 127.0.0.1 -P 3306 -u remote_user -p
     ```
 
-## Step 5: The Golden Rule - Avoid Port Conflicts Entirely 🛡️
+## Step 5: Avoid the Conflict Entirely
 
 To maintain a stable development environment, always configure a unique host port for each service.
 

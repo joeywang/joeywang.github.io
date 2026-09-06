@@ -1,67 +1,43 @@
 ---
 layout: post
-title: "🕵️‍♂️ Monitoring Cloudflare Zero Trust (WARP) and Disconnecting on macOS"
-description: "Cloudflare Zero Trust is great for enforcing corporate security policies, but if you're using a company-managed device, it can be frustrating when the WARP"
+title: "Monitor Cloudflare WARP Status on macOS with launchd"
+description: "A launchd-scheduled shell script that detects when Cloudflare WARP reconnects on a company-managed Mac and sends a desktop notification."
 date: "2025-02-02"
-categories: security cloudflare zero-trust macos
+categories: [Security, DevOps]
+tags: [security, macos, automation, networking]
 ---
-
-# 🕵️‍♂️ Monitoring Cloudflare Zero Trust (WARP) and Disconnecting on macOS
 
 <audio controls preload="metadata" src="/assets/audio/zero-trust-monitor-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Cloudflare Zero Trust does its job well: it enforces a secure WARP tunnel to the corporate network. The annoyance shows up on a company-managed Mac, where the client re-enables itself automatically and reroutes traffic even after you're off duty. You usually can't disable or uninstall it, so the practical option is visibility: know when it's on, and get notified.
 
-Cloudflare Zero Trust is great for enforcing corporate security policies, but if you're using a **company-managed device**, it can be frustrating when the **WARP client re-enables automatically** and reroutes traffic—even while you're off duty.
+This is a small script that checks WARP's status on a schedule, logs it, and fires a macOS notification when the state changes.
 
-In this guide, we'll walk through how to:
+## Why monitor WARP at all
 
-- ✅ Detect when WARP is active
-- 📢 Get real-time alerts via macOS notifications
-- ⏱ Run the check automatically at regular intervals
-- 📒 Log activity for auditing or debugging
-- 🚫 (Optional) Trigger a disconnect or alert when off duty
+Once WARP is active, it can:
 
----
+- Slow down personal traffic or conflict with a personal VPN
+- Route data through corporate inspection outside work hours
+- Interfere with a local firewall, proxy, or service
 
-## 🚧 Why You Might Want to Monitor Cloudflare WARP
+None of that is fixable if you can't touch the client. A monitor at least tells you what's happening.
 
-Cloudflare WARP via Zero Trust automatically enforces a secure VPN tunnel to your organization’s network. This can:
+## Tools
 
-- Slow down personal traffic or VPNs
-- Route data through corporate inspection even after work
-- Conflict with personal firewall, proxies, or local services
+- `curl` to detect WARP status
+- `terminal-notifier` for notifications (cleaner than `osascript`)
+- `launchd` to run the check on a schedule
+- A log file for the history
 
-Since **you might not be allowed to disable or uninstall the client** on a corporate Mac, a script that monitors its status and alerts you can give you more visibility—and peace of mind.
-
----
-
-## 🧰 Tools We'll Use
-
-- `curl` – to detect WARP status
-- `terminal-notifier` – to show notifications (better than `osascript`)
-- `launchd` – to automate periodic checks on macOS
-- Shell scripting – for glue logic
-- Logging – to track status changes
-
----
-
-## 📝 Step 1: Create the Monitoring Script
-
-Create a directory for your scripts:
+## Step 1: The monitoring script
 
 ```bash
 mkdir -p ~/scripts
-```
-
-Then create `check_warp.sh`:
-
-```bash
 nano ~/scripts/check_warp.sh
 ```
-
-Paste the following:
 
 ```bash
 #!/bin/bash
@@ -85,39 +61,24 @@ else
 fi
 ```
 
-Make it executable:
-
 ```bash
 chmod +x ~/scripts/check_warp.sh
 ```
 
----
-
-## 🛠 Step 2: Install terminal-notifier
+## Step 2: Install terminal-notifier
 
 ```bash
 brew install terminal-notifier
-```
-
-Confirm the full path:
-
-```bash
 which terminal-notifier
 ```
 
-Update the script path if necessary (`/opt/homebrew/bin` for Apple Silicon, `/usr/local/bin` for Intel).
+Update the script path if needed: `/opt/homebrew/bin` on Apple Silicon, `/usr/local/bin` on Intel.
 
----
-
-## 🧩 Step 3: Create a `launchd` Job to Run Every 10 Minutes
-
-Create the `.plist` file:
+## Step 3: Schedule it with launchd
 
 ```bash
 nano ~/Library/LaunchAgents/com.user.checkwarp.plist
 ```
-
-Paste:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -148,41 +109,23 @@ Paste:
 </plist>
 ```
 
-Replace `YOUR_USERNAME` with the result of `whoami`.
-
-Load it:
+Replace `YOUR_USERNAME` with the output of `whoami`, then load it:
 
 ```bash
 launchctl load ~/Library/LaunchAgents/com.user.checkwarp.plist
 ```
 
-To stop it:
+To stop it: `launchctl unload ~/Library/LaunchAgents/com.user.checkwarp.plist`.
 
-```bash
-launchctl unload ~/Library/LaunchAgents/com.user.checkwarp.plist
-```
+## Step 4: Verify it
 
----
+- Run the script manually, or wait ~10 minutes for launchd to fire it: `~/scripts/check_warp.sh`
+- Tail the log: `tail -f ~/warp_check.log`
+- Allow notifications for Terminal/iTerm in System Settings > Notifications
 
-## 🔍 Step 4: Verify It’s Working
+## Optional: disconnect during off-hours
 
-- Wait ~10 minutes or run the script manually to test:
-  ```bash
-  ~/scripts/check_warp.sh
-  ```
-
-- View logs:
-  ```bash
-  tail -f ~/warp_check.log
-  ```
-
-- Check notifications (allow them for Terminal/iTerm in **System Settings > Notifications**)
-
----
-
-## (Optional) 🚫 Disconnect WARP on Off-Hours
-
-If your job allows some flexibility, and you're not violating policy, you could add a disconnection step for off-duty hours:
+If your policy actually allows it, you can add a disconnect step:
 
 ```bash
 HOUR=$(date +%H)
@@ -191,18 +134,8 @@ if [[ "$HOUR" -ge 18 || "$HOUR" -lt 9 ]]; then
 fi
 ```
 
-> ⚠️ **Important**: Use this only if you’re certain it’s permitted. Some orgs enforce auto-reconnect policies.
+Check first. Some organizations enforce auto-reconnect, and forcing a disconnect against policy is not a great look.
 
----
+You could take this further and ping an internal hostname to catch Zero Trust routing even when WARP reports itself as off, but that's a separate check worth its own script.
 
-## 🔐 Bonus: Detect Network-Level Blocking
-
-You could also ping an internal IP or DNS name to determine if you're being routed through Zero Trust even if WARP is "off." Let me know if you'd like to add that.
-
----
-
-## ✅ Conclusion
-
-With this setup, you've built a **simple and effective way to monitor WARP connections**, alert yourself when you're routed through Zero Trust, and take action when you're not on the clock.
-
-This method keeps you aware, gives you some autonomy on a locked-down Mac, and respects macOS's security model.
+With this in place, you get a log of when WARP was active, a notification when it flips on, and an optional escape hatch for off-hours. That's the ceiling of what's possible without admin rights on the machine, and it's enough to stop being surprised by your own laptop.

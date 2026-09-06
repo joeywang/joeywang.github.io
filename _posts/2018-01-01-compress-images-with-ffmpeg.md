@@ -1,23 +1,18 @@
 ---
 layout: post
-title: Compress Images with FFMPEG
+title: Compress Images with FFmpeg
 description: "FFmpeg one-liners to scale and compress images: fixed dimensions, percentage scaling, and aspect-ratio-safe resizing."
 date: 2018-01-01 00:00 +0000
-image:
-category:
-tags:
-published: false
-sitemap: false
+categories: [Engineering]
+tags: [ffmpeg, images, compression]
 ---
-```bash
-# compress image with scale
-
 <audio controls preload="metadata" src="/assets/audio/compress-images-with-ffmpeg-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+```bash
+# compress image with scale
 ffmpeg -i test.mp4 -vf scale=320:240 small.mp4
-
 
 # compress image
 ffmpeg -i input.jpg -vf scale=320:240 output_320x240.png

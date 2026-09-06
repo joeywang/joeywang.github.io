@@ -3,7 +3,7 @@ layout: post
 title: "When an Always Free server gets smaller"
 date: 2026-08-08 10:45:00 +0000
 author: "Joey Wang"
-description: "What Oracle's smaller Ampere A1 Always Free limits mean for a self-hosted ARM server, and how I reshaped mine around a 12 GB memory budget."
+description: "What Oracle's smaller Ampere A1 Always Free limits mean for a self-hosted ARM server, and how I redesigned mine around a 12 GB, 2-core budget."
 tags: [devops, cloud, oracle, arm, self-hosting, cost]
 categories: [Engineering, DevOps]
 ---

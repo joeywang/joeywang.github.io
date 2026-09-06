@@ -3,12 +3,10 @@ layout: post
 title: "Securing Hermes Agent with OpenShell"
 date: 2026-07-23 09:57:13 +0100
 author: "Joey Wang"
-description: "Why I would run Hermes Agent inside OpenShell when the agent reads untrusted content, and how filesystem, network, process, and credential policy change the security model."
-tags: [hermes, openshell, ai-agents, security, sandboxing, devops]
+description: "Why I run Hermes Agent inside OpenShell when it reads untrusted content, and how filesystem, network, process, and credential policy change the security model."
+tags: [hermes, openshell, agents, security, sandboxing, devops]
 categories: [AI, Security]
 ---
-
-# Securing Hermes Agent with OpenShell
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-23-securing-hermes-agent-with-openshell-summary.ogg">
   Your browser does not support the audio element.

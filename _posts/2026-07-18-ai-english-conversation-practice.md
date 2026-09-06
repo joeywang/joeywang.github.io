@@ -4,11 +4,9 @@ title: "Building an AI English Conversation Practice App"
 date: 2026-07-18 16:55:00 +0100
 author: "Joey Wang"
 description: "Notes on building an AI speaking practice app: STT, TTS, Gemini, ElevenLabs, latency, topic control, and useful feedback for oral English learners."
-tags: [ai, english-learning, speech-to-text, text-to-speech, gemini, llm, language-learning]
+tags: [ai, llm, gemini, speech-to-text, language-learning]
 categories: [AI, Engineering]
 ---
-
-# Building an AI English Conversation Practice App
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-18-ai-english-conversation-practice-summary.ogg">
   Your browser does not support the audio element.

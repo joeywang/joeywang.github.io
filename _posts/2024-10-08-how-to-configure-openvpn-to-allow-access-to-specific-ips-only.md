@@ -1,31 +1,27 @@
 ---
 layout: post
-title: How to Configure OpenVPN to Allow Access to Specific IPs Only
-description: "OpenVPN is a popular open-source VPN solution that provides secure point-to-point or site-to-site connections. While it's often used to provide full network"
+title: "OpenVPN: Restrict Client Access to Specific IPs Only"
+description: "How to restrict OpenVPN clients to a limited set of destination IPs, using client-config-dir routes, a client-connect script, and iptables rules."
 date: 2024-10-08 00:00 +0000
-categories: OpenVPN
-tags: [openvpn, devops, firewall]
+categories: [Security]
+tags: [openvpn, networking, firewall, security]
 ---
-# How to Configure OpenVPN to Allow Access to Specific IPs Only
-
 <audio controls preload="metadata" src="/assets/audio/how-to-configure-openvpn-to-allow-access-to-specific-ips-only-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction
-OpenVPN is a popular open-source VPN solution that provides secure point-to-point or site-to-site connections. While it's often used to provide full network access, there are scenarios where you might want to restrict VPN users to accessing only specific IP addresses. This article will guide you through the process of configuring OpenVPN to allow connections to a limited set of IP addresses and provide additional advanced configurations.
+OpenVPN's default behavior is full network access: once a client connects, it can reach anything routable through the tunnel. That's not what you want for a contractor VPN, a support tunnel, or any profile that only needs a handful of internal services. Restricting a client to specific IPs takes three pieces working together: a `client-config-dir` route, a script that runs on connect, and iptables rules that actually enforce it.
 
 ## Prerequisites
+
 - A working OpenVPN server
 - Root or sudo access to the server
 - Basic knowledge of networking and firewall concepts
 
-## OpenVPN Server Setup
+## Server configuration
 
-### 1. Basic Configuration
-
-Edit your OpenVPN server configuration file (usually located at `/etc/openvpn/server.conf`) and add the following lines:
+Edit `/etc/openvpn/server.conf`:
 
 ```
 # DNS setup
@@ -48,7 +44,7 @@ script-security 2
 client-connect /etc/openvpn/client-connect.sh
 ```
 
-### 2. Create Client Configuration Directory
+Create the client config directory:
 
 ```bash
 sudo mkdir -p /etc/openvpn/ccd
@@ -56,18 +52,18 @@ sudo chown nobody:nogroup /etc/openvpn/ccd
 sudo chmod 755 /etc/openvpn/ccd
 ```
 
-### 3. Limit Routes for Clients
-
-To restrict clients to specific routes, add these lines to your server config:
+Push the specific routes clients are allowed to use:
 
 ```
 push "route 192.168.1.0 255.255.255.0"
 push "route 10.0.0.5 255.255.255.255"
 ```
 
-### 4. Create a list of allowed IP addresses
+## Enforcing the restriction with a client-connect script
 
-Create a file that contains the list of IP addresses you want to allow:
+Pushed routes tell the client which networks to send through the tunnel; they don't stop the server from forwarding traffic anywhere else. The actual enforcement happens in iptables, applied by a script that runs every time a client connects.
+
+List of allowed destination IPs:
 
 ```bash
 echo "192.168.1.100
@@ -75,9 +71,7 @@ echo "192.168.1.100
 203.0.113.10" > /etc/openvpn/allowed_ips.txt
 ```
 
-### 5. Create the client-connect script
-
-Create a new file `/etc/openvpn/client-connect.sh` with the following content:
+`/etc/openvpn/client-connect.sh`:
 
 ```bash
 #!/bin/bash
@@ -94,15 +88,13 @@ done
 iptables -A FORWARD -i tun+ -j DROP
 ```
 
-Make the script executable:
-
 ```bash
 chmod +x /etc/openvpn/client-connect.sh
 ```
 
-## Firewall Configuration with iptables
+## Managing rules directly with iptables
 
-### 1. Basic iptables Rules
+If you'd rather manage rules by hand instead of through the connect script:
 
 ```bash
 # Allow all traffic for other VPN clients
@@ -114,34 +106,23 @@ sudo iptables -A FORWARD -i tun0 -o eth0 -s 10.8.0.5 -p udp --dport 53 -j ACCEPT
 sudo iptables -A FORWARD -i tun0 -o eth0 -s 10.8.0.5 -j DROP
 ```
 
-### 2. Managing iptables Rules
-
-To view current rules:
 ```bash
+# View current rules
 sudo iptables -L -v -n
-```
 
-To delete a specific rule:
-```bash
+# Delete a specific rule
 sudo iptables -L --line-numbers
 sudo iptables -D CHAIN_NAME RULE_NUMBER
 ```
 
-### 3. Backup and Restore iptables Rules
+Back up and restore:
 
-To backup:
 ```bash
 sudo iptables-save > /tmp/iptables.rules
-```
-
-To restore:
-```bash
 sudo iptables-restore < /tmp/iptables.rules
 ```
 
-### 4. Automated Backup Script
-
-Create a script to automatically backup iptables rules:
+A backup script, if you want this on a cron job:
 
 ```bash
 #!/bin/bash
@@ -152,40 +133,35 @@ iptables-save > "$BACKUP_FILE"
 echo "Backup saved to $BACKUP_FILE"
 ```
 
-## Client-Specific Configurations
+## Per-client configuration
 
-To apply specific configurations to individual clients:
+To give one client its own IP and routes, create a file in `ccd` named after the client:
 
-1. Create a file in the `ccd` directory with the client's name:
-   ```bash
-   sudo nano /etc/openvpn/ccd/client1
-   ```
+```bash
+sudo nano /etc/openvpn/ccd/client1
+```
 
-2. Add client-specific configurations, such as:
-   ```
-   # Assign a specific IP to the client
-   ifconfig-push 10.8.0.200 255.255.255.255
+```
+# Assign a specific IP to the client
+ifconfig-push 10.8.0.200 255.255.255.255
 
-   # Push specific routes to this client
-   push "route 192.168.1.0 255.255.255.0"
-   ```
+# Push specific routes to this client
+push "route 192.168.1.0 255.255.255.0"
+```
 
-3. Set proper permissions:
-   ```bash
-   sudo chown nobody:nogroup /etc/openvpn/ccd/client1
-   sudo chmod 644 /etc/openvpn/ccd/client1
-   ```
+```bash
+sudo chown nobody:nogroup /etc/openvpn/ccd/client1
+sudo chmod 644 /etc/openvpn/ccd/client1
+```
 
-## Troubleshooting and Verification
+## Verifying it worked
 
-### 1. Check OpenVPN Status
 ```bash
 sudo systemctl status openvpn
 # or
 sudo service openvpn status
 ```
 
-### 2. Verify Network Configuration
 ```bash
 # Check routing table
 netstat -r
@@ -200,14 +176,10 @@ ss -anp | grep openvpn
 netstat -anp | grep openvpn
 ```
 
-### 3. Check Logs
-Monitor OpenVPN logs for any issues:
 ```bash
 tail -f /var/log/openvpn.log
 ```
 
-## Conclusion
+## What this buys you, and what it doesn't
 
-By following this comprehensive guide, you've not only configured OpenVPN to restrict access to specific IP addresses but also learned about advanced configurations, client-specific settings, and proper firewall management. This setup provides a robust and flexible VPN solution that can be tailored to meet specific security requirements.
-
-Remember to regularly update your configurations, manage your firewall rules carefully, and monitor your VPN server for any unusual activity. With proper management, this setup will provide a secure and controlled access point to your network resources.
+Pushed routes and iptables rules restrict where traffic can go, but they're enforced on the server, not the client: a compromised or misconfigured client is still authenticated, just unable to reach much. That's the right trade-off for a contractor or support tunnel. It isn't a substitute for per-client certificates and proper key management, which this setup assumes you've already solved.

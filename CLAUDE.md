@@ -59,12 +59,19 @@ tags: [Ruby on Rails, Performance, ...]
 
 ## Writing Style
 
-- Use H2 (##) and H3 (###) for sections
-- Add relevant emojis (🎯, 💡, 🔧, 📊, ✨)
-- Include code examples with syntax highlighting
-- End with key takeaways and conclusion
+Full contract: [.claude/blog-style-contract.md](.claude/blog-style-contract.md). The short version:
 
-**Common tags**: Ruby on Rails, Performance, Database, Backend Engineering, DevOps, Docker, Testing, Security
+- First person, direct, concrete. Open on the actual problem and what it costs; close with the judgment or lesson, not a "Conclusion" that restates the sections.
+- Use H2 (##) and H3 (###) for sections; never an H1 in the body (Chirpy renders the title as H1)
+- No decorative emojis in headings or bullets
+- No AI boilerplate: delve, crucial, robust, seamless, landscape, "In today's...", "Key Takeaways" dumps, "Happy coding!"
+- No em dashes; use commas, colons, or periods
+- Never invent anecdotes, metrics, or case studies; specificity comes from the real technical content
+- Include code examples with syntax highlighting
+- Frontmatter: specific title ≤65 chars (no "Mastering/Comprehensive Guide"), 140–160 char description, 3–6 lowercase-kebab tags
+
+**Common tags** (lowercase-kebab): rails, ruby, postgresql, redis, sidekiq, docker, kubernetes, devops, ci, github-actions, testing, debugging, performance, database, security, ai, llm, agents
+**Categories** (1–2 per post): Engineering, DevOps, Rails, Database, AI, Security, Notes
 
 ## GitHub Actions
 

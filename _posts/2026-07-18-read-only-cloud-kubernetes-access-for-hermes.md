@@ -3,12 +3,10 @@ layout: post
 title: "Giving Hermes Read-Only Access to GCP, AWS, and Kubernetes"
 date: 2026-07-18 18:38:00 +0100
 author: "Joey Wang"
-description: "A practical setup for giving an AI agent enough read-only access to debug QA and production on GCP, AWS, GKE, and EKS without giving it permission to change workloads or read secrets."
-tags: [hermes, ai-agents, kubernetes, gcp, aws, gke, eks, security, devops]
+description: "A practical setup giving an AI agent read-only access to debug QA and production on GCP, AWS, GKE, and EKS without touching workloads or secrets."
+tags: [hermes, agents, kubernetes, gcp, aws, security]
 categories: [AI, DevOps]
 ---
-
-# Giving Hermes read-only access to GCP, AWS, and Kubernetes
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-18-read-only-cloud-kubernetes-access-for-hermes-summary.ogg">
   Your browser does not support the audio element.

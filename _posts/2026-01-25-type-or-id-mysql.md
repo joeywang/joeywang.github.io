@@ -1,24 +1,20 @@
 ---
 layout: post
-title: "To `Type` or to `ID`: Mastering Polymorphic Indexing in MySQL & Rails"
-description: "When building polymorphic associations in Ruby on Rails, the database schema usually looks straightforward: a relationid (Integer) and a relationtype (String)."
+title: "Polymorphic Indexes in MySQL: Type-First or ID-First?"
+description: "A practical comparison of [type, id] versus [id, type] composite index order for polymorphic associations in Rails and MySQL, and how to choose."
 date: 2026-01-25
-categories: [database, mysql, rails, performance]
-tags: [polymorphic associations, indexing strategies, performance
-optimization]
-
+categories: [Database, Rails]
+tags: [mysql, rails, database, performance]
 ---
-
-# To `Type` or to `ID`: Mastering Polymorphic Indexing in MySQL & Rails
 
 <audio controls preload="metadata" src="/assets/audio/type-or-id-mysql-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-When building polymorphic associations in Ruby on Rails, the database schema usually looks straightforward: a `relation_id` (Integer) and a `relation_type` (String). But beneath the surface, a debate rages: **Should your composite index start with the ID or the Type?**
+When building polymorphic associations in Ruby on Rails, the database schema usually looks straightforward: a `relation_id` (Integer) and a `relation_type` (String). But beneath the surface, there's a real question: should your composite index start with the ID or the Type?
 
-While Rails defaults to `[type, id]`, high-performance scenarios—especially when IDs are "mostly unique" (like when Athlete IDs are much larger than classroom IDs)—might tempt you to flip the script.
+Rails defaults to `[type, id]`. In high-performance scenarios, especially when IDs are "mostly unique" (Athlete IDs are much larger than classroom IDs, say), it's tempting to flip the order.
 
 ## The Anatomy of a Polymorphic Query
 
@@ -79,10 +75,10 @@ When both columns are in the index, MySQL never has to look at the "Table Data" 
 
 | Requirement | Pick `[type, id]` | Pick `[id, type]` |
 | --- | --- | --- |
-| **Standard Rails App** | ✅ (Best all-rounder) | ❌ |
-| **Highly Skewed Data** | ❌ (If one type has 99% of rows) | ✅ |
-| **UUIDs as IDs** | ✅ (Consistency) | ✅ (Slightly faster jump) |
-| **Reporting/Analytics** | ✅ (Filter by type easily) | ❌ |
+| **Standard Rails App** | Yes (best all-rounder) | No |
+| **Highly Skewed Data** | No (if one type has 99% of rows) | Yes |
+| **UUIDs as IDs** | Yes (consistency) | Yes (slightly faster jump) |
+| **Reporting/Analytics** | Yes (filter by type easily) | No |
 
 ## The Developer's Decision Matrix
 
@@ -98,8 +94,8 @@ Rails often performs "Dependent Destroys" or "Eager Loading" based on the Type. 
 
 ## Final Verdict
 
-For 95% of applications, **stick to the Rails default: `[:relation_type, :relation_id]**`.
+For most applications, stick to the Rails default: **`[:relation_type, :relation_id]`**.
 
-The "speed" gained by putting the ID first is measured in microseconds, but the "utility" lost is measured in potential production bottlenecks when you try to run a query without an ID.
+The speed gained by putting the ID first is measured in microseconds. The utility lost shows up later, as production bottlenecks the first time you need to query without an ID.
 
-**Pro-Tip:** If you have massive scale and truly need both, don't create two composite indexes. Create one composite `[type, id]` and one single-column index on `[id]`. This gives you the best of both worlds with minimal overhead.
+If you have massive scale and truly need both, don't create two composite indexes. Create one composite `[type, id]` and one single-column index on `[id]`. That gets you most of the benefit with minimal overhead.

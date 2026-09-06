@@ -1,21 +1,17 @@
 ---
 layout: post
-title: "Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance"
-description: "Database deadlocks are a classic source of frustration for backend developers, especially when working with complex transactional workloads in systems like"
-date: "2025-01-01"
-categories: database performance integrity
+title: "Deadlocks in MySQL and PostgreSQL: Foreign Keys vs Performance"
+description: "How deadlocks form in MySQL and PostgreSQL under concurrent updates, and the trade-off between foreign key integrity and write throughput."
+date: 2025-02-14
+categories: [Database]
+tags: [database, mysql, postgresql, performance]
 ---
-
-# Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance
 
 <audio controls preload="metadata" src="/assets/audio/deadlock-with-index-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-## Introduction
-
-Database deadlocks are a classic source of frustration for backend developers, especially when working with complex transactional workloads in systems like MySQL or PostgreSQL. A deadlock happens when two or more transactions are each waiting for the other to release a lock, and none can proceed. This article explores how deadlocks occur in MySQL and PostgreSQL, with examples, and dives into the heated debate between maintaining referential integrity via foreign keys versus sacrificing it for performance and scalability.
+A deadlock happens when two or more transactions are each waiting for a lock the other holds, and neither can proceed. MySQL and PostgreSQL both handle this by rolling back one of the transactions, but the paths that lead there, and what you can do about it, differ enough to be worth walking through, especially where foreign keys are involved.
 
 ---
 
@@ -207,16 +203,14 @@ This operation temporarily increases lock contention but creates new gaps for fu
 - Easier to scale distributed systems (especially with sharding)
 - More control over performance tuning
 
-> "In large-scale systems, foreign keys often move from the database schema to service contracts." — Common microservices design principle
+> "In large-scale systems, foreign keys often move from the database schema to service contracts."
+>
+> A common microservices design principle
 
 ---
 
-## Conclusion
+## The trade-off, stated plainly
 
-Deadlocks are an unavoidable risk in transactional databases, especially when concurrency and referential integrity intersect. Both MySQL and PostgreSQL handle them with different internal mechanisms, but the end result is the same: unexpected rollbacks and operational pain.
+Deadlocks are a fact of life in transactional databases once concurrency and referential integrity intersect. MySQL and PostgreSQL get there through different locking mechanics, but the outcome is the same: an unexpected rollback and a transaction to retry.
 
-Whether to use foreign keys or not depends on your system's needs:
-- Favor **foreign keys** when data integrity is critical and throughput is moderate
-- Favor **application-enforced rules** when scaling high-write, distributed systems
-
-Understanding locking behavior, implementing strategies like gap insertion intent, and analyzing access patterns are key to building deadlock-resilient systems—regardless of your database of choice.
+Favor foreign keys when integrity matters more than raw write throughput. Favor application-enforced rules when you're scaling a high-write, distributed system and the locking overhead is the bottleneck. Neither choice is free: understanding your database's locking behavior, and designing access patterns (gap insertion intent among them) with that behavior in mind, is what keeps deadlocks rare instead of routine.

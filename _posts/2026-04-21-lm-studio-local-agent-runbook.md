@@ -3,12 +3,10 @@ layout: post
 title: "LM Studio Local Agent Runbook: Pi and OpenCode Step by Step"
 date: 2026-04-21
 author: "Joey Wang"
-description: "A step-by-step runbook for using LM Studio as a local OpenAI-compatible backend for Pi agents and OpenCode, including config examples, verification steps, and troubleshooting."
-tags: [ai, llm, gemma, lm-studio, agents, pi, opencode, local-llm]
+description: "A step-by-step runbook for wiring LM Studio as a local OpenAI-compatible backend for Pi agents and OpenCode, with config examples and troubleshooting."
+tags: [ai, llm, gemma, lm-studio, agents, local-llm]
 categories: [AI, Engineering]
 ---
-
-# LM Studio Local Agent Runbook: Pi and OpenCode Step by Step
 
 <audio controls preload="metadata" src="/assets/audio/lm-studio-local-agent-runbook-summary.ogg">
   Your browser does not support the audio element.

@@ -1,76 +1,43 @@
 ---
 layout: post
-title:  "Migrating from Rails UJS to Turbo: The Hidden Pitfalls That Broke Our Production App"
-description: "Our Rails application had been running smoothly for years with Turbolinks and Rails UJS handling AJAX form submissions. When we upgraded to Rails 7 and Turbo"
+title:  "Rails UJS to Turbo: the event timing bug CI didn't catch"
+description: "Migrating Rails UJS to Turbo can silently break submit buttons and resets in production, because Turbo's event timing and Promise handling differ from UJS."
 date:  2026-06-01
-categories: Rails
+categories: [Rails]
+tags: [rails, javascript, testing, debugging]
 ---
-
-# Migrating from Rails UJS to Turbo: The Hidden Pitfalls That Broke Our Production App
 
 <audio controls preload="metadata" src="/assets/audio/turbo-upgrade-article-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+## The silent failure
 
-**A cautionary tale about event timing, async promises, and why your tests might be lying to you**
+Our Rails application had been running smoothly for years on Turbolinks and Rails UJS for AJAX form submissions. When we upgraded to Rails 7 and Turbo (Hotwired), the deployment went without a hitch and the test suite was green. Everything appeared to work.
 
----
+Production users hit a wall immediately: submit buttons stayed disabled, results didn't display, and interactive exercises couldn't be reset. The tests passed. The app was broken.
 
-## The Silent Failure
+This is what we found when we dug into Turbo's event lifecycle, and how to migrate from Rails UJS to Turbo without falling into the same traps.
 
-Our Rails application had been running smoothly for years with Turbolinks and Rails UJS handling AJAX form submissions. When we upgraded to Rails 7 and Turbo (Hotwired), the deployment went without a hitch. Our test suite was green. Everything *appeared* to work.
+## The application
 
-But production users immediately hit a wall: submit buttons stayed disabled, results didn't display, and interactive exercises couldn't be reset. **The tests passed, but the app was broken.**
+Ours is an English learning platform where students answer introduction questions, complete article comprehension quizzes, submit opinions and see poll results, and practice interactive exercises (Highlighter, Word Match, Blockbuster) that they can reset and retry.
 
-This is the story of how we debugged the issue, what we learned about Turbo's event lifecycle, and how to properly migrate from Rails UJS to Turbo without falling into the same traps.
+The core UX pattern: submit buttons start disabled and enable once all questions are answered, so partial submissions can't happen. The implementation relied on AJAX form submissions with Stimulus controllers listening for success events to enable submit buttons, display results, and reset activities.
 
----
+## What broke, silently
 
-## The Architecture: A Learning Platform
+After the upgrade to Turbo:
 
-Our application is an English learning platform where students:
-1. Answer introduction questions (yes/no)
-2. Complete article comprehension (5 multiple choice)
-3. Submit opinions and see poll results
-4. Practice with interactive exercises (Highlighter, Word Match, Blockbuster)
-5. Reset and retry exercises for mastery
+- Users answered all five questions, but the submit button never enabled.
+- Clicking Submit produced no feedback. The page looked frozen.
+- Clicking Reset after completing an exercise did nothing.
 
-The key UX pattern: **submit buttons start disabled and enable when all questions are answered**. This prevents partial submissions and guides the user through the workflow.
+Our integration tests passed the whole time; they completed full lesson flows successfully. We only found the bugs when QA manually tested the reset functionality, something the automated tests never exercised.
 
-The implementation relied heavily on AJAX form submissions with JavaScript controllers listening to success events to:
-- Enable submit buttons (when all answers collected)
-- Display results (correct/wrong feedback)
-- Reset activities (replace content with fresh state)
+## Root cause: the event format changed
 
----
-
-## The Symptom: Everything Breaks Silently
-
-After upgrading to Turbo, users encountered:
-
-### Problem 1: Submit Buttons Never Enable
-```
-User answers all 5 questions → Submit button stays disabled → Cannot proceed
-```
-
-### Problem 2: No Results Display
-```
-User clicks Submit → No feedback appears → Page looks frozen
-```
-
-### Problem 3: Reset Buttons Don't Work
-```
-User completes exercise → Clicks Reset → Nothing happens
-```
-
-The confusing part? **Our integration tests passed.** The test suite completed full lesson flows successfully. We only discovered the bugs when QA manually tested the reset functionality—something our automated tests never exercised.
-
----
-
-## The Root Cause: Event Format Changes
-
-Our JavaScript controllers were written for Rails UJS, which emits custom events like `ajax:success` with a specific data format:
+Our JavaScript controllers were written for Rails UJS, which emits a custom `ajax:success` event with its own data shape:
 
 ```javascript
 // Rails UJS event format
@@ -81,30 +48,28 @@ document.addEventListener('ajax:success', (event) => {
 })
 ```
 
-When we upgraded to Turbo, **these events stopped firing**. Turbo intercepts form submissions and emits its own events with a completely different format:
+Turbo intercepts form submissions and never fires that event. It emits its own events with a different shape entirely:
 
 ```javascript
 // Turbo event format
 document.addEventListener('turbo:submit-end', (event) => {
   const response = event.detail.fetchResponse.response
-  const responseText = event.detail.fetchResponse.responseText  // ⚠️ Promise!
+  const responseText = event.detail.fetchResponse.responseText  // Promise!
   const statusCode = response.status
 })
 ```
 
-Our controllers were listening to events that never fired, so they never updated the UI.
+Our controllers were listening for events that never fired, so the UI never updated.
 
----
+## The false fix: supporting both formats
 
-## The False Fix: Dual Format Support
-
-Our first attempt tried to support both formats:
+Our first attempt tried to handle both event shapes in one method:
 
 ```javascript
-// ❌ This seems reasonable but has subtle bugs
+// This looks reasonable but has three separate bugs
 update(event) {
   let html, code
-  
+
   if (event.detail && event.detail.length > 1) {
     // Rails UJS format
     html = event.detail[0]
@@ -114,113 +79,58 @@ update(event) {
     html = event.detail.fetchResponse.responseText
     code = event.detail.fetchResponse.response.status
   }
-  
+
   this.element.innerHTML = html
-  
+
   if (code === 202) {
     this.enableSubmitButton()
   }
 }
 ```
 
-**This code has three critical bugs:**
+**`responseText` is a Promise, not a string.** Using it directly sets `innerHTML` to the literal text `[object Promise]` instead of the HTML we wanted.
 
-### Bug 1: `responseText` is a Promise
+**Event timing was wrong.** We were listening on `turbo:submit-end`, which fires after Turbo has already tried to process the response, navigate, or update the page. By that point `event.preventDefault()` does nothing, and you get a console error: "Form responses must redirect to another location."
 
-The Turbo `FetchResponse.responseText` is a **Promise**, not a string. Using it directly results in:
+**The migration was incomplete.** With dual-format code covering both event shapes, it's easy to miss updating a form in a view. That form's listener never fires, and it fails silently with no error to point at it.
 
-```javascript
-this.element.innerHTML = html  // Sets innerHTML to "[object Promise]"
+## The fix: migrate to Turbo completely
+
+**Use `turbo:before-fetch-response`, not `turbo:submit-end`.** The event lifecycle for a Turbo form submission is:
+
+```
+turbo:submit-start           -> form about to submit (can cancel)
+turbo:before-fetch-request   -> HTTP request about to send (can modify)
+turbo:before-fetch-response  -> response received, not yet processed  <- use this
+turbo:submit-end             -> response processed (too late for preventDefault)
 ```
 
-The UI updates with literal text `[object Promise]` instead of the HTML we wanted.
-
-### Bug 2: Wrong Event Timing
-
-We initially used `turbo:submit-end`, which fires **after** Turbo has already processed the response. At that point:
-- Turbo has already tried to navigate or update the page
-- Calling `event.preventDefault()` does nothing
-- We get console errors: "Form responses must redirect to another location"
-
-### Bug 3: Incomplete Migration
-
-With dual-format code, it's easy to miss updating all the forms in your views. One form still using `ajax:success` will silently fail because the event never fires.
-
----
-
-## The Correct Solution: Complete Migration to Turbo
-
-### Step 1: Use the Right Event
-
-**Use `turbo:before-fetch-response` instead of `turbo:submit-end`:**
+`turbo:before-fetch-response` fires before Turbo processes the response, so `event.preventDefault()` actually stops Turbo's own navigation and hands you the response to handle manually:
 
 ```javascript
-// ✅ Correct: Intercept before Turbo processes the response
 async replace(event) {
-  event.preventDefault()  // Stops Turbo navigation
-  
+  event.preventDefault()  // stops Turbo navigation
+
   const html = await event.detail.fetchResponse.responseText
   this.element.outerHTML = html
 }
 ```
 
-**The Turbo event lifecycle:**
+**Await every Promise.** `FetchResponse.response.status` and `.response.ok` are plain values you can read directly. `responseText` and `responseHTML` are Promises and must be awaited.
 
-```
-turbo:submit-start           → Form about to submit (can cancel)
-  ↓
-turbo:before-fetch-request   → HTTP request about to send (can modify)
-  ↓
-turbo:before-fetch-response  → Response received, NOT processed ⭐ USE THIS
-  ↓
-turbo:submit-end             → Response processed (too late for preventDefault)
-```
-
-**Why `turbo:before-fetch-response`?**
-- Fires before Turbo processes the response
-- `event.preventDefault()` successfully stops navigation
-- Gives you the response to handle manually
-- Prevents "Form responses must redirect" errors
-
-### Step 2: Await All Promises
-
-```javascript
-// ✅ Correct: Await the Promise
-const html = await event.detail.fetchResponse.responseText
-
-// ❌ Wrong: Using Promise directly
-const html = event.detail.fetchResponse.responseText  // [object Promise]
-```
-
-**FetchResponse properties:**
-
-| Property | Type | Usage |
-|----------|------|-------|
-| `response.status` | `number` | Direct access ✅ |
-| `response.ok` | `boolean` | Direct access ✅ |
-| `responseText` | `Promise<string>` | Must `await` ⚠️ |
-| `responseHTML` | `Promise<string>` | Must `await` ⚠️ |
-
-### Step 3: Update All Views
-
-Change every form from Rails UJS events to Turbo events:
+**Update every view.** Every form using `data: { action: 'ajax:success->...' }` needs to change to the Turbo event name:
 
 ```diff
-  <%# Before: Rails UJS %>
   <%= form_with url: answer_path,
 -               data: { action: 'ajax:success->result#update' } %>
 +               data: { action: 'turbo:before-fetch-response->result#update' } %>
 ```
 
-**This is non-negotiable.** You must update **every single form** that uses JavaScript event handlers. Miss one, and you'll have silent failures.
+This has to be complete. A mix of Rails UJS and Turbo event handlers across different forms produces silent, per-form failures that are hard to trace back to the migration.
 
----
+## Before and after: the submit button controller
 
-## Real-World Example: Submit Button Controller
-
-Here's a complete before/after for our submit button controller:
-
-### Before (Rails UJS)
+Before, on Rails UJS:
 
 ```javascript
 // app/frontend/controllers/result_controller.js
@@ -228,10 +138,10 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static targets = ['form']
-  
+
   update(event) {
     const [data, status, xhr] = event.detail
-    
+
     if (status === 'Accepted' || xhr.status === 202) {
       this.formTarget.disabled = false
       this.formTarget.querySelectorAll('[type="submit"]').forEach(submit => {
@@ -248,7 +158,7 @@ export default class extends Controller {
             data: { action: 'ajax:success->result#update' }
 ```
 
-### After (Turbo)
+After, on Turbo:
 
 ```javascript
 // app/frontend/controllers/result_controller.js
@@ -256,20 +166,17 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static targets = ['form']
-  
+
   update(event) {
-    event.preventDefault()  // Stop Turbo from processing
-    
+    event.preventDefault()  // stop Turbo from processing the response itself
+
     const code = event.detail.fetchResponse.response.status
-    
-    if (code === 202) {  // All questions answered
+
+    if (code === 202) {  // all questions answered
       this.formTarget.disabled = false
       this.formTarget.querySelectorAll('[type="submit"]').forEach(submit => {
         submit.disabled = false
       })
-      console.log('✓ All questions answered - submit button enabled')
-    } else if (code === 201) {
-      console.log('✓ Answer saved - waiting for more answers')
     }
   }
 }
@@ -281,18 +188,11 @@ export default class extends Controller {
             data: { action: 'turbo:before-fetch-response->result#update' }
 ```
 
-**Key changes:**
-- Event: `ajax:success` → `turbo:before-fetch-response`
-- Added `event.preventDefault()`
-- Changed from `event.detail[2].status` to `event.detail.fetchResponse.response.status`
-- Removed dual-format handling
-- Added console logging for debugging
+The event name changed, `preventDefault()` was added, and `event.detail[2].status` became `event.detail.fetchResponse.response.status`. The dual-format branching is gone.
 
----
+## Before and after: the content replacement controller
 
-## Real-World Example: Content Replacement Controller
-
-### Before (Rails UJS)
+Before:
 
 ```javascript
 // app/frontend/controllers/section_controller.js
@@ -302,297 +202,110 @@ replace(event) {
 }
 ```
 
-### After (Turbo)
+After:
 
 ```javascript
 // app/frontend/controllers/section_controller.js
 async replace(event) {
   event.preventDefault()
-  
+
   const html = await event.detail.fetchResponse.responseText
   this.element.outerHTML = html
 }
 ```
 
-**Key changes:**
-- Made method `async` to use `await`
-- Added `event.preventDefault()`
-- `await` the `responseText` Promise
-- Simplified (no dual-format handling)
+The method became `async` so it could `await` the `responseText` Promise, and the dual-format handling disappeared entirely.
 
----
+## The testing trap
 
-## The Testing Trap
-
-Our integration tests passed because they tested the happy path:
+Our integration tests passed because they only exercised the happy path:
 
 ```ruby
-# test/system/take_lesson_test.rb (INSUFFICIENT)
+# test/system/take_lesson_test.rb (insufficient)
 test 'complete lesson' do
   visit lesson_path(@lesson)
-  
-  # Introduction
+
   choose 'True'
   click_on 'Submit'
-  
-  # Article
+
   5.times { |i| choose "Answer #{i}" }
   click_on 'Submit'
-  
-  # ... continue through lesson
-  
+
   assert_text 'Congratulations!'
 end
 ```
 
-**What this test missed:**
-- ✅ Forms submit successfully
-- ✅ Content updates after submission
-- ❌ Submit button state transitions (starts disabled, enables when ready)
-- ❌ Reset functionality (never clicks Reset buttons)
-- ❌ Results display (doesn't verify correct/wrong indicators)
+It confirmed forms submit and content updates after submission, but it never checked submit button state transitions, never clicked a Reset button, and never verified the correct/wrong feedback indicators. The test verified lesson completion, not the interaction the user actually has with the page.
 
-The test verified the *outcome* (lesson completion) but not the *user experience* (button states, feedback, reset functionality).
-
-### The Fix: Comprehensive E2E Tests
+We rewrote it to check the states that had broken:
 
 ```ruby
-# test/system/take_lesson_test.rb (COMPREHENSIVE)
+# test/system/take_lesson_test.rb (comprehensive)
 test 'take lesson with full UX verification' do
   visit lesson_path(@lesson)
-  
+
   within('div[data-target="lesson.introPart"]') do
-    # Verify submit button starts disabled
     submit_button = find('button[type="submit"]')
     assert submit_button.disabled?, 'Submit button should start disabled'
-    
-    # Answer the question
+
     choose 'False'
-    
-    # Wait for AJAX and verify button enables
+
     sleep 1
     assert !submit_button.disabled?, 'Submit button should enable after answering'
-    
+
     click_on 'Submit'
   end
-  
-  # Verify results displayed
+
   within('div[data-target="lesson.introPart"]') do
-    assert_text 'Well done!'  # Feedback appears
+    assert_text 'Well done!'
   end
-  
-  # ... test article with progressive button enabling
-  
-  # Test Reset functionality
+
   within('div[data-controller="highlighter"]') do
-    # Complete the exercise
     within('#hq-1') do
       find('span[data-flag="c"]', text: 'even as').click
       click_on 'Check Answer'
       assert_text 'Well done!'
     end
-    
+
     assert_text 'Click Reset to take the activity again'
-    
-    # Test Reset
     click_on 'Reset'
-    
-    # Verify questions reset
+
     within('#hq-1') do
       assert_text 'Which linking phrase in paragraph one shows contrast?'
-      assert_no_text 'Well done!'  # Feedback cleared
+      assert_no_text 'Well done!'
     end
-    
-    # Verify can answer again
+
     within('#hq-1') do
       find('span[data-flag="c"]', text: 'even as').click
       click_on 'Check Answer'
-      assert_text 'Well done!'  # Works after reset
+      assert_text 'Well done!'
     end
   end
 end
 ```
 
-**What this test verifies:**
-- ✅ Submit button disabled state
-- ✅ Submit button enables when questions answered
-- ✅ Results display after submission
-- ✅ Reset button clears state
-- ✅ Exercise works after reset
+That version checks the disabled state, the enable transition, the results display, the reset behaviour, and that the exercise still works after a reset. It's the version that would have caught the bugs before production did.
 
-**Test results:**
-```
-2 tests, 112 assertions, 0 failures
-```
+## Migration checklist
 
-These tests now catch the exact bugs that slipped into production.
+The mechanics that mattered in practice: grep the codebase for every `ajax:success`, `ajax:error`, and `ajax:complete` listener and every form using `data: { action: 'ajax:*' }`, then update each controller's event name, add `preventDefault()`, replace `event.detail[n]` with the `fetchResponse` equivalents, await the Promise-returning properties, and make the method `async` where needed. Do the same for every view. Replace any leftover `Rails.fire()` calls with `form.requestSubmit()`, and drop `remote: true` since Turbo already intercepts the form. Once the code is updated, `grep -r "ajax:success\|ajax:error\|ajax:complete" app/views/` should return nothing. Only after that should tests be rewritten to check button state, reset behaviour, and error paths, followed by manual QA of every interactive form.
 
----
+## Alternative: Turbo Streams
 
-## Migration Checklist
+Instead of manually intercepting the response and replacing HTML, Turbo Streams push the update from the server:
 
-When upgrading from Rails UJS to Turbo, use this checklist:
-
-### Phase 1: Audit (Before Changing Anything)
-
-- [ ] Grep for all `ajax:success` listeners in JavaScript
-- [ ] Grep for all `ajax:error` listeners in JavaScript  
-- [ ] Grep for all `ajax:complete` listeners in JavaScript
-- [ ] Find all forms with `data: { action: 'ajax:*' }` in views
-- [ ] Document all `Rails.fire()` calls in JavaScript
-- [ ] List all controllers that handle form responses
-
-### Phase 2: Update JavaScript Controllers
-
-For each controller that handles form events:
-
-- [ ] Change `ajax:success` → `turbo:before-fetch-response`
-- [ ] Change `ajax:error` → `turbo:submit-error`
-- [ ] Add `event.preventDefault()` at start of handler
-- [ ] Change `event.detail[0]` → `await event.detail.fetchResponse.responseText`
-- [ ] Change `event.detail[1]` → `event.detail.fetchResponse.response.statusText`
-- [ ] Change `event.detail[2].status` → `event.detail.fetchResponse.response.status`
-- [ ] Make methods `async` if using `await`
-- [ ] Remove all dual-format handling code
-- [ ] Add console logging for debugging
-
-### Phase 3: Update Views
-
-For each form view:
-
-- [ ] Change `data: { action: 'ajax:success->...' }` to `turbo:before-fetch-response->...`
-- [ ] Change `data: { action: 'ajax:error->...' }` to `turbo:submit-error->...`
-- [ ] Remove `data: { turbo: false }` if added as temporary fix
-- [ ] Verify form uses `form_with` (not `form_tag`)
-
-### Phase 4: Update Form Submission Code
-
-- [ ] Replace `Rails.fire()` with `form.requestSubmit()`
-- [ ] Replace `$.ajax()` with Fetch API or Turbo
-- [ ] Remove `remote: true` from forms (Turbo handles this)
-
-### Phase 5: Testing
-
-- [ ] Write tests for submit button state transitions
-- [ ] Write tests for reset functionality
-- [ ] Write tests for results/feedback display
-- [ ] Test error handling paths
-- [ ] Manual QA of all interactive forms
-- [ ] Check browser console for Turbo errors
-
----
-
-## Common Pitfalls and How to Avoid Them
-
-### Pitfall 1: Using `turbo:submit-end` Instead of `turbo:before-fetch-response`
-
-**Wrong:**
-```javascript
-document.addEventListener('turbo:submit-end', (event) => {
-  event.preventDefault()  // Too late! Turbo already processed the response
-  const html = await event.detail.fetchResponse.responseText
-  this.element.innerHTML = html
-})
-```
-
-**Error:**
-```
-Form responses must redirect to another location
-```
-
-**Right:**
-```javascript
-document.addEventListener('turbo:before-fetch-response', (event) => {
-  event.preventDefault()  // Perfect timing! Stops Turbo from processing
-  const html = await event.detail.fetchResponse.responseText
-  this.element.innerHTML = html
-})
-```
-
-### Pitfall 2: Forgetting to Await Promises
-
-**Wrong:**
-```javascript
-const html = event.detail.fetchResponse.responseText
-this.element.innerHTML = html  // Sets innerHTML to "[object Promise]"
-```
-
-**Right:**
-```javascript
-const html = await event.detail.fetchResponse.responseText
-this.element.innerHTML = html  // Sets innerHTML to actual HTML string
-```
-
-### Pitfall 3: Incomplete View Updates
-
-**You updated the JavaScript but forgot one form:**
-
-```slim
-/ ❌ This form still uses ajax:success - silently fails
-= form_with url: answer_path,
-            data: { action: 'ajax:success->result#update' }
-
-/ ✅ This form works
-= form_with url: submit_path,
-            data: { action: 'turbo:before-fetch-response->section#replace' }
-```
-
-**Solution:** Grep your views after migration:
-```bash
-grep -r "ajax:success\|ajax:error\|ajax:complete" app/views/
-# Should return 0 results
-```
-
-### Pitfall 4: Tests That Don't Match User Flows
-
-**Your test:**
-```ruby
-click_on 'Submit'
-assert_text 'Success'
-```
-
-**What it misses:**
-- Button state changes
-- Reset functionality  
-- Error feedback
-- Progressive enabling
-
-**Better test:**
-```ruby
-submit_button = find('button[type="submit"]')
-assert submit_button.disabled?
-
-choose 'Answer'
-assert !submit_button.disabled?
-
-click_on 'Submit'
-assert_text 'Correct!'
-
-click_on 'Reset'
-assert submit_button.disabled?  # Reset clears state
-```
-
----
-
-## Alternative Approaches
-
-### Option 1: Turbo Streams (Recommended for New Projects)
-
-Instead of manual content replacement with `preventDefault()`, use Turbo Streams:
-
-**Controller:**
 ```ruby
 def create
   @result = process_answer(params[:answer])
-  
+
   respond_to do |format|
-    format.turbo_stream  # Returns turbo-stream response
+    format.turbo_stream
   end
 end
 ```
 
-**View (create.turbo_stream.erb):**
 ```erb
+<%# create.turbo_stream.erb %>
 <%= turbo_stream.replace "section-intro" do %>
   <%= render partial: "intro_results", locals: { result: @result } %>
 <% end %>
@@ -602,168 +315,17 @@ end
 <% end %>
 ```
 
-**Benefits:**
-- No `preventDefault()` needed
-- No manual HTML replacement
-- No Promise handling
-- Server-driven UI updates
-- Real-time capable (via ActionCable)
+No `preventDefault()`, no manual HTML replacement, no Promise handling: the server drives the UI. The tradeoff is a larger refactor and dedicated `turbo_stream` views for every response. We kept manual handling because the migration surface was smaller and our existing server responses worked as-is; Turbo Streams make more sense for a new project or one that already needs real-time updates.
 
-**Tradeoffs:**
-- Larger refactor from existing code
-- Requires dedicated turbo_stream views
-- More server round-trips
+## Performance
 
-### Option 2: Keep Manual Handling (Our Choice)
+The request count doesn't change: one fetch per form submission either way. Turbo fires more JavaScript events around that fetch (`turbo:submit-start`, `turbo:before-fetch-request`, `turbo:before-fetch-response`, `turbo:submit-end` versus a single `ajax:success`), but the extra events cost microseconds. Turbo's caching and prefetching more than make up for it in practice.
 
-We chose to keep manual content replacement because:
-- Smaller migration surface area
-- Existing server responses work as-is
-- Fine-grained control over UI updates
-- No need for real-time features yet
+## The principle
 
-**When to use each:**
-- **Turbo Streams:** New projects, real-time features, server-driven UI
-- **Manual handling:** Migrating existing UJS code, client-side control
+Rails UJS to Turbo is not a drop-in replacement: the event formats, the timing, and the semantics are all different, and the migration has to be complete or it fails silently, form by form. The more useful lesson is about the tests: a green suite told us nothing about whether users could actually use the page. Test the interaction, not just the outcome. If a test can pass while a real user is stuck looking at a disabled button, the test is checking the wrong thing.
 
----
-
-## Debugging Tips
-
-### 1. Add Console Logging
-
-```javascript
-update(event) {
-  console.group('result#update')
-  console.log('Event:', event)
-  console.log('Detail:', event.detail)
-  console.log('Status:', event.detail.fetchResponse.response.status)
-  console.groupEnd()
-  
-  event.preventDefault()
-  // ... rest of code
-}
-```
-
-### 2. Watch Turbo Events
-
-```javascript
-// Add to application.js for debugging
-document.addEventListener('turbo:before-fetch-response', (event) => {
-  console.log('turbo:before-fetch-response', {
-    url: event.detail.fetchResponse.response.url,
-    status: event.detail.fetchResponse.response.status,
-    ok: event.detail.fetchResponse.response.ok
-  })
-})
-
-document.addEventListener('turbo:submit-end', (event) => {
-  console.log('turbo:submit-end', {
-    success: event.detail.success,
-    formSubmission: event.detail.formSubmission
-  })
-})
-```
-
-### 3. Check Response Headers
-
-```javascript
-async replace(event) {
-  event.preventDefault()
-  
-  const response = event.detail.fetchResponse.response
-  console.log('Content-Type:', response.headers.get('Content-Type'))
-  console.log('Status:', response.status)
-  
-  const html = await event.detail.fetchResponse.responseText
-  console.log('HTML length:', html.length)
-  
-  this.element.outerHTML = html
-}
-```
-
-### 4. Verify Event Listeners
-
-Open browser console and check registered listeners:
-
-```javascript
-// In browser console
-getEventListeners(document)
-// Should show turbo:before-fetch-response listeners
-```
-
----
-
-## Performance Considerations
-
-### Before (Rails UJS)
-
-Each form submission:
-1. Browser sends AJAX request
-2. Server returns HTML partial
-3. `ajax:success` fires
-4. JavaScript updates DOM
-
-**Network:** 1 request  
-**JavaScript events:** 1 event (`ajax:success`)
-
-### After (Turbo)
-
-Each form submission:
-1. Browser sends Fetch request
-2. Server returns HTML partial  
-3. `turbo:submit-start` fires
-4. `turbo:before-fetch-request` fires
-5. `turbo:before-fetch-response` fires (we handle here)
-6. `turbo:submit-end` fires
-
-**Network:** 1 request (same)  
-**JavaScript events:** 4 events (more overhead)
-
-**Impact:** Negligible. The extra events fire in microseconds. Turbo's caching and predictive prefetching often make the app *faster* overall.
-
----
-
-## Key Takeaways
-
-### 1. **Event Timing is Critical**
-
-Use `turbo:before-fetch-response`, not `turbo:submit-end`. The former fires before Turbo processes the response, allowing `preventDefault()` to work.
-
-### 2. **Promises are Everywhere**
-
-`FetchResponse.responseText` and `.responseHTML` are Promises. Always `await` them.
-
-### 3. **Migration Must Be Complete**
-
-You cannot have some forms using Rails UJS and others using Turbo. It's all or nothing. Dual-format code hides bugs.
-
-### 4. **Tests Must Match Reality**
-
-Integration tests should verify the user experience, not just the outcome. Test button states, reset functionality, and error feedback—not just "does it submit?"
-
-### 5. **Console Logging is Your Friend**
-
-Add generous logging during migration. Remove it later if needed, but during migration it's invaluable for debugging silent failures.
-
----
-
-## Conclusion
-
-Migrating from Rails UJS to Turbo is not a drop-in replacement. The event formats are different, the timing is different, and the expectations are different. But with careful attention to:
-
-- Event timing (`turbo:before-fetch-response`)
-- Promise handling (`await responseText`)
-- Complete migration (update all forms)
-- Comprehensive testing (verify UX, not just outcomes)
-
-...you can successfully migrate without breaking production.
-
-Our migration touched 18 controller files, 8 view files, and required new comprehensive tests. It took time, but the result is a faster, more maintainable application that's ready for Turbo's advanced features like Streams and real-time updates.
-
-**The most important lesson:** Your tests should fail when your users fail. If users can't reset exercises but your tests pass, your tests are testing the wrong things.
-
----
+Our migration touched 18 controller files and 8 view files.
 
 ## Resources
 
@@ -771,10 +333,3 @@ Our migration touched 18 controller files, 8 view files, and required new compre
 - [Turbo Events Reference](https://turbo.hotwired.dev/reference/events)
 - [FetchResponse API](https://github.com/hotwired/turbo/blob/main/src/http/fetch_response.ts)
 - [Stimulus Handbook](https://stimulus.hotwired.dev/handbook/introduction)
-- [Our GitHub PR with full migration](https://github.com/reallyenglish/re-n2r/pull/211)
-
----
-
-**About the Author:** Built at ReallyEnglish, a language learning platform serving thousands of students globally. This migration was completed in June 2026 with comprehensive testing to ensure zero downtime and no user-facing bugs.
-
-**License:** This article is licensed under CC BY-SA 4.0. Code examples are MIT licensed.

@@ -5,14 +5,12 @@ date: 2026-07-31 22:44:18 +0100
 author: "Joey Wang"
 description: "A practical walkthrough for moving Hermes API keys out of local env files and into Bitwarden Secrets Manager, with verification and cleanup steps."
 tags: [ai, agents, security, hermes, bitwarden, secrets]
-categories: [AI, Security, Engineering]
+categories: [AI, Security]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/tightening-hermes-secrets-with-bitwarden-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# Tightening Hermes secrets with Bitwarden
 
 I recently tightened up my Hermes setup by moving the provider and tool tokens out of the local `.env` file and into Bitwarden Secrets Manager.
 

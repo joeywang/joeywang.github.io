@@ -3,7 +3,7 @@ layout: post
 title: "Could AI Simulate Billions of Possible Human Lives?"
 date: 2026-08-22 09:14:00 +0000
 author: "Joey Wang"
-description: "An exploration of LLMs as compressed maps of human experience, and what a future branching world model might do with them."
+description: "An exploration of large language models as compressed maps of human experience, and what a branching world model built on them might reveal."
 tags: [ai, llm, world-models, multi-agent-systems, philosophy, future-of-work]
 categories: [AI, Ideas]
 ---
@@ -245,4 +245,4 @@ So I keep coming back to one principle:
 
 The best system would not use probability to close the future. It would use probability to show where the future is still open.
 
-That may be the real promise of this idea: not creating billions of artificial lives for their own sake, but helping real people understand the branches in front of them — and which choices can still change the direction of the story.
+That may be the real promise of this idea: not creating billions of artificial lives for their own sake, but helping real people understand the branches in front of them, and which choices can still change the direction of the story.

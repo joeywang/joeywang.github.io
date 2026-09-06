@@ -1,18 +1,16 @@
 ---
 layout: post
 title: "The One-Person Company Is a Coordination Problem"
-description: "I am exploring how a one-person company could use agents, observability, project tracking, and market intelligence without turning automation into an ungoverned second company."
+description: "I am exploring how a one-person company can use agents, observability, and market intelligence without turning automation into an ungoverned second company."
 date: 2026-08-30 12:00:00 +0000
 author: "Joey Wang"
-tags: [ai-agents, one-person-company, hermes, software-engineering, product-management, market-intelligence]
+tags: [agents, one-person-company, hermes, software-engineering, product-management, market-intelligence]
 categories: [AI, Engineering]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/ai-native-one-person-company-operating-system-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# The One-Person Company Is a Coordination Problem
 
 I did not start with the idea of building an AI company. I started with a more ordinary problem: too many small operational loops were competing for the same limited attention.
 
@@ -304,7 +302,7 @@ This is the beginning of a series rather than a finished architecture. Possible 
 4. **Memory and skills in a multi-user engineering system.**
 5. **Model gateways, shared quotas, and the cost of AI coordination.**
 6. **Running interruptible cloud workers without losing state.**
-7. **What an AI project manager should report—and what it should never decide.**
+7. **What an AI project manager should report, and what it should never decide.**
 8. **Market intelligence without turning the company into a link-collection machine.**
 
 Each article should be based on an actual experiment, repository state, source-backed comparison, or failure. I would rather publish a small workflow that worked and explain its limits than publish a grand diagram that has never been exercised.

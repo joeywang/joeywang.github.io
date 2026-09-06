@@ -1,8 +1,9 @@
 ---
-title: "Database Deadlocks and Foreign Keys"
+title: "MySQL vs PostgreSQL: Foreign Key Deadlock Contention"
 date: 2025-04-26
-description: "Deadlock scenarios around foreign keys in MySQL InnoDB and PostgreSQL, and how to avoid them."
+description: "How foreign key checks cause deadlock contention in MySQL InnoDB versus PostgreSQL, and why PostgreSQL's FOR KEY SHARE lock reduces the risk considerably."
 tags: [database, mysql, postgresql, deadlock]
+categories: [Database]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/db-deadlock-foreign-key-summary.ogg">
@@ -27,18 +28,18 @@ PostgreSQL's approach to locking and foreign key checks is generally more granul
 * **Foreign Key Checks and Locks:**
     * When you `INSERT` a row into a child table (like `orders`), PostgreSQL needs to ensure the referenced `delivery_day_id` exists in the parent table (`delivery_day`). To do this, it implicitly acquires a `FOR KEY SHARE` lock on the referenced row in the parent table.
     * A `FOR KEY SHARE` lock is a very light lock. It prevents `DELETE`s on the parent row and `UPDATE`s that modify *key* columns (primary or unique keys) of the parent row.
-    * Crucially, `FOR KEY SHARE` **does not conflict with `FOR NO KEY UPDATE`**. This means if another transaction is updating a *non-key* column of that same parent `delivery_day` row, it will typically acquire a `FOR NO KEY UPDATE` lock, and both operations can proceed concurrently.
+    * Notably, `FOR KEY SHARE` **does not conflict with `FOR NO KEY UPDATE`**. This means if another transaction is updating a *non-key* column of that same parent `delivery_day` row, it will typically acquire a `FOR NO KEY UPDATE` lock, and both operations can proceed concurrently.
     * If you are updating the `delivery_day_id` in your `orders` table, this means the `orders` table rows are taking exclusive locks on themselves, but they are only taking `FOR KEY SHARE` locks on the *referenced* `delivery_day` rows.
 * **Less Contention on Parent for Non-Key Updates:** This is where PostgreSQL shines. If your `delivery_day` table is stable and its primary key (the `delivery_day_id`) is not being modified, even if many concurrent order updates are referencing the same `delivery_day_id` values, they will only take `FOR KEY SHARE` locks on those parent rows. This allows concurrent `UPDATE`s on *non-key* columns of those `delivery_day` rows to proceed without blocking.
 * **Potential for Deadlocks (but less likely in your described scenario):** While PostgreSQL's locking is generally more concurrent, deadlocks can still occur, especially if transactions update rows in different orders across tables (e.g., Transaction A updates `order` then `delivery_day`, while Transaction B updates `delivery_day` then `order`). However, in your specific scenario of only updating `orders` rows that reference `delivery_day`, and assuming the `delivery_day` table itself isn't being modified in a way that changes its primary key, the contention is significantly reduced compared to MySQL.
 
 **In summary for PostgreSQL:** PostgreSQL's MVCC and its more granular `FOR KEY SHARE` lock for foreign key checks make it less prone to contention on the parent table when child table rows are being updated, *as long as the primary/unique key of the parent row is not being modified*.
 
-### Conclusion
+### Bottom line
 
 Your assumption is generally correct:
 
 * **MySQL:** You're more likely to experience contention on the `delivery_day` parent table when updating `delivery_day_id` in `orders` concurrently, especially if there are few distinct `delivery_day_id` values being referenced. MySQL's foreign key checking can acquire shared locks on these parent rows, which can block other operations, particularly if any of those parent rows are also being updated in a way that requires an exclusive lock.
 * **PostgreSQL:** You'd likely see significantly less contention in the same scenario. PostgreSQL's `FOR KEY SHARE` lock is designed to allow more concurrency when child tables are inserting or updating foreign keys, as long as the referenced parent row's *key* isn't being modified.
 
-If you are experiencing significant locking issues in MySQL due to foreign key updates, one common approach (though it comes with its own trade-offs) is to disable foreign key checks (`SET FOREIGN_KEY_CHECKS = 0;`) during bulk operations and then re-enable and re-check them afterward. However, this sacrifices immediate data integrity enforcement and requires careful management. For ongoing high-concurrency operations, understanding and optimizing your transaction design (keeping them short, ensuring consistent lock ordering) is crucial, and in some cases, PostgreSQL's locking model might be a better fit.
+If you are experiencing significant locking issues in MySQL due to foreign key updates, one common approach (though it comes with its own trade-offs) is to disable foreign key checks (`SET FOREIGN_KEY_CHECKS = 0;`) during bulk operations and then re-enable and re-check them afterward. However, this sacrifices immediate data integrity enforcement and requires careful management. For ongoing high-concurrency operations, understanding and optimizing your transaction design (keeping them short, ensuring consistent lock ordering) matters more than the engine choice itself, and in some cases, PostgreSQL's locking model is simply a better fit.

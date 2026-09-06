@@ -1,30 +1,20 @@
 ---
-layout: post
-title: "Understanding Deadlocks in MySQL and PostgreSQL: Integrity vs Performance"
-description: "Concurrency issues in web applications, especially when dealing with race conditions, are common when multiple users or processes try to perform the same"
-title: "Ensuring Idempotency with Semaphore Locks in Rails: Handling Concurrent Requests Efficiently"
+title: "Idempotent Rails Requests with a Redis Semaphore Lock"
+description: "How to stop duplicate Rails requests from creating the same record twice, using a Redis-backed semaphore lock instead of chasing a race condition."
 date: "2025-04-04"
-categories: database performance integrity
+categories: [Rails, Database]
+tags: [rails, redis, database, performance]
 ---
-
-# **Ensuring Idempotency with Semaphore Locks in Rails: Handling Concurrent Requests Efficiently**
 
 <audio controls preload="metadata" src="/assets/audio/redis-avoid-racing-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Race conditions show up whenever two requests can hit the same code path at once and both assume they're first. The common trigger is enforcing uniqueness: creating a resource identified by a client-generated UUID.
 
-Concurrency issues in web applications, especially when dealing with race conditions, are common when multiple users or processes try to perform the same action at the same time. These issues often result in data inconsistencies, errors, or failures — especially when trying to enforce uniqueness, such as creating a new resource with a unique identifier (e.g., a UUID).
+## The problem
 
-In this article, we'll explore how to address these problems in a **Ruby on Rails** application by using **semaphore locks**. We'll walk through a solution using **Redis-backed caching** to ensure that only one process or thread can access a critical section of code at a time, making the process **idempotent**.
-
----
-
-## **The Problem: Race Conditions and Duplicate Requests**
-
-Consider the following scenario: Your application needs to handle requests that create new resources, such as `LessonSession` records, identified by a unique `uuid`. In a highly concurrent environment, it's possible that multiple requests for the same `uuid` might come in simultaneously. If this happens, two records with the same `uuid` might be created, violating your database's unique constraint.
-
-Here's a simplified version of the code that leads to a **`PG::UniqueViolation`**:
+A `LessonSession` gets created from a `uuid` the client supplies. In a highly concurrent environment, two requests carrying the same `uuid` can arrive close enough together that both pass the existence check before either has saved:
 
 ```ruby
 def create
@@ -46,27 +36,11 @@ def create
 end
 ```
 
-In the code above, if two requests for the same `uuid` come in concurrently, they might both pass the check for the `persisted?` condition and try to save the same `LessonSession`, causing a **unique constraint violation**.
+Both requests see `persisted?` return false, both try to save, and the second one hits `PG::UniqueViolation`.
 
----
+## A semaphore lock in front of the critical section
 
-## **The Solution: Distributed Semaphore Locks**
-
-To solve this problem, we can use a **distributed semaphore lock**. A **semaphore lock** allows only one process to access a critical section of code at a time. If another request tries to enter the critical section while the lock is held, it can either **wait** or **skip** the operation, depending on the use case.
-
-In our case, we want to ensure that only one request can create a `LessonSession` for a specific `uuid` at a time. If another request comes in while the lock is held, we’ll simply skip it or return a `no_content` response.
-
-We'll use **Rails.cache**, backed by Redis, to handle the locking mechanism. Redis is well-suited for this purpose due to its atomic operations, and Rails provides an abstraction layer (`Rails.cache`) that allows us to interact with it easily.
-
----
-
-## **Implementing the Semaphore Lock**
-
-We'll create a **concern** to wrap the lock logic into a reusable helper method that can be used across controllers, jobs, and services. The core idea is to use **`Rails.cache.write`** with `unless_exist: true` to acquire the lock, and **`Rails.cache.delete`** to release it.
-
-Here’s how we implement the semaphore lock in a Rails concern:
-
-### **SemaphoreLock Concern**
+A distributed semaphore lock lets only one request into the critical section at a time; anything arriving while the lock is held gets skipped instead of racing. `Rails.cache`, backed by Redis, gives you this for free through its atomic `write ... unless_exist: true`:
 
 ```ruby
 # app/controllers/concerns/semaphore_lockable.rb
@@ -92,25 +66,9 @@ module SemaphoreLockable
 end
 ```
 
-### **Explanation:**
-1. **`with_semaphore_lock` method**:
-   - It tries to acquire the lock by writing a key to the cache with an expiration time (`ttl`).
-   - If the lock is acquired (the key didn’t exist), it runs the provided block and yields `:locked`.
-   - If the lock is already held, it yields `:skipped`, allowing you to handle skipped requests appropriately.
-   - After the block executes (or skips), it **releases the lock** by deleting the key.
+`key` identifies what's being locked (the UUID here), `ttl` bounds how long a stuck process can hold it, `namespace` keeps the key space from colliding with unrelated locks.
 
-2. **Parameters**:
-   - `key`: The unique identifier (e.g., UUID or task identifier) used to create the lock.
-   - `ttl`: The lock expiration time (default is 10 seconds).
-   - `namespace`: A namespace for the lock key to avoid key collisions with other locks.
-
----
-
-## **Using the Semaphore Lock in Your Controller**
-
-Once we have our `SemaphoreLockable` concern, we can use it in any controller action where we need to protect a critical section.
-
-### **Example Usage in Controller**
+## Using it in the controller
 
 ```ruby
 class LessonSessionsController < ApplicationController
@@ -152,20 +110,9 @@ class LessonSessionsController < ApplicationController
 end
 ```
 
-### **Explanation**:
-1. We call `with_semaphore_lock` with the `uuid` of the `LessonSession` we’re trying to create. The `ttl` is set to 10 seconds, meaning the lock will expire after 10 seconds if the process hasn’t finished.
-2. If the lock is acquired (`:locked`), we proceed with the transaction to create the `LessonSession`.
-3. If the lock is already held (`:skipped`), we log the skipped request and return a `no_content` response.
+Note the `rescue` at the bottom is still there. The lock closes the window, it doesn't eliminate every possible race (a lock TTL that expires mid-transaction, a process that crashes without releasing the key): the database's unique constraint is still the actual source of truth. The lock exists to make that constraint violation rare instead of routine.
 
----
-
-## **Testing the Semaphore Lock**
-
-It's essential to test that the lock mechanism works as expected, both when it acquires the lock and when it skips execution because the lock is already held.
-
-Here’s how we write tests for the `SemaphoreLockable` concern using **RSpec**:
-
-### **RSpec Test**
+## Testing it
 
 ```ruby
 require "rails_helper"
@@ -216,16 +163,6 @@ RSpec.describe SemaphoreLockable, type: :concern do
 end
 ```
 
-### **Explanation of the Tests**:
-1. **`yields :locked when lock is acquired`**: Tests that the lock is acquired on the first attempt.
-2. **`yields :skipped if lock is already held`**: Tests that subsequent attempts to acquire the lock while it’s held will be skipped.
-3. **`releases the lock after block runs`**: Tests that the lock is properly released after the block finishes and that subsequent attempts can acquire the lock after TTL expiration.
+## Where this fits
 
----
-
-## **Conclusion**
-
-Using a **semaphore lock** with **Redis-backed caching** in Rails helps to ensure that your application handles concurrency and race conditions in a safe, predictable manner. By leveraging **`Rails.cache`**, we can ensure that only one process or thread can perform a critical section at a time, preventing issues like duplicate database entries and unique constraint violations.
-
-This approach is highly scalable and works well in distributed environments, making it ideal for high-concurrency applications such as webhooks, background jobs, or any system where idempotency is crucial.
-
+This pattern is for reducing contention on a hot path, webhooks, background jobs, anywhere idempotency matters and duplicate work is expensive or visible to the user. It's not a substitute for the database constraint. Keep both: the lock stops most of the noise, the constraint stops the rest.

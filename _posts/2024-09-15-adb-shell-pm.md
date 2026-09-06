@@ -1,42 +1,27 @@
 ---
 layout: post
-title: Mastering Android Package Management with ADB and pm
-description: "Ever felt like you needed superhero powers to manage apps on your Android device? Well, grab your cape because we're about to turn you into an Android package"
+title: "adb shell pm: Managing Android Packages from the Command Line"
+description: "How to use adb shell pm to list, install, uninstall, disable, and inspect Android packages, including removing bloatware without root."
 date: 2024-09-15 00:00 +0000
-categories: Android
-tags: [adb, package management, android]
+categories: [Engineering]
+tags: [android, adb, debugging]
 ---
-
-# Mastering Android Package Management with ADB and pm
 
 <audio controls preload="metadata" src="/assets/audio/adb-shell-pm-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-Ever felt like you needed superhero powers to manage apps on your Android device? Well, grab your cape because we're about to turn you into an Android package management pro! In this guide, we'll explore the dynamic duo of ADB (Android Debug Bridge) and pm (Package Manager) that will give you unprecedented control over your Android apps.
+Android's settings UI hides most of what the package manager can do. Preinstalled apps you cannot uninstall, disabled system apps you cannot find, no way to see where an APK actually lives. All of that is reachable from a shell. `pm`, the package manager service, is exposed through ADB, and it does not need root for most operations.
 
-## The Power Couple: ADB and pm
+## Setup
 
-Before we dive in, let's get acquainted with our tools:
+1. Install ADB on your computer.
+2. Enable USB debugging on the device (Settings > Developer options).
+3. Connect the device over USB.
+4. Run `adb devices` and confirm the device is listed.
 
-- **ADB (Android Debug Bridge)**: Your trusty sidekick for communicating with Android devices from your computer.
-- **pm (Package Manager)**: The behind-the-scenes hero that manages all the apps on your Android device.
-
-Together, they're unstoppable!
-
-## Setting Up Your Command Center
-
-1. Install ADB on your computer (if you haven't already).
-2. Enable USB debugging on your Android device (Settings > Developer options).
-3. Connect your device to your computer with a USB cable.
-4. Open your terminal and type `adb devices` to ensure your device is recognized.
-
-## Unleashing the Power of pm
-
-### 1. The Art of App Reconnaissance
-
-Want to know what's lurking in your device? Try these commands:
+## Listing packages
 
 ```bash
 # List all installed packages
@@ -45,71 +30,61 @@ adb shell pm list packages
 # Find a specific package
 adb shell pm list packages | grep facebook
 
-# Get the full scoop (including file location and disabled apps)
+# Include APK paths and uninstalled packages
 adb shell pm list packages -f -u | grep maps
 ```
 
-### 2. App Installation: Like a Boss
+The `-u` flag is the one I reach for most: it shows packages that were uninstalled for the current user but still exist on the system partition, which is exactly the state most "removed" bloatware ends up in.
+
+## Installing and reinstalling
 
 ```bash
 # Install an APK from your computer
 adb install path/to/awesome_app.apk
 
-# Resurrect a disabled system app
+# Reinstall a system app that was removed for this user
 adb shell cmd package install-existing com.google.android.apps.maps
 ```
 
-### 3. The Great App Purge
+`install-existing` is the undo button for an over-aggressive debloating session. The APK never left the device; this just makes it visible to your user again.
 
-Time to bid farewell to those unused apps:
+## Uninstalling
 
 ```bash
-# Uninstall for the current user
-adb shell pm uninstall com.example.bloatware
-
-# Uninstall for all users (requires root)
+# Uninstall for user 0 (works on system apps, no root needed)
 adb shell pm uninstall --user 0 com.example.bloatware
+
+# Uninstall completely, all users
+adb shell pm uninstall com.example.bloatware
 ```
 
-### 4. Finding the Secret Lair (Data Directory)
+The `--user 0` form is how you remove carrier and vendor bloatware without root. The app is only removed for that user; the APK stays on the system partition, which is why `install-existing` can bring it back.
 
-Ever wondered where apps hide their data? Here's how to find out:
+## Finding the APK and data
 
 ```bash
-# Get the data directory path
+# Get the APK path for a package
 adb shell pm path com.example.app
 
-# List contents of the data directory (requires root)
+# List the app's data directory (this one does require root)
 adb shell su -c "ls -la /data/data/com.example.app"
 ```
 
-### 5. More Tricks Up Your Sleeve
+## Other useful commands
 
 ```bash
 # Clear app data (useful for troubleshooting)
 adb shell pm clear com.example.app
 
-# Disable an app (without uninstalling)
+# Disable an app without uninstalling it
 adb shell pm disable-user com.example.app
 
-# Enable a disabled app
+# Re-enable it
 adb shell pm enable com.example.app
-
-# Get app size information
-adb shell pm get-app-size com.example.app
 ```
 
-## Pro Tips for Package Management Mastery
+Disabling is often the better move than uninstalling: the app stops running and disappears from the launcher, but nothing is deleted, so reverting is one command.
 
-1. **Backup Before You Act**: Always backup important data before messing with system apps.
-2. **Root Responsibly**: Some commands require root access. Use with caution!
-3. **Stay in the Loop**: Keep your ADB tools updated for the latest features and bug fixes.
-4. **Experiment Safely**: Try these commands on a test device before using them on your daily driver.
+## Two cautions
 
-## Conclusion: With Great Power Comes Great Responsibility
-
-Congratulations! You're now armed with the knowledge to bend Android to your will using ADB and pm. Remember, with these powers comes the responsibility to use them wisely. Happy hacking!
-
----
-
-Got any cool pm tricks up your sleeve? Share them in the comments below and let's build our Android superhero community!
+Back up anything you care about before touching system apps, and test on a spare device before your daily one. Some packages look like bloatware but are dependencies for things you actually use, and the failure mode is a boot loop, not an error message.

@@ -1,107 +1,83 @@
 ---
 layout: post
-title: How to Extract the Second Page From Multiple PDFs and Combine Them on macOS
-description: "How to Extract the Second Page From Multiple PDFs and Combine Them on macOS Managing PDFs on the command line may seem daunting at first, but it can be"
+title: Extracting the Second Page From Multiple PDFs on macOS
+description: "How to batch-extract one page from many PDFs on macOS and merge the results into a single file, using Poppler's pdfseparate/pdfunite or pdftk."
 date: 2025-01-02 21:34 +0000
+categories: [Notes]
+tags: [macos, cli, pdf, productivity]
 ---
 <audio controls preload="metadata" src="/assets/audio/how-to-extract-the-second-page-from-multiple-pdfs-and-combine-them-on-macos-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-How to Extract the Second Page From Multiple PDFs and Combine Them on macOS
-Managing PDFs on the command line may seem daunting at first, but it can be incredibly efficient for batch operations. Suppose you have dozens (or even hundreds) of PDF files and you want to do something very specific—like extracting the second page of every PDF and merging them into one consolidated file.
+If you have a folder of PDFs and need page 2 of each, pulled out and merged into one file, doing it by hand in Preview does not scale past a handful of documents. The command line does. Two toolchains handle it on macOS: Poppler's `pdfseparate`/`pdfunite`, and `pdftk`.
 
-In this article, we’ll walk through an easy step-by-step process to accomplish exactly that. We’ll look at two approaches:
+## Prerequisites
 
-Using Poppler utilities (pdfseparate and pdfunite)
-Using PDFlib’s pdftk
-Both methods are widely used on Unix-like systems (including macOS). Let’s dive in!
+Install whichever tool you pick through Homebrew. If you do not have Homebrew:
 
-Prerequisites
-Homebrew: The easiest way to install command-line tools on macOS is through Homebrew. If you don’t have Homebrew installed, open your Terminal and run:
-
+```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-Follow the onscreen instructions.
+```
 
-Poppler or pdftk: You’ll need at least one of these tools to perform the extraction and merge operations.
+## Approach 1: Poppler (`pdfseparate` and `pdfunite`)
 
-Approach 1: Using Poppler Utilities
-Poppler is a widely used PDF rendering library that comes with several helpful command-line utilities, including:
-
-pdfseparate: Splits a PDF file into individual pages or page ranges.
-pdfunite: Merges PDF pages or entire PDF documents into one file.
-Step 1: Install Poppler
-With Homebrew, installation is straightforward:
-
+```sh
 brew install poppler
-Step 2: Extract the Second Page of Each PDF
-Assuming all your PDF files are in one folder, open the Terminal and navigate to that folder. For example:
+```
 
-cd /path/to/your/pdfs
-Run the following for loop:
+Extract page 2 from every PDF in the current folder:
 
+```sh
 for f in *.pdf
 do
     base="$(basename "$f" .pdf)"
     # Extract only page 2 and save it as base-page2.pdf
     pdfseparate -f 2 -l 2 "$f" "${base}-page2.pdf"
 done
-Here’s what each part means:
+```
 
-for f in *.pdf loops over every PDF file in the current directory.
-basename "$f" .pdf extracts the filename without the .pdf extension.
-pdfseparate -f 2 -l 2 instructs pdfseparate to start at page 2 and end at page 2, effectively extracting just the second page of the PDF.
-"$f" "${base}-page2.pdf" tells the command to read from f (the current PDF file) and write out to a new file named after that PDF’s base name, plus -page2.pdf.
-After this loop runs, you’ll have a set of new single-page PDF files ending with -page2.pdf.
+`-f 2 -l 2` tells `pdfseparate` to start and end on page 2, so it pulls out exactly one page per file. Then merge the results in filename order:
 
-Step 3: Combine All Extracted Pages
-Next, we’ll merge these single-page PDFs into one consolidated file:
-
+```sh
 pdfunite *-page2.pdf combined-second-pages.pdf
-The wildcard *-page2.pdf targets all the newly created second-page PDFs. The output, combined-second-pages.pdf, will contain the second page from each of your original PDFs, in alphabetical order by the original filename.
+```
 
-Step 4: Clean Up (Optional)
-If you don’t need the individual -page2.pdf files anymore, you can delete them:
+Clean up the intermediate files once you have `combined-second-pages.pdf`:
 
+```sh
 rm *-page2.pdf
-At this point, you’ll have a clean folder with only the original PDFs and one merged PDF (combined-second-pages.pdf) containing all page 2s.
+```
 
-Approach 2: Using pdftk
-pdftk (PDF Toolkit) is another popular command-line utility for PDF manipulation. Although it’s older, it still works well for tasks like splitting, merging, rotating, and watermarking PDF files.
+## Approach 2: pdftk
 
-Step 1: Install pdftk
-Again, we’ll use Homebrew:
+`pdftk` (PDF Toolkit) is older but still handles splitting and merging well.
 
+```sh
 brew install pdftk
-Step 2: Extract Page 2 From Each PDF
-Similar to our Poppler approach, we’ll run a loop to extract only the second page from each PDF:
+```
 
+Same loop, different syntax:
+
+```sh
 for f in *.pdf
 do
     base="$(basename "$f" .pdf)"
     # Extract only page 2 and save it as base-page2.pdf
     pdftk "$f" cat 2 output "${base}-page2.pdf"
 done
-Step 3: Combine All Extracted Pages
-To combine all those single-page files into one PDF, run:
+```
 
+```sh
 pdftk ./*-page2.pdf cat output combined-second-pages.pdf
-This creates combined-second-pages.pdf that sequentially contains all the second pages you extracted.
-
-Step 4: (Optional) Clean Up
-As before, you can remove the single-page PDFs if you don’t need them:
-
 rm *-page2.pdf
-Troubleshooting
-No output files: Double-check your file extension. Make sure your PDFs are named .pdf (all lowercase) and that you’re in the correct directory.
-Poppler or pdftk command not found: Verify that the tool you installed is properly linked to your PATH. This should happen automatically with Homebrew, but you may need to restart your Terminal for changes to take effect.
-Permissions issues: If you’re working in a directory that requires elevated privileges, ensure that you have the right permissions or switch to a directory where you do.
-Conclusion
-Extracting specific pages from PDFs doesn’t have to be cumbersome. With utilities like Poppler’s pdfseparate and pdfunite or the versatile pdftk, you can quickly automate PDF tasks that might otherwise take hours of manual effort. These tools truly shine when you have large batches of files to process.
+```
 
-Key takeaways:
+## Troubleshooting
 
-Poppler (pdfseparate, pdfunite) and pdftk are both great solutions for splitting and merging PDF files.
-Using a simple for loop in the macOS Terminal can help you iterate over multiple PDFs in a folder.
-You can fine-tune these commands to extract any page (or range of pages), not just page 2.
-Now you have a single PDF, combined-second-pages.pdf, containing the second page from each of your PDF files. The entire process, from installing dependencies to cleaning up the workspace, can be done in just a few minutes. Give it a try and see how much time you save with your PDF tasks!
+- **No output files**: check that your PDFs actually end in `.pdf` (lowercase) and that you are in the right directory.
+- **Command not found**: Homebrew links binaries onto your `PATH` automatically, but a fresh Terminal session may need to be restarted to pick it up.
+- **Permissions errors**: work in a directory you own rather than fighting for elevated privileges.
+
+Either toolchain turns a tedious manual task into a few minutes of scripting, and the same loop works for any page or page range, not just page 2.
+</content>

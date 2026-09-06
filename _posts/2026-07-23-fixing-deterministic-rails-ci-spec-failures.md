@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "Fixing Deterministic Rails CI Failures Without Teaching the Tests to Lie"
+title: "Deterministic Rails CI failures: read the evidence first"
 date: 2026-07-23 08:57:34 +0100
 author: "Joey Wang"
-description: "A Rails debugging story about following CI evidence, fixing shared test state, and resisting the urge to weaken assertions."
+description: "A Rails CI debugging story: following the evidence to shared test state, instead of weakening assertions to make failures disappear."
 tags: [rails, rspec, capybara, ci, testing]
-categories: [Ruby on Rails]
+categories: [Rails]
 ---
-
-# Fixing deterministic Rails CI failures without teaching the tests to lie
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-23-fixing-deterministic-rails-ci-spec-failures-summary.ogg">
   Your browser does not support the audio element.
@@ -154,7 +152,7 @@ In our case, artifacts showed that some feature specs were still landing on the 
 
 The important part was applying that rule centrally. Some specs used a project helper like `login_as_admin`. Others called `login_as(user)` directly. Fixing only the project helper improved the failure signature, but did not remove the class of failure.
 
-A more robust shape is:
+A shape that holds up centrally is:
 
 ```ruby
 # Pseudocode.

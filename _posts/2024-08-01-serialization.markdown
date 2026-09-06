@@ -1,67 +1,57 @@
 ---
 layout: post
-title:  "Streamlining the Data Symphony: Enhancing Serialization in Ruby on Rails"
+title: "Speeding Up Nested JSON Serialization in Rails"
+description: "Caching, the Oj gem, eager loading, background jobs, and load_async each cut serialization time for deeply nested Rails associations like classrooms and scores."
 date:   2024-08-01 14:41:26 +0100
 pin: true
 categories: Rails
+tags: [rails, ruby, performance, database]
 ---
-# **Streamlining the Data Symphony: Enhancing Serialization in Ruby on Rails**
 
-In the intricate ballet of web application development, Ruby on Rails often leads the performance with grace. But when it comes to the grand orchestration of large, nested data structures, even the most agile framework can stumble. Let's embark on a journey to refine the process of serializing complex data, like the multi-layered hierarchy of classrooms, students, lessons, exercises, and scores.
+Serializing a deeply nested structure, classrooms to students to lessons to exercises to scores, is where Rails starts to slow down. Fetching it in one request means walking every layer, and each layer that isn't eager-loaded turns into its own round trip to the database. A few techniques, used together, keep this fast.
 
-## Prologue: The Nested Data Conundrum
+## Cache the parts that don't change often
 
-Picture a vast library where each bookshelf represents a layer of data. The deeper you venture, the more intricate the connections become. Fetching such data in one go can be as daunting as navigating a labyrinth. But fear not, for we have strategies to illuminate the path.
+Scores and exercises are the most frequently requested part of this structure and, once an exercise is graded, the least likely to change. Caching at the fragment or action level means serving the previous response instead of rebuilding it:
 
-## Act I: The Cache – A Treasure Trove of Pre-Rendered Delights
+- Use Rails' built-in caching, or Redis for finer-grained control over what gets invalidated and when.
+- Cache scores and exercises specifically, they're the layer with the best hit rate.
 
-When the same data is requested repeatedly, caching becomes our trusty time machine, transporting us back to a moment when the data was already prepared. Implementing cache at various levels—page, action, or fragment—allows us to serve data swiftly, reducing the load on our server and speeding up response times.
+## A faster serializer: Oj
 
-### Technical Insight:
-- Use Rails' built-in caching mechanisms or integrate with Redis for more granular control.
-- Cache scores and exercises, as they are the most dynamic elements in our data structure.
+`Oj` outperforms Ruby's default `JSON` library for generating large JSON payloads.
 
-## Act II: The Serializer – Crafting with Precision
+```ruby
+# Gemfile
+gem 'oj'
+```
 
-Just as a master craftsman selects the finest tools, we choose Oj for its speed and efficiency in shaping our JSON output. Oj is a gem that stands out for its performance, making it an ideal choice for our serialization needs.
+```ruby
+Oj.dump(data)  # instead of JSON.generate(data)
+```
 
-### Technical Insight:
-- Add `gem 'oj'` to your Gemfile.
-- Replace `JSON.generate` with `Oj.dump` for faster serialization.
+## Eager loading to avoid N+1 queries
 
-## Act III: Eager Loading – The Art of Anticipation
+The nested structure above is a textbook N+1 problem: querying each classroom's students, then each student's lessons, one query at a time. Preload the whole chain instead:
 
-In the bustling kitchen of our application, eager loading is the sous-chef who prepares all the ingredients in advance. This technique prevents the common N+1 query problem, ensuring that our data is fetched in the most efficient manner possible.
+```ruby
+ClassRoom.includes(students: { lessons: { exercises: :scores } }).where(teacher_id: 1)
+```
 
-### Technical Insight:
-- Use `.includes` with ActiveRecord to preload associated data.
-- Example: `ClassRoom.includes(students: {lessons: {exercises: :scores}}).where(teacher_id: 1)`
+## Background serialization with Sidekiq
 
-## Act IV: Asynchronous Processing – The Ensemble of Background Tasks
+If the payload is expensive to build and doesn't need to be real-time, build it outside the request cycle. A Sidekiq worker can serialize the data on a schedule or on write, and store the result for the next read to pick up, so nobody's request pays the full cost of the nested query.
 
-As in a symphony where each instrument plays independently yet harmoniously, asynchronous processing allows different parts of our data to be prepared in parallel. Sidekiq is our conductor, orchestrating these background tasks to perfection.
+## Parallel loading with load_async
 
-### Technical Insight:
-- Set up Sidekiq to handle data serialization tasks outside the main request/response cycle.
-- Create Sidekiq workers to serialize data and store it for subsequent requests.
+Rails' `load_async`, combined with `Concurrent::Async`, lets independent associations load concurrently instead of sequentially:
 
-## Act V: Async Programming – The Power of Parallelism
+```ruby
+ClassRoom.find(1).load_async.students.load_async.lessons
+```
 
-Rails' `load_async`, in conjunction with `Concurrent::Async`, is like having multiple artists painting different sections of our mural simultaneously. This parallelism ensures that our CPU is utilized to its fullest potential, speeding up the overall process.
+This helps most when the associations being loaded are independent of each other, loading students and a separate summary table in parallel, for example, rather than a strict parent-child chain.
 
-### Technical Insight:
-- Utilize `load_async` for asynchronously loading ActiveRecord relations.
-- Example: `ClassRoom.find(1).load_async.students.load_async.lessons`
+## What's left
 
-## Epilogue: The Road Ahead
-
-As we conclude our journey, we recognize that the path to optimization is a continuous exploration. The strategies we've discussed are but a few arrows in our quiver. As we venture further, we might discover new frameworks like Hanami, which offer built-in solutions for concurrency challenges.
-
-### Further Adventures:
-- Experiment with pagination to limit data depth and reduce payload size.
-- Employ data compression techniques to enhance API response efficiency.
-- Use monitoring and profiling tools to identify bottlenecks and refine performance.
-
-By striking a balance between storytelling and technical guidance, we've crafted an article that not only educates but also engages. The art of serialization is a dance of efficiency and performance, and with the right steps, we can ensure that our data structures flow as smoothly as a well-written symphony.
-
-
+These five techniques compose: eager load to avoid N+1, cache the parts that repeat, use a faster serializer for the parts that don't, and push anything expensive and non-urgent into the background. Beyond that, pagination to cap payload depth and response compression are the next levers, and profiling the actual request is what tells you which one to pull first.

@@ -1,37 +1,23 @@
 ---
 layout: post
-title: Building Your Own Speech-to-Text Service with Whisper
-description: "In the realm of English language learning, transcribing audio files is a crucial yet time-consuming task. Manual transcription is not only laborious but also"
+title: "Self-Hosted Whisper: A Speech-to-Text API with Ruby and Kubernetes"
+description: "How to run OpenAI's Whisper as a self-hosted speech-to-text REST API with Docker, a Ruby client, and a Kubernetes deployment for transcribing audio."
 date: 2024-09-18 00:00 +0000
 categories: [AI]
-tags: [Ruby]
+tags: [ai, ruby, docker, kubernetes]
 ---
-# Building Your Own Speech-to-Text Service with Whisper
-
 <audio controls preload="metadata" src="/assets/audio/building-your-own-speech-to-text-service-with-whisper-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction
+We produce English language learning material, and every audio file needs a transcript. Manual transcription is slow and error-prone, and sending thousands of files to a paid API adds up. So we self-hosted OpenAI's Whisper model behind a small REST API and wired it into our authoring tools.
 
-In the realm of English language learning, transcribing audio files is a crucial yet time-consuming task. Manual transcription is not only laborious but also prone to errors. This article explores how to streamline this process by leveraging Speech-to-Text (STT) technology, specifically focusing on building a service using the open-source Whisper model.
+Whisper earns its reputation. It is accurate across accents and background noise, and the transcripts are detailed enough to use directly in educational content.
 
-## Understanding Whisper
+## Wrapping Whisper in a REST API
 
-Whisper is an innovative open-source speech recognition model developed by researchers at OpenAI (not Mozilla as previously stated). It has gained popularity due to its:
-
-- High accuracy across multiple languages
-- Ability to handle diverse accents and background noises
-- Detailed transcriptions suitable for educational purposes
-
-## Creating a REST API for Whisper
-
-To make Whisper more accessible and integrate it into our authoring tools, we'll wrap it in a REST API. This approach allows for easy scalability and integration with various applications.
-
-### Setting Up the Whisper API
-
-Follow these steps to set up the Whisper API using Docker:
+Whisper is a Python model; our tooling is Ruby. The simplest boundary is HTTP. We run a Flask wrapper in Docker:
 
 ```bash
 # Clone the repository
@@ -47,11 +33,11 @@ docker run -p 9000:5000 -e MODEL=small -d whisper
 curl -F "file=@your_audio_file.mp3" http://0.0.0.0:9000/whisper
 ```
 
-## Developing a Ruby Client
+The `MODEL` variable selects the Whisper model size. Smaller models are faster and cheaper to host; larger ones are more accurate. `small` has been a reasonable middle ground for clear speech.
 
-To interact with our Whisper API, we'll create a Ruby client. This client will handle API communication and process transcription results.
+## A Ruby client
 
-### Ruby Client Implementation
+The client posts a multipart file upload and pulls the transcript out of the JSON response:
 
 ```ruby
 # frozen_string_literal: true
@@ -101,11 +87,18 @@ class SpeechToText
 end
 ```
 
+Usage from the application side:
+
+```ruby
+service = SpeechToText.new
+transcript = service.convert('path/to/audio_file.mp3')
+```
+
+The `enabled?` check matters in practice: environments without a Whisper endpoint fall back to skipping transcription rather than failing.
+
 ## Deploying to Kubernetes
 
-For production environments, deploying the Whisper API within a Kubernetes cluster ensures scalability and reliability.
-
-### Kubernetes Deployment Configuration
+For production we run the API in our cluster:
 
 ```yaml
 apiVersion: apps/v1
@@ -140,8 +133,6 @@ spec:
             port: 5000
 ```
 
-### Kubernetes Service Configuration
-
 ```yaml
 apiVersion: v1
 kind: Service
@@ -156,37 +147,11 @@ spec:
       targetPort: 5000
 ```
 
-## Integrating the Service
+## Trade-offs to know before you copy this
 
-Incorporating the Whisper API into your application is straightforward with the Ruby client:
+- On CPU, transcription is slow. GPU acceleration changes the economics; without it, budget minutes per file, not seconds.
+- The model holds a lot of memory. That is the real hosting cost, and it is why we run the `base` model in the cluster and `small` only where we can afford it.
+- The API above has no authentication. Inside a cluster that is acceptable; anywhere else, put auth in front of it before someone else's audio bill becomes yours.
+- Handle failure explicitly. Network errors, invalid audio, and empty results all happen, which is why the client raises typed errors instead of returning nil.
 
-```ruby
-service = SpeechToText.new
-transcript = service.convert('path/to/audio_file.mp3')
-# Process the transcript as needed
-```
-
-## Considerations and Optimizations
-
-While Whisper offers a powerful solution for speech transcription, consider the following:
-
-1. **Performance**: GPU acceleration significantly improves processing speed.
-2. **Resource Usage**: The model requires substantial memory, impacting hosting costs.
-3. **Scalability**: Different model sizes offer trade-offs between accuracy and resource consumption.
-4. **API Security**: Implement authentication to control access to your API.
-5. **Error Handling**: Implement robust error handling for various scenarios (network issues, invalid audio files, etc.).
-
-## Future Enhancements
-
-To further improve the service, consider:
-
-1. **Implementing Caching**: Store frequently requested transcriptions to reduce processing load.
-2. **Adding Language Detection**: Automatically detect the spoken language for multi-language support.
-3. **Integrating Analytics**: Track usage patterns to optimize resource allocation.
-4. **Implementing Batch Processing**: Allow multiple audio files to be processed in a single request.
-
-## Conclusion
-
-Building a custom Speech-to-Text service using Whisper can significantly enhance the efficiency of creating English learning resources. By following this guide, you can create a robust, scalable solution tailored to your specific needs, making the transcription process more accurate and less time-consuming.
-
-Remember to stay updated with the latest developments in the Whisper project, as continuous improvements may offer new features and enhanced performance over time.
+Self-hosting Whisper turned transcription from a manual chore into a call in our authoring pipeline. The model keeps improving upstream, so it is worth tracking releases: a model bump has so far been the cheapest accuracy improvement available.

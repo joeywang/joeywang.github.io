@@ -1,18 +1,16 @@
 ---
 layout: post
-title: "Shared AI Artifacts Are Not Private Just Because the URL Is Hard to Guess"
+title: "Shared AI Artifacts Aren't Private From a Hard-to-Guess URL"
 date: 2026-07-31 10:05:00 +0100
 author: "Joey Wang"
-description: "A security note on the Claude shared chats and Artifacts indexing incident, and why AI workspaces need clearer boundaries between private, unlisted, and public content."
-tags: [ai, security, privacy, claude, artifacts, ai-agents]
+description: "A security note on the Claude shared-chat and Artifacts leak, and why AI workspaces need clear boundaries between private, unlisted, and public content."
+tags: [ai, security, privacy, claude, agents]
 categories: [AI, Security]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/ai-artifacts-private-chat-sharing-security-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# Shared AI artifacts are not private just because the URL is hard to guess
 
 I have been thinking about the Claude shared chats and Artifacts indexing incident because it sits exactly on a boundary that AI tools keep making blurry.
 

@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "When Ubuntu Builds Fail on libvips but macOS Does Not"
-description: "Why a Rails test suite can fail because Ubuntu ships an older native libvips, how ruby-vips fits into the picture, and how to upgrade libvips safely without confusing the system package with the Ruby gem."
+description: "Why a Rails test suite can fail on Ubuntu because of an older native libvips, and how to upgrade it safely without confusing it with the ruby-vips gem."
 date: 2026-08-12 22:00:00 +0100
 author: "Joey Wang"
-tags: [ruby, rails, libvips, ubuntu, macos, testing, native-dependencies]
+tags: [ruby, rails, libvips, ubuntu, macos, testing]
 categories: [Engineering, DevOps]
 ---
-
-# When Ubuntu Builds Fail on libvips but macOS Does Not
 
 <audio controls preload="metadata" src="/assets/audio/libvips-ubuntu-build-mismatch-summary.ogg">
   Your browser does not support the audio element.
@@ -370,7 +368,7 @@ Then compare:
 
 This turns “it only fails on Ubuntu” into a concrete dependency difference.
 
-## Final thoughts
+## The lesson
 
 Native dependencies live below the Ruby dependency file. Bundler can resolve `ruby-vips` successfully while the operating system still provides an incompatible libvips. macOS and Ubuntu can therefore run the same Rails code with different native behavior because their package ecosystems move at different speeds.
 

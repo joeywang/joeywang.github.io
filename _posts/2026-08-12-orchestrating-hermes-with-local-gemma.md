@@ -1,15 +1,13 @@
 ---
 layout: post
-title: "Orchestrating Hermes with Local Gemma: Cheap Routing, Delegation, and Safe Rails Workflows"
+title: "Local Gemma with Hermes: Cheap Delegation for Rails Maintenance"
 description: "A practical guide to using Hermes Agent with a local Gemma model for routine coding work, while reserving cloud models for tasks that genuinely need them."
 date: 2026-08-12 14:00:00 +0100
 author: "Joey Wang"
-tags: [hermes, agents, gemma, local-ai, coding-agent, rails, orchestration]
+tags: [hermes, agents, gemma, local-llm, rails]
 categories: [AI, Engineering]
 start_here: true
 ---
-
-# Orchestrating Hermes with Local Gemma
 
 *Part of the [AI & Agents reading path](/ai-agents/).*
 

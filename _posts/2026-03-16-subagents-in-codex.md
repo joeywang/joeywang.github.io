@@ -4,14 +4,12 @@ title: "What Subagents Are Actually Good For in Codex"
 date: 2026-03-16
 description: "A field guide for AI-heavy early adopters on when subagents in Codex speed work up, when they slow it down, and how to use them without creating chaos."
 tags: [ai, codex, agents, engineering, productivity, code-review]
-categories: [ai, engineering]
+categories: [AI, Engineering]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/subagents-in-codex-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-## What Subagents Are Actually Good For in Codex
 
 I did not start out as a subagent enthusiast.
 

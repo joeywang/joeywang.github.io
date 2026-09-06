@@ -3,12 +3,10 @@ layout: post
 title: "Life Is Not Git"
 date: 2026-08-01 09:29:00 +0100
 author: "Joey Wang"
-description: "A personal reflection on Life OS, LLM memory, digital twins, and why being archived is not the same as being alive."
+description: "A personal reflection on Life OS, LLM memory, and digital twins: why being perfectly archived and searchable is not the same as being alive."
 tags: [ai, llm, life-os, memory, identity, philosophy]
 categories: [AI, Life]
 ---
-
-# Life is not Git
 
 <audio controls preload="metadata" src="/assets/audio/life-is-not-git-ai-memory-and-being-alive-summary.ogg">
   Your browser does not support the audio element.

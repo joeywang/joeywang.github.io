@@ -3,12 +3,10 @@ layout: post
 title: "Running Hermes on a Cloud Machine as a Daily Routine Assistant"
 date: 2026-07-18 15:01:00 +0100
 author: "Joey Wang"
-description: "How I wired Hermes Agent on a remote Linux box into Telegram, email, calendar, monitoring, GitHub, and a daily morning routine."
-tags: [ai, agents, hermes, telegram, github, sentry, automation, personal-os]
+description: "How I wired Hermes Agent on a remote Linux box into Telegram, email, calendar, error monitoring, GitHub, and a daily morning briefing routine."
+tags: [ai, agents, hermes, automation, github, productivity]
 categories: [AI, Engineering]
 ---
-
-# Running Hermes on a cloud machine as a daily routine assistant
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-18-hermes-remote-cloud-daily-routine-summary.ogg">
   Your browser does not support the audio element.
@@ -231,7 +229,7 @@ The target is not a beautiful report. I want one message that reduces morning co
 Something like this:
 
 ```text
-Morning Routine — Monday
+Morning Routine, Monday
 
 Work calendar
 - 10:00 Standup

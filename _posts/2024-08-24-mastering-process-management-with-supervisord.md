@@ -1,36 +1,25 @@
 ---
 layout: post
-title: "Mastering Process Management with Supervisord"
-description: "In the dynamic world of system administration, ensuring that your services are running smoothly and reliably is paramount. supervisord is a powerful tool"
+title: "Supervisord: Process Management for Containers and VMs"
+description: "How supervisord monitors and restarts UNIX processes through simple INI-style config, with a working example for MySQL, PHP, and an init script."
 date: 2024-08-24 00:00 +0000
-categories: container
-tags: [container, supervisord]
+categories: [DevOps]
+tags: [supervisord, linux, devops, container]
 ---
-
-# Mastering Process Management with Supervisord: A Comprehensive Guide
 
 <audio controls preload="metadata" src="/assets/audio/mastering-process-management-with-supervisord-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+`supervisord` is a Python process control system for monitoring and restarting UNIX processes, configured through plain INI files. It's a common choice inside a container that needs to run more than one process, since Docker itself only supervises PID 1.
 
-**Introduction**
+## Installation
 
-In the dynamic world of system administration, ensuring that your services are running smoothly and reliably is paramount. `supervisord` is a powerful tool designed for this purpose, offering a robust solution for managing UNIX processes. This article will guide you through setting up and configuring `supervisord` to monitor and control your services, ensuring they run as intended without manual intervention.
+Install it with your OS package manager, or from source if you need a specific version.
 
-**What is Supervisord?**
+## Basic configuration
 
-`supervisord` is an open-source process control system that allows you to monitor and control a group of processes on UNIX-like operating systems. It is written in Python and is easy to configure using simple INI-style configuration files.
-
-**Getting Started with Supervisord**
-
-Before diving into the configuration, you need to have `supervisord` installed on your system. You can install it using the package manager for your operating system, or by downloading the source code from the official website.
-
-**Basic Configuration**
-
-The configuration file for `supervisord` is typically located at `/etc/supervisor/supervisord.conf`. This file contains sections that define the behavior of `supervisord` itself, as well as the programs it will manage.
-
-Here is a basic configuration example:
+The config file usually lives at `/etc/supervisor/supervisord.conf`. It has a section for `supervisord` itself, then one `[program:name]` section per process it manages:
 
 ```ini
 [supervisord]
@@ -56,31 +45,22 @@ stdout_logfile=/var/log/supervisor/init_script.log ; Log output to this file
 stderr_logfile=/var/log/supervisor/init_script.err ; Log errors to this file
 ```
 
-**Key Configuration Options**
+## Key options
 
-- `nodaemon`: When set to `true`, `supervisord` will run as a foreground process instead of daemonizing.
-- `command`: The command used to start the program.
-- `autostart`: Whether the program should start automatically with `supervisord`.
-- `autorestart`: Whether the program should be automatically restarted if it exits.
-- `stderr_logfile` and `stdout_logfile`: The paths to the log files where the standard error and standard output of the program will be written.
+- `nodaemon`: run in the foreground instead of daemonizing. Set this to `true` when `supervisord` is PID 1 in a container.
+- `command`: the command that starts the program.
+- `autostart`: start automatically when `supervisord` starts.
+- `autorestart`: restart automatically if the process exits.
+- `stderr_logfile` / `stdout_logfile`: where each stream gets written.
 
-**Advanced Configuration**
+For more advanced setups, `supervisord` also supports environment variables per program, process priorities (controlling start/stop order), and event listeners.
 
-For more advanced use cases, `supervisord` offers additional configuration options such as environment variables, process priorities, and event listeners.
+## Controlling processes
 
-**Monitoring and Control**
+`supervisorctl` is the command-line client for talking to a running `supervisord`:
 
-Once your configuration is set up, you can use the `supervisorctl` command-line tool to control and monitor your processes. Some common commands include:
+- `supervisorctl status`: check the status of all programs.
+- `supervisorctl start program_name`: start one program.
+- `supervisorctl stop program_name`: stop one program.
 
-- `supervisorctl status`: Check the status of all programs.
-- `supervisorctl start program_name`: Start a specific program.
-- `supervisorctl stop program_name`: Stop a specific program.
-
-**Conclusion**
-
-`supervisord` is an invaluable tool for system administrators looking to streamline the management of their services. With its simple configuration and powerful features, it can help ensure that your services are always running at their best.
-
-**Further Reading**
-
-For more information on `supervisord`, including advanced usage and troubleshooting, you can refer to the official documentation and community forums.
-
+The official documentation covers the rest, including event listeners and process groups, in more detail than a single post can.

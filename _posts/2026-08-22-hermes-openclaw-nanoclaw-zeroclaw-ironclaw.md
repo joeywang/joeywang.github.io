@@ -1,18 +1,16 @@
 ---
 layout: post
-title: "Hermes, OpenClaw, NanoClaw, ZeroClaw, and IronClaw: Choosing the Right Agent Architecture"
+title: "Hermes vs OpenClaw, NanoClaw, ZeroClaw, IronClaw: Agent Architecture"
 date: 2026-08-22 09:44:00 +0000
 author: "Joey Wang"
-description: "A practical and architectural comparison of Hermes, OpenClaw, NanoClaw, ZeroClaw, and IronClaw—and why the best answer may be a layered system rather than one winning agent."
-tags: [ai-agents, hermes, openclaw, nanoclaw, zeroclaw, ironclaw, security, personal-ai]
+description: "A practical, architectural comparison of Hermes, OpenClaw, NanoClaw, ZeroClaw, and IronClaw, and why a layered agent system beats picking one winner."
+tags: [agents, hermes, ai, security]
 categories: [AI, Engineering]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/hermes-openclaw-nanoclaw-zeroclaw-ironclaw-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# Hermes, OpenClaw, NanoClaw, ZeroClaw, and IronClaw: Choosing the Right Agent Architecture
 
 I have been thinking about a group of projects with unusually similar names: **Hermes, OpenClaw, NanoClaw, ZeroClaw, and IronClaw**.
 

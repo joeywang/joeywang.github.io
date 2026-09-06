@@ -1,40 +1,24 @@
 ---
 layout: post
-title: "Seamless Logical Upgrades of PostgreSQL with Zero Downtime"
-description: "In the world of database management, ensuring zero downtime during upgrades is crucial for maintaining the availability and integrity of services. Logical"
+title: "Zero-Downtime PostgreSQL Upgrades With Logical Replication"
+description: "A bash script that sets up PostgreSQL logical replication, publications, and subscriptions to perform a major-version upgrade without downtime."
 date: 2024-07-22 00:00 +0000
 pin: true
-categories: PostgreSQL
+categories: [Database]
+tags: [postgresql, database, devops, automation]
 ---
-
-# Seamless Logical Upgrades of PostgreSQL with Zero Downtime
 
 <audio controls preload="metadata" src="/assets/audio/script-to-logical-upgrade-postgresql-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+A PostgreSQL major-version upgrade usually means downtime: dump, restore, and hope the maintenance window is long enough. Logical replication gives you another path. Stand up the new version as a replica, let it catch up, then cut over. Here is the script I use to wire that up.
 
-In the world of database management, ensuring zero downtime during upgrades is crucial for maintaining the availability and integrity of services. Logical replication in PostgreSQL provides a powerful mechanism for achieving this. In this article, we will explore a script designed to perform a logical upgrade of PostgreSQL with zero downtime.
+## How it fits together
 
-## Introduction to Logical Replication
+The script exports the database list from the source instance, checks whether the schema already exists on the target, and if not dumps the global objects and schema separately and imports them. Then, for each database, it creates a publication on the source covering all tables, and a matching subscription on the target that connects back to the source and starts replicating.
 
-PostgreSQL's logical replication allows you to replicate data changes from one database to another without affecting the primary database's performance. This feature is particularly useful for performing upgrades without downtime, as it enables you to promote a standby database to a primary role once the upgrade is complete.
-
-## The Script: Overview and Components
-
-The provided script is a Bash script designed to automate the process of setting up logical replication for a zero-downtime PostgreSQL upgrade. Let's break down its components:
-
-1. **Environment Setup**: The script starts by setting up the environment with the necessary variables for the source host and the directory to store temporary files.
-
-2. **Database Export**: It defines a function to export the list of databases from the source PostgreSQL instance.
-
-3. **Schema Import Check**: The script checks if the necessary databases exist on the target instance. If not, it proceeds to dump the global objects and schema and import them into the target instance.
-
-4. **Publication Creation**: The script creates a publication for all tables in each database on the primary server. This publication will be used by the subscription on the replica.
-
-5. **Subscription Creation**: For each database, the script creates a subscription on the replica server that connects back to the primary server, using the publication created earlier.
-
-## Detailed Script Analysis
+## The script
 
 ```bash
 #!/bin/bash
@@ -93,14 +77,10 @@ create_subscription() {
 }
 ```
 
-### Key Points to Consider
+## What to watch for
 
-- **Error Handling**: The script uses `set -eo pipefail` to ensure that it exits immediately if a command exits with a non-zero status.
-- **Security**: It's important to handle the `PGPASSWORD` securely, especially in production environments. The script attempts to sanitize the password by removing single quotes, but consider more robust security practices.
-- **Testing**: Before running this script in a production environment, thoroughly test it in a staging environment to ensure it behaves as expected.
-- **Monitoring**: After setting up the replication, continuously monitor the replica to ensure that the data is being replicated correctly and that there are no replication lags.
+`set -eo pipefail` makes the script exit on the first failed command, which is what you want here: a partial replication setup is worse than none. The `PGPASSWORD` handling strips single quotes before building the connection string, that's string escaping, not real credential security, so pull the password from a secrets manager rather than an environment variable in anything resembling production. Run it against staging first, and once replication is running, watch replication lag before you cut traffic over.
 
-## Conclusion
+## The principle
 
-Logical replication in PostgreSQL offers a robust solution for performing database upgrades with minimal to no downtime. The provided script is a starting point for automating this process, but it's essential to adapt and expand upon it to suit the specific needs and configurations of your PostgreSQL environment. Always ensure that you have proper backup and recovery strategies in place before performing any upgrade operations.
-
+Logical replication turns a major-version upgrade from a scheduled outage into a cutover you control. This script is a starting point, not a drop-in: adapt the publication and subscription naming to your own conventions, and don't run it against anything real without a tested rollback path and a recent backup.

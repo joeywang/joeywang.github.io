@@ -1,37 +1,39 @@
 ---
 layout: post
-title: "Redis Sentinel Mode Overview"
-description: "Redis Sentinel is a high-availability solution for Redis. It operates by deploying a distributed system of Sentinel instances that monitor the health and"
+title: "Redis Sentinel: How Automatic Failover Actually Works"
+description: "How Redis Sentinel provides high availability: quorum-based monitoring, master election, automatic failover, and what your client applications must do to follow along."
 date:   2024-07-10 14:41:26 +0100
-categories: Redis
+categories: [Database]
+tags: [redis, devops, database]
 ---
 <audio controls preload="metadata" src="/assets/audio/redis-sentinel-mode-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-<img alt="course" src="assets/img/re/redis-sentinel.png"/>
+<img alt="Redis Sentinel topology" src="/assets/img/re/redis-sentinel.png"/>
 
+A single Redis instance is a single point of failure. Sentinel is Redis's own answer to that: a distributed set of monitor processes that watch your Redis servers and promote a replica when the master dies, without a human in the loop. Here is the shape of it.
 
-**Redis Sentinel Mode Overview:**
+## The moving parts
 
-Redis Sentinel is a high-availability solution for Redis. It operates by deploying a distributed system of Sentinel instances that monitor the health and performance of your Redis infrastructure.
+- **Sentinel instances.** You deploy at least three, so they can form a quorum and no single Sentinel failure takes down the monitoring itself.
+- **One master.** All writes go to it. Everything else replicates from it.
+- **Replicas.** They serve reads and stand by as failover candidates.
 
-1. **Deployment:** In Sentinel mode, you typically deploy at least three Sentinel instances to ensure fault tolerance. These instances work in concert to monitor the status of the Redis servers.
+## What Sentinel does
 
-2. **Role of Master:** There is one primary Redis server designated as the "master." This is the server that handles all write operations, ensuring data consistency and integrity.
+The Sentinel processes continuously ping the master and its replicas. When the master stops responding for longer than the configured `down-after-milliseconds`, the Sentinels compare notes. Only when enough of them agree the master is down (the quorum) does a failover begin. That agreement step matters: it stops one Sentinel with a flaky network path from triggering an unnecessary failover.
 
-3. **Monitoring:** Sentinel instances continuously monitor the master and any replica servers (slaves) for any signs of failure. They check the health of the servers by sending heartbeat messages.
+The failover itself:
 
-4. **Failover Process:** If the master server fails or becomes unresponsive within a specified timeframe (commonly set to 5 seconds), the Sentinel instances will initiate a failover process.
+1. The Sentinels elect a new master from the healthy replicas, based on replication offset and configured priorities.
+2. The remaining replicas are reconfigured to replicate from the new master.
+3. Sentinel publishes the new topology so clients can redirect their writes.
 
-5. **Election of New Master:** The Sentinel instances will elect a new master from the available replicas. The election process is based on predefined rules and the health status of the replicas.
+## The part people forget: the client
 
-6. **Automatic Switchover:** Once a new master is elected, the Sentinel instances will reconfigure the replica servers to recognize the new master. They will also redirect any client applications to the new master for write operations.
+Failover on the server side is only half the story. Your application cannot simply hold a connection to a fixed master address, because that address stops being the master. Sentinel-aware clients connect to the Sentinels first, ask "who is the master for this name", and re-ask after a disconnection. If your Redis library is not configured for Sentinel, you have high availability on the server and an outage in the app.
 
-7. **Resilience and Redundancy:** By having multiple Sentinel instances, the system ensures that there is no single point of failure. If one Sentinel instance goes down, the others can still perform the monitoring and failover tasks.
+## When it is worth it
 
-8. **Client Reconfiguration:** Applications that are connected to the Redis master need to be aware of the Sentinel system to handle automatic reconfiguration and switchover to the new master without downtime.
-
-9. **Use Case:** Sentinel mode is ideal for applications that require high availability and cannot afford to lose write capabilities for an extended period. It ensures that the system can quickly recover from a failure without manual intervention.
-
-By implementing Redis in Sentinel mode, you can achieve a robust, fault-tolerant system that minimizes downtime and ensures continuous availability of your data.
+Sentinel earns its operational overhead when losing write capability for more than a few seconds is unacceptable. For a cache that can be cold-started, it is usually overkill. For Sidekiq queues or anything holding data you cannot regenerate, automatic failover is the difference between a blip and a paged human at 3am.

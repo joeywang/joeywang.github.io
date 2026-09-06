@@ -1,93 +1,70 @@
 ---
 layout: post
-title: 'Mastering Linux Kill Signals: Graceful Shutdown in Containerized Worker Environments
-description: "Linux kill signals are a crucial mechanism for process communication and management. These signals provide a way to send specific instructions to processes,"
-  2024-11-24'
+title: "Linux kill signals: graceful shutdown in containerized workers"
+description: "SIGTERM, SIGKILL, and grace periods control whether a containerized worker finishes its job before Kubernetes or Supervisord kills it outright."
 date: 2024-11-26 22:54 +0000
-description: "Linux kill signals are a crucial mechanism for process communication and management. These signals provide a way to send specific instructions to processes,"
+categories: [DevOps]
+tags: [linux, kubernetes, docker, devops]
 ---
-# Mastering Linux Kill Signals: Graceful Shutdown in Containerized Worker Environments
-
 <audio controls preload="metadata" src="/assets/audio/mastering-linux-kill-signals-graceful-shutdown-in-containerized-worker-environments-2024-11-24-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction to Linux Kill Signals
+A worker process that gets SIGKILL mid-job doesn't get a chance to finish, checkpoint, or even log what it was doing. In a containerized environment, that's the default outcome unless you handle SIGTERM explicitly and give the process a grace period to act on it before the orchestrator escalates to SIGKILL.
 
-Linux kill signals are a crucial mechanism for process communication and management. These signals provide a way to send specific instructions to processes, with each signal representing a different type of communication or action.
+## The signals that matter
 
-## Common Kill Signals
+| Signal | Name | Meaning | Default action |
+|--------|------|---------|-----------------|
+| SIGTERM (15) | Terminate | Please shut down | Terminate process |
+| SIGKILL (9) | Kill | Shut down now, no cleanup | Immediately stop process |
+| SIGINT (2) | Interrupt | Ctrl+C | Terminate process |
+| SIGHUP (1) | Hangup | Reload config, or terminate | Terminate process |
 
-| Signal | Name | Description | Default Action |
-|--------|------|-------------|----------------|
-| SIGTERM (15) | Terminate | Graceful shutdown request | Terminate process |
-| SIGKILL (9) | Kill | Forceful termination | Immediately stop process |
-| SIGINT (2) | Interrupt | Interrupt from keyboard (Ctrl+C) | Terminate process |
-| SIGHUP (1) | Hangup | Reload configuration or terminate |  Terminate process |
+Kubernetes and Docker both send SIGTERM first, wait out a grace period, then send SIGKILL if the process is still alive. Everything below is about using that window.
 
-## Kill Signals in Containerized Environments
+## Handling SIGTERM in the worker itself
 
-In containerized environments, proper handling of kill signals is critical to ensure:
-- Graceful shutdown of worker processes
-- Completion of in-progress jobs
-- Proper resource cleanup
-- Minimal service disruption
-
-### Sidekiq Worker Signal Handling
-
-Sidekiq provides robust signal handling for graceful shutdowns:
+Sidekiq already does this:
 
 ```ruby
-# Example Sidekiq signal handling
 Sidekiq.configure_server do |config|
   config.on(:shutdown) do
-    # Perform cleanup operations
     puts "Gracefully shutting down Sidekiq"
   end
 end
 ```
 
-### Laravel Worker Signal Management
-
-Laravel workers can implement graceful shutdown mechanisms:
+A Laravel queue worker needs the signal handler registered explicitly, since PHP doesn't trap signals unless you ask it to:
 
 ```php
-// Laravel worker signal handling
 public function handle()
 {
-    // Register signal handlers
     pcntl_signal(SIGTERM, function () {
         $this->shouldStop = true;
     });
 
     while (!$this->shouldStop) {
-        // Process jobs
         $this->processNextJob();
     }
 }
 ```
 
-## Grace Period Implementation
+## Giving the process time to act
 
-Grace periods are crucial for ensuring uninterrupted job processing:
-
-### Docker Compose Example
+Docker Compose and Kubernetes both let you extend the grace period:
 
 ```yaml
+# docker-compose.yml
 services:
   worker:
-    stop_grace_period: 30s  # 30-second grace period
-    stop_signal: SIGTERM    # Use graceful termination
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
 ```
 
-### Kubernetes Deployment Configuration
-
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: worker-deployment
+# Kubernetes
 spec:
   template:
     spec:
@@ -99,36 +76,22 @@ spec:
               command: ["/bin/sh", "-c", "sleep 30"]
 ```
 
+The grace period only helps if the worker is actually listening for SIGTERM. Extending `stop_grace_period` on a worker that ignores the signal just delays the SIGKILL by 30 seconds for nothing.
 
-## Supervisord: Signal Management and Process Control
+## Supervisord as the signal relay
 
-Supervisord provides a robust solution for managing long-running processes and handling signal propagation in containerized environments.
-
-### Signal Propagation Workflow
-
-When a container receives a termination signal, the process flow typically looks like this:
+When Supervisord manages the worker instead of the container runtime talking to it directly, the signal has to pass through Supervisord first:
 
 ```
-Container Termination Signal (SIGTERM)
-│
-↓
-Supervisord
-│
-↓
-Supervised Processes
-│
-↓
-Application Graceful Shutdown
+Container termination signal (SIGTERM)
+  -> Supervisord
+    -> supervised processes
+      -> application shutdown
 ```
 
-### Supervisord Configuration Example
+`stopasgroup` and `killasgroup` are what make that forwarding actually happen, rather than Supervisord catching the signal and leaving its children running:
 
 ```ini
-[supervisord]
-nodaemon=true
-logfile=/var/log/supervisor/supervisord.log
-pidfile=/var/run/supervisord.pid
-
 [program:worker]
 command=/usr/bin/php /app/artisan queue:work
 autostart=true
@@ -137,47 +100,18 @@ stopwaitsecs=30
 stopsignal=SIGTERM
 stopasgroup=true
 killasgroup=true
-
-[program:sidekiq-worker]
-command=bundle exec sidekiq
-autostart=true
-autorestart=true
-stopwaitsecs=30
-stopsignal=SIGTERM
-stopasgroup=true
-killasgroup=true
 ```
 
-### Docker Compose Integration
-
-```yaml
-services:
-  app:
-    build: .
-    volumes:
-      - ./supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
-    stop_signal: SIGTERM
-    stop_grace_period: 45s
-```
-
-### Comprehensive Signal Handling Script
+A wrapper script that traps SIGTERM directly gives more control over the shutdown sequence than Supervisord's defaults alone:
 
 ```bash
 #!/bin/bash
 
-# Trap SIGTERM signal
 trap_sigterm() {
     echo "Received SIGTERM. Initiating graceful shutdown..."
-
-    # Notify Supervisord to stop workers
     supervisorctl stop all
-
-    # Wait for processes to shut down
     wait_for_workers_shutdown
-
-    # Perform any additional cleanup
     cleanup_resources
-
     exit 0
 }
 
@@ -192,67 +126,19 @@ wait_for_workers_shutdown() {
         sleep 1
         ((timeout--))
     done
-
     echo "Some workers did not shutdown in time"
     return 1
 }
 
 cleanup_resources() {
-    # Example: Clear temporary files, close database connections
     rm -rf /tmp/worker-*
     echo "Cleanup complete"
 }
 
-# Attach the trap
 trap trap_sigterm SIGTERM
-
-# Start Supervisord
 exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 ```
 
-## Advanced Signal Handling Considerations
+## What tends to go wrong
 
-### Multi-Process Signal Propagation
-
-1. **Parent Process Responsibility**: Supervisord acts as a parent process managing child processes
-2. **Signal Forwarding**: Uses `stopasgroup=true` and `killasgroup=true` to ensure signal propagation
-3. **Graceful Termination Sequence**:
-   - Receive SIGTERM
-   - Notify all child processes
-   - Wait for processes to complete
-   - Force terminate if grace period expires
-
-### Kubernetes Integration
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: app-deployment
-spec:
-  template:
-    spec:
-      containers:
-      - name: app
-        lifecycle:
-          preStop:
-            exec:
-              command: ["/bin/sh", "-c", "supervisorctl stop all"]
-```
-
-## Potential Pitfalls and Solutions
-
-1. **Zombie Processes**: Use `init` systems or containers with proper PID 1 management
-2. **Incomplete Shutdown**: Implement robust timeout mechanisms
-3. **Resource Leaks**: Always include cleanup scripts
-
-## Best Practices for Signal Handling
-
-- Use `stopsignal=SIGTERM` in Supervisord
-- Implement proper timeout mechanisms
-- Log all shutdown and cleanup activities
-- Test signal handling thoroughly in staging environments
-
-## Conclusion
-
-Effective signal management with Supervisord provides a robust mechanism for graceful process termination, ensuring minimal disruption and proper resource management in containerized environments.
+Zombie processes show up when nothing is acting as PID 1 correctly, usually solved by an init wrapper such as `tini`, or by Supervisord itself in that role. Incomplete shutdowns are almost always a grace period that's shorter than the actual cleanup work takes, not a bug in the trap logic. Test the shutdown path under load, not just at rest, since a worker mid-job behaves differently than one sitting idle when SIGTERM arrives.

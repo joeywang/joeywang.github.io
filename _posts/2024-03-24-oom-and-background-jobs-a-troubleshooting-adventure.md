@@ -1,67 +1,52 @@
 ---
 layout: post
-title: 'OOM and Background Jobs: A Troubleshooting Adventure'
-description: "A few months ago, we received an urgent complaint from a customer: a notification email had failed to reach him on time. As the assigned detective of the"
+title: "When the OOM Killer Silently Kills a Background Job"
+description: "A missed notification email traced back to the Linux OOM killer terminating a Sidekiq job mid-run, leaving a stuck Redis lock and no error logged anywhere."
 date: 2024-03-24 00:00 +0000
-categories: OOM
-tags: [oom, troubleshooting]
+categories: [DevOps]
+tags: [kubernetes, linux, debugging, sidekiq]
 ---
-# OOM and Background Jobs: A Troubleshooting Adventure
-
 <audio controls preload="metadata" src="/assets/audio/oom-and-background-jobs-a-troubleshooting-adventure-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## The Mystery Unfolds
+A customer's notification email didn't arrive on time. When I went looking for why, every log was empty: nothing in Sentry, nothing in the Sidekiq logs, nothing in the job queue history. Whatever ran that job didn't get the chance to log an error before it died.
 
-A few months ago, we received an urgent complaint from a customer: a notification email had failed to reach him on time. As the assigned detective of the digital realm, I embarked on a mission to unravel the mystery.
+I'd seen this before: a Sidekiq job killed mid-run by the OOM killer, leaving a Redis lock stuck with no trace of what happened. That was the culprit again.
 
-1. **Sentry Logs**: A blank canvas, no traces of foul play.
-2. **Sidekiq Logs**: A void, offering no helpful breadcrumbs.
-3. **Job Queue**: An empty river, with no logs to float downstream.
+## What the OOM killer actually does
 
-However, a deja vu struck me, reminiscent of another case where a Sidekiq job was abruptly ended by the OOM killer, leaving a Redis lock in limbo. I decided to probe the OOM enigma and, after relentless pursuit, uncovered the culprit. It was indeed the OOM Killer.
+Out of memory means a process, container, or the whole system is asking for more memory than is available. On Linux, the kernel's response is the OOM killer: when memory is critically low, it picks a process and kills it to free memory immediately. It doesn't warn the process first and it doesn't give it a chance to flush logs.
 
-### Unmasking the OOM Killer
+The kernel scores every process with an `oom_score`. Higher score, more likely to be picked when memory runs out. The score factors in:
 
-OOM, or Out Of Memory, is the digital equivalent of a bank robbery where the perpetrator, a system, application, or container, steals more memory than available. This heist leads to a hostage situation, where performance is held ransom or processes are terminated to free up resources. In the Kubernetes arena, OOM can be a fatal blow when a container exceeds its memory limit, prompting the OOM killer to swoop in, terminate the process, and reclaim memory.
+- **RSS** (resident set size): non-swapped physical memory the process is using.
+- **PSS** (proportional set size): its share of memory shared with other processes.
+- Kernel thread count at the same priority.
+- Whether the process runs in user space (more likely to be killed) or kernel space.
+- `oom_score_adj`, a tunable per-process bias; a lower value makes a process less likely to be picked.
 
-### The Kernel's Deadly Arsenal
+In Kubernetes, the kubelet doesn't kill anything itself. It watches each container's memory against its configured limit, and when a container goes over, it asks the host kernel's OOM killer to act. The container just stops, with no distinction in the pod's logs between "crashed" and "was killed for memory."
 
-Deep in the heart of the Linux operating system, the kernel wields the OOM killer—a sharp, double-edged sword—to slay processes that guzzle excessive memory when the system's reserves are critically low. This killer assigns an 'oom_score' to each process, a telltale number indicating the likelihood of a process meeting its demise during an OOM event.
+## Finding the evidence after the fact
 
-### The Kubernetes OOM Saga
+None of the application-level logs show an OOM kill, because the process is dead before it can write anything. What does show it:
 
-In the orchestrated chaos of Kubernetes, the kubelet is the diligent custodian of containers, ensuring they respect the memory limits set before them. Should a container dare to surpass its memory limit, the kubelet does not take the law into its own hands. Instead, it beckons the Linux kernel's OOM killer, a silent avenger within the host's operating system, to mete out justice.
+- `dmesg`, the kernel's ring buffer, usually has the kill logged.
+- `/var/log/kern.log`, on systems that keep one, persists the same information.
+- `/proc/<pid>/oom_score` shows a live process's current score.
+- `/proc/<pid>/oom_score_adj` lets you bias a process away from being picked.
 
-### Unearthing Clues with Command Line Tools
+If a job runner or Sidekiq worker vanishes with no error, check `dmesg` for "Out of memory: Killed process" before looking anywhere else.
 
-To piece together the puzzle of OOM events, I turned to a arsenal of command-line tools and system files:
+## What actually reduces OOM kills
 
-1. **`dmesg`**: This command unveils messages from the kernel's ring buffer, which may harbor logs of the OOM killer's recent activities.
-2. **`/var/log/kern.log`**: On some systems, this is the final resting place for kernel logs, which can be exhumed for OOM events.
-3. **`/proc/<pid>/oom_score`**: Reveals the OOM score of a specific process, a score that could mean the difference between life and death.
-4. **`/proc/<pid>/oom_score_adj`**: Allows the adjustment of a process's OOM score, where a lower value is akin to donning kevlar in this deadly game.
+- Monitor memory per container, not just per node; one noisy pod can trigger a kill that looks like a node-wide problem.
+- Set memory limits that match real usage, not a guess. A limit that's too tight turns normal load spikes into OOM kills.
+- Find and fix leaks and oversized data structures in the job itself; an OOM kill is a symptom of memory consumption, not a bug in Kubernetes.
+- Cache with a bound. An unbounded in-process cache is a slow-motion OOM.
+- Scale horizontally so no single pod holds all the memory-heavy work.
+- Use Kubernetes QoS classes (`Guaranteed`, `Burstable`, `BestEffort`) so critical workloads aren't first in line when a node runs low.
 
-### The Grim Algorithm of the OOM Reaper
-
-The OOM killer employs a cold calculus to calculate a score for each process based on several merciless factors:
-
-- **Resident Set Size (RSS)**: The amount of non-swapped physical memory a process is using, akin to a gluttonous feast.
-- **Proportional Set Size (PSS)**: The share of the memory consumed by a process when in the company of other processes.
-- **Kernel Same Priority Threads (KSPT)**: The count of same-priority kernel threads, a sibling rivalry that can turn deadly.
-- **User Space Execution**: Processes running in user space are more likely to face the executioner than those dwelling in kernel space.
-- **OOM Score Adjustment**: A tunable parameter, a slight of hand that can make a process either more of a target or less likely to be slain by the OOM killer.
-
-### Strategies to Evade the OOM Guillotine
-
-To sidestep the grim reaper of OOM issues, consider these cunning strategies:
-
-1. **Monitor Memory Usage**: Keep a hawk-eyed vigil on the memory consumption of applications and containers.
-2. **Set Appropriate Memory Limits**: Ensure that the memory limits set for containers match their true appetite.
-3. **Optimize Application Code**: Snip memory leaks and prune memory usage in the application code.
-4. **Employ Efficient Data Structures**: Choose data structures that sip memory, not guzzle it.
-5. **Implement Caching Strategies**: Use caching with the discretion of a connoisseur, to avoid overindulgence in memory use.
-6. **Scale Horizontally**: Multiply the number of nodes or pods to disperse memory usage, like drops of water in a vast ocean.
-7. **Use Quality of Service Classes**: In Kubernetes, employ QoS classes to anoint critical workloads, making them less likely to be sacrificed during OOM events.
+The lesson from this incident specifically: if a background job holds a lock and gets OOM-killed, that lock does not get released. Whatever acquires the lock needs a TTL or a watchdog independent of the job's own cleanup code, because an OOM kill skips `ensure` blocks entirely.

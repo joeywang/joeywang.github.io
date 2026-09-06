@@ -1,20 +1,18 @@
 ---
 layout: post
-title:  "Too many connections already"
-description: "PostgreSQL is my favorite database, and I have experience with Oracle, SQL Server, MySQL, and MongoDB. However, due to performance issues with MongoDB,"
+title:  "Postgres 'Too Many Connections': Debugging Pgpool-II Limits"
+description: "Debugging a Postgres 'too many connections' error through Pgpool-II's num_init_children and max_pool settings, and the fix that stopped clients queueing."
 date:   2024-05-05 14:41:26 +0100
-categories: PostgreSQL
-tags: [postgres, devops]
+categories: [Database]
+tags: [postgresql, devops, kubernetes]
 ---
-
-# Too many connectioins: Managing PostgreSQL Connections with Pgpool-II
 
 <audio controls preload="metadata" src="/assets/audio/pgpooII-to-postgres-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-PostgreSQL is my favorite database, and I have experience with Oracle, SQL Server, MySQL, and MongoDB. However, due to performance issues with MongoDB, especially on join searches, we decided to stick with PostgreSQL. Over the years, we've upgraded from PostgreSQL 8.3 to the latest version, 14, achieving "Zero" downtime migration from version 11 to 13.
+We've run PostgreSQL in production since 8.3, upgrading all the way to 14 with a zero-downtime migration from 11 to 13. MongoDB was in the mix at one point too, but join-heavy queries pushed us back to Postgres for good.
 
 ## PostgreSQL Connection Limitations
 
@@ -44,7 +42,7 @@ num_init_children
 max_pool
 ```
 
-The relationship between these settings is crucial:
+These two settings have to satisfy a relationship or Pgpool-II misbehaves:
 
 ```plaintext
 max_pool * num_init_children <= (max_connections - superuser_reserved_connections)
@@ -72,7 +70,7 @@ Even with these improvements, the 200 connection limit persists. To overcome thi
 
 ## Conclusion
 
-While PostgreSQL offers robust performance and features, managing a large number of concurrent connections can be challenging. Pgpool-II is a valuable tool for connection management, but it requires careful configuration to avoid potential pitfalls. By understanding and addressing these challenges, we can ensure a scalable and reliable database architecture.
+PostgreSQL handles concurrent load well, but managing a large number of concurrent connections is still a real operational problem. Pgpool-II helps, but only once you understand how `num_init_children`, `max_pool`, and `reserved_connections` interact, because the default behavior queues clients instead of failing fast.
 
 ## References
 

@@ -3,12 +3,10 @@ layout: post
 title: "Tightening a dev VM that was quietly living without a firewall"
 date: 2026-08-10 07:15:00 +0000
 author: "Joey Wang"
-description: "What a routine security audit found on a small always-on dev VM — unauthenticated databases, no host firewall, over-privileged automation — and the fixes that made it boring again."
-tags: [devops, security, self-hosting, linux, containers, iptables, automation]
+description: "What a routine security audit found on a small always-on dev VM: passwordless databases, no host firewall, over-privileged jobs, and how it got fixed."
+tags: [devops, security, linux, docker, iptables, automation]
 categories: [Engineering, DevOps]
 ---
-
-# Tightening a dev VM that was quietly living without a firewall
 
 I spent an afternoon auditing a small always-on VM that runs my personal AI agent, a couple of VPNs, and some dev infrastructure. It started as a routine setup review. It ended with me closing a database that required no password, on a machine with a public IPv4 address.
 
@@ -35,7 +33,7 @@ redis-cli -p <nonstandard_port> config get requirepass
 
 The answers were: a lot, yes, and no.
 
-Two containers — a dev Postgres and a dev Redis — were published on all interfaces with `trust` auth and an empty password. The Postgres prompt sat there and printed a row when I asked nicely. The Redis had no `requirepass` at all. Both were reachable from any network path the host was on, and the host has a public IP.
+Two containers, a dev Postgres and a dev Redis, were published on all interfaces with `trust` auth and an empty password. The Postgres prompt sat there and printed a row when I asked nicely. The Redis had no `requirepass` at all. Both were reachable from any network path the host was on, and the host has a public IP.
 
 Redis with no auth is not a sleepy little cache. It is a write target: SSH key planting, cron overwrites, ransomware. The fact that it held zero keys was luck, not design.
 

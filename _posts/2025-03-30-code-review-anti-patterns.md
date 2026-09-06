@@ -1,72 +1,27 @@
 ---
 layout: post
-title: "Mastering Code Reviews: Best Practices and Anti-Patterns"
-description: "As an experienced software developer, I've participated in countless code reviews. Effective code reviews are crucial—they not only maintain code quality but"
+title: "Code Review Anti-Patterns That Waste the Most Time"
+description: "The code review anti-patterns that slow teams down most: giant PRs, style-war comments, and reviews that skip the business context entirely."
 date: 2025-03-30
-tags: [code review, best practices, anti-patterns]
+tags: [code-review, testing, ci, productivity]
+categories: [Engineering]
 ---
 <audio controls preload="metadata" src="/assets/audio/code-review-anti-patterns-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-### Mastering Code Reviews: Best Practices and Anti-Patterns
+### Code review anti-patterns that waste the most time
 
-As an experienced software developer, I've participated in countless code reviews. Effective code reviews are crucial—they not only maintain code quality but also build stronger, more knowledgeable teams. Here, I share essential best practices and common anti-patterns to help your team maximize the value of code reviews.
+Most bad code review isn't a skill problem. It's a handful of habits that repeat across teams, and each one has a fix that's cheaper than living with it.
 
-#### Best Practices
+**Style wars in the comments.** Arguing about brace placement or import order in a PR thread is a tell that linting isn't wired into CI. Push ESLint, Black, Prettier, whatever fits the stack, into the pipeline so the reviewer never sees a style issue in the first place. That frees the review for the things a linter can't check: is this the right approach, does it handle the edge case, does it belong here at all.
 
-1. **Automate the Mundane:**
+**PRs too large to actually review.** A 900-line diff gets a skim and an approve, not a review. Reviewers either rubber-stamp it or spend hours on it and still miss things, because holding that much context in your head at once isn't something people are good at. Break the work into pieces a reviewer can hold in their head: one behavior change, one migration, one refactor at a time.
 
-   * Integrate tools like linters (e.g., ESLint, Black), static analyzers (SonarQube), and automated formatters (Prettier) directly into your CI pipeline.
-   * Automating style and syntax checks allows reviewers to focus on deeper, more meaningful concerns.
+**Threads that run forever.** Two rounds of back-and-forth on a comment is normal. A fifth round on the same line is a sign the disagreement is not about the code, it's about something that needs a five-minute call to resolve. Move it there before it eats a day of async latency.
 
-2. **Prioritize Small, Focused PRs:**
+**Reviewing the diff without the reason.** A reviewer who doesn't know why a change exists can only check that it compiles, not that it's the right change. Link the ticket. Write the "why" in the PR description, not just the "what."
 
-   * Smaller pull requests (PRs) lead to more thorough, effective reviews.
-   * Clearly scoped changes enable reviewers to understand and quickly provide actionable feedback.
+**Skipping security and scale to focus on correctness.** Code that works today and falls over at ten times the load, or leaks data under the wrong input, passed review because nobody asked those questions. They need to be part of the checklist, not an afterthought raised after an incident.
 
-3. **Maintain Constructive Communication:**
-
-   * Feedback should be clear, precise, and constructive. Avoid vague critiques.
-   * Limit async back-and-forth discussions to two rounds; if an issue persists, discuss synchronously via a quick video call or face-to-face.
-
-4. **Explicitly Separate Concerns:**
-
-   * Clearly distinguish between business logic, system design, security implications, and code maintainability.
-   * Structured reviews help ensure comprehensive feedback and improve clarity for authors.
-
-5. **Enforce Testing and Coverage:**
-
-   * Changes in the codebase must come with appropriate test coverage.
-   * Ensure CI checks explicitly validate the link between code modifications and associated tests.
-
-#### Anti-Patterns to Avoid
-
-1. **Style Wars in PR Comments:**
-
-   * Arguing over stylistic choices in comments wastes precious developer time.
-   * Adopt standardized, automated tools and remove subjective style debates from review conversations.
-
-2. **Massive PRs:**
-
-   * Large PRs overwhelm reviewers and often lead to superficial or incomplete reviews.
-   * Break large features or refactors into incremental, independently reviewable pieces.
-
-3. **Endless Async Discussions:**
-
-   * Prolonged back-and-forth comment threads decrease productivity and slow down development cycles.
-   * When discussions extend beyond two rounds, switch to synchronous conversations.
-
-4. **Overlooking Business Context:**
-
-   * Reviewing code without understanding its business purpose or requirements leads to missed critical issues.
-   * Ensure PR descriptions and linked issues clearly communicate the "why" behind changes.
-
-5. **Neglecting Security & Scalability:**
-
-   * Focusing solely on functional correctness while ignoring security and scalability is dangerous.
-   * Always explicitly consider performance implications, data security, and privacy during reviews.
-
-#### Final Thoughts
-
-Effective code reviews are more than just gatekeeping—they're a key part of continuous learning, collaborative improvement, and maintaining high standards. By following these best practices and avoiding common pitfalls, your team can significantly enhance both productivity and software quality.
+None of this is about being a harsher reviewer. It's about automating what a machine can check, keeping the unit of review small enough to actually read, and making sure the reviewer has the context to judge the change, not just the diff.

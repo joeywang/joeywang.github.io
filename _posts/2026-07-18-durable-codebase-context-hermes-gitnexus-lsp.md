@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "Giving Hermes Durable Codebase Context with GitNexus, LSP, and AGENTS.md"
+title: "Durable codebase context for Hermes: GitNexus, LSP, AGENTS.md"
 date: 2026-07-18 19:14:29 +0100
 author: "Joey Wang"
 description: "How I gave Hermes a persistent local code graph, semantic diagnostics, and stable project instructions without turning agent memory into a stale symbol index."
-tags: [hermes-agent, gitnexus, mcp, lsp, code-intelligence]
-categories: [AI Engineering]
+tags: [hermes, gitnexus, mcp, lsp, agents]
+categories: [AI, Engineering]
 ---
-
-# Giving Hermes durable codebase context with GitNexus, LSP, and AGENTS.md
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-18-durable-codebase-context-hermes-gitnexus-lsp-summary.ogg">
   Your browser does not support the audio element.

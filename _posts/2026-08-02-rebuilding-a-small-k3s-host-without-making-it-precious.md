@@ -3,12 +3,10 @@ layout: post
 title: "Rebuilding a Small k3s Host Without Making It Precious"
 date: 2026-08-02 10:30:00 +0100
 author: "Joey Wang"
-description: "Notes from wiping an old single-node k3s setup and rebuilding it with a smaller, cleaner baseline for ingress, certificates, and storage."
+description: "Notes from wiping an old single-node k3s setup and rebuilding it with a smaller, cleaner baseline for ingress, certificates, and persistent storage."
 tags: [kubernetes, k3s, traefik, longhorn, devops, homelab]
 categories: [Engineering, DevOps]
 ---
-
-# Rebuilding a small k3s host without making it precious
 
 I had an old single-node k3s machine that had done what small Kubernetes machines often do: accumulate history.
 

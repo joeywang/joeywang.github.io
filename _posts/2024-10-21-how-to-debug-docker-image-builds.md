@@ -1,25 +1,22 @@
 ---
 layout: post
-title: How to Debug Docker Image Builds
-description: "This guide covers various techniques to debug Docker image builds, from basic to advanced approaches."
+title: "How to Debug Docker Image Builds"
+description: "Practical techniques for debugging Docker image builds: BuildKit output flags, inspecting intermediate layers, nsenter tricks, and multi-stage build targets."
 date: 2024-10-21 00:00 +0000
-tags: [debug, docker, image, build]
+categories: [DevOps]
+tags: [docker, debugging, devops, ci]
 ---
-
-# How to Debug Docker Image Builds
 
 <audio controls preload="metadata" src="/assets/audio/how-to-debug-docker-image-builds-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-This guide covers various techniques to debug Docker image builds, from basic to advanced approaches.
+A Docker build that fails on step 14 of 20 hands you an error message and not much else. The container that ran the failing command is gone, and the obvious move, adding echo statements and rebuilding, costs minutes per attempt. These are the techniques I reach for instead.
 
-## Common Debugging Scenarios
+## Get more output from BuildKit
 
-### 1. Using BuildKit's Enhanced Debugging Features
-
-BuildKit (the default builder in modern Docker) offers several powerful debugging options:
+BuildKit, the default builder in modern Docker, truncates step logs by default. Turn that off first:
 
 ```bash
 # Enable detailed debugging output
@@ -32,33 +29,44 @@ docker buildx build --progress=plain --on-error=continue .
 docker buildx build --progress=plain .
 ```
 
-### 2. Debugging Failed Layers
+`--progress=plain` alone solves a surprising number of "why did this fail" questions. The interactive progress UI hides the exact output you need.
 
-#### 2.1 Remove Problematic Commands
+## Debug a failed layer
+
+### Remove the failing command and inspect the state before it
+
 If you have a failing command like:
+
 ```Dockerfile
 FROM busybox
 RUN echo 'hello world' > /tmp/test
 RUN exit 1  # problematic command
 RUN echo 'ready'
 ```
-Simply remove the failing command and subsequent commands:
+
+Remove the failing command and everything after it:
+
 ```Dockerfile
 FROM busybox
 RUN echo 'hello world' > /tmp/test
 ```
 
-#### 2.2 Inspect Intermediate Layers
-Turn off BuildKit to see layer SHA:
+Build that, then run a shell in the result and try the failing command by hand.
+
+### Inspect intermediate layers
+
+The legacy builder prints the SHA of every intermediate layer, which BuildKit hides. Turn BuildKit off when you want to shell into the last good layer:
+
 ```bash
 DOCKER_BUILDKIT=0 docker build -t test .
 # Use the SHA of the last successful layer
 docker run --rm -it <sha> sh
 ```
 
-### 3. Interactive Debugging with `nsenter`
+## Interactive debugging with nsenter
 
-#### 3.1 Basic nsenter Debugging
+Sometimes you want a shell inside the build container while the build is running. Park the build on a `sleep` and enter its namespace:
+
 ```Dockerfile
 FROM busybox
 RUN echo 'hello world'
@@ -76,15 +84,19 @@ ps -ef | grep sleep
 nsenter -p -m -u -i -n -t <PID> sh
 ```
 
-#### 3.2 Alternative nsenter Approach with Alpine
+An alternative using a plain Alpine image:
+
 ```bash
 docker run --privileged --pid=host -it alpine \
 nsenter -t 1 -m -u -n -i sh
 ```
 
-### 4. Multi-stage Build Debugging
+This is a blunt instrument, it needs `--privileged`, but it works when nothing else does.
 
-#### 4.1 Basic Target Approach
+## Multi-stage builds as debug checkpoints
+
+Named stages give you build targets you can stop at:
+
 ```Dockerfile
 FROM busybox as working
 RUN echo 'hello world'
@@ -100,7 +112,8 @@ docker build -t test --target working .
 docker run --rm -it test sh
 ```
 
-#### 4.2 Advanced Multi-stage Debugging
+The same idea keeps debugging tools out of production images. Install them in a development stage only:
+
 ```Dockerfile
 # Development stage with debugging tools
 FROM ruby:3.2 as development
@@ -112,24 +125,26 @@ FROM ruby:3.2-slim as production
 COPY --from=development /app /app
 ```
 
-### 5. BuildKit Debug Features
+## BuildKit mounts
 
-#### 5.1 Mount Cache
+Two BuildKit features change how you debug slow or secret-dependent builds. Cache mounts stop package downloads from being the slowest part of every retry loop:
+
 ```Dockerfile
 # Cache apt packages
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y build-essential
 ```
 
-#### 5.2 Secret Mounting
+Secret mounts keep credentials out of layers while you test steps that need them:
+
 ```Dockerfile
 # Mount secrets during build
 RUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret
 ```
 
-### 6. Debugging Ruby on Rails Specific Issues
+## A Rails Dockerfile with debugging in mind
 
-Here's an improved version of the Rails Dockerfile with debugging considerations:
+The same principles applied to a Rails image: cache mounts for apt, debug gems gated behind a build arg, dependency files copied before the app so the expensive layers cache well.
 
 ```Dockerfile
 FROM ruby:3.2
@@ -167,60 +182,31 @@ COPY . .
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
 ```
 
-## Best Practices
+## Quick checks worth remembering
 
-1. **Layer Caching**
-   - Use multi-stage builds to separate build dependencies
-   - Order Dockerfile commands from least to most frequently changing
-   - Use .dockerignore to exclude unnecessary files
+Common failure classes and the one-liner that diagnoses them:
 
-2. **Debugging Tools**
-   - Include debugging tools only in development stages
-   - Use BuildKit's cache mounts for package managers
-   - Leverage BuildKit's --progress=plain for detailed build output
-
-3. **Security**
-   - Never leave debugging tools in production images
-   - Use secrets mounting for sensitive data
-   - Regular security scanning of base images
-
-## Common Issues and Solutions
-
-1. **Bundle Install Failures**
-   ```bash
-   # Debug bundle install
-   docker run --rm -it <image-id> bundle install --verbose
-   ```
-
-2. **Permission Issues**
-   ```bash
-   # Fix permission problems
-   RUN chown -R user:user /app
-   USER user
-   ```
-
-3. **Network Issues**
-   ```bash
-   # Test network connectivity
-   docker run --rm -it <image-id> ping -c 3 google.com
-   ```
-
-## Additional Tools
-
-1. **Docker Dive**
-   ```bash
-   # Analyze image layers
-   dive <image-name>
-   ```
-
-2. **Docker History**
-   ```bash
-   # View layer history
-   docker history --no-trunc <image-name>
-   ```
-
-Remember to always clean up debugging artifacts before pushing to production:
 ```bash
-# Remove debugging layers
-docker image prune -f
+# Debug bundle install
+docker run --rm -it <image-id> bundle install --verbose
+
+# Test network connectivity from inside the image
+docker run --rm -it <image-id> ping -c 3 google.com
+
+# Analyze image layers with dive
+dive <image-name>
+
+# View layer history
+docker history --no-trunc <image-name>
 ```
+
+Permission problems are usually fixed in the Dockerfile itself:
+
+```Dockerfile
+RUN chown -R user:user /app
+USER user
+```
+
+## The principle
+
+Fast debugging of Docker builds comes down to shortening the loop: get full output, stop at the last good layer, and get a shell as close to the failure as possible. And clean up after yourself. Debug layers, sleep hacks, and privileged helpers belong in your terminal history, not in the image you push.

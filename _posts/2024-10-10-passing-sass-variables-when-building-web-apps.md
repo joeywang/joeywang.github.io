@@ -1,44 +1,31 @@
 ---
 layout: post
-title: Passing Sass Variables When Building Web Apps
-description: "In our project, scrom-wrapper is using the training-components library. We want to implement a flexible theming system by changing the primary color in"
+title: "Passing Sass Variables at Build Time with Webpack"
+description: "How to inject a Sass variable, like a theme's primary color, at build time using a SASS_OPTIONS environment variable and a custom webpack additionalData function."
 date: 2024-10-10 00:00 +0000
+categories: [Engineering]
+tags: [javascript, css, webpack, debugging]
 ---
-
-# Passing Sass Variables When Building Web Apps
 
 <audio controls preload="metadata" src="/assets/audio/passing-sass-variables-when-building-web-apps-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-In our project, scrom-wrapper is using the training-components library. We want to implement a flexible theming system by changing the primary color in training-components. This article explains how we can set environment variables during the build process of scorm-wrapper to customize the primary color of the imported training-components.
+In our project, `scorm-wrapper` imports a shared `training-components` library and needs to override its primary color per deployment, without forking the library or hardcoding a color into its source. Passing a Sass variable at build time does that: the theme lives outside both codebases, in an environment variable set when `scorm-wrapper` is built.
 
-## Why We Want to Pass Variables When Building
-
-Passing Sass variables during the build process offers several advantages:
-
-1. **Flexibility**: It allows us to change the theme without modifying the source code.
-2. **Reusability**: The same components can be used with different themes in various projects.
-3. **Separation of Concerns**: Theme configuration is separated from component logic.
-4. **Build-time Efficiency**: Variables are resolved at build time, ensuring no runtime overhead.
-
-## How to Implement This
-
-### 1. Make the Primary Color Dynamic
-
-First, we need to make our primary color variable in the Sass files dynamic:
+## Making the variable overridable
 
 ```sass
 $primary-color: #19a950 !default;
 $primary-color-light: lighten($primary-color, 10%);
 ```
 
-The `!default` flag means this value will be used only if `$primary-color` hasn't been defined elsewhere.
+`!default` means this value only applies if `$primary-color` hasn't already been set elsewhere, which is what makes it overridable from the build.
 
-### 2. Pick Up Options from Environment Variables
+## Reading the override from an environment variable
 
-In your webpack configuration, add logic to parse the `SASS_OPTIONS` environment variable:
+In the webpack config, parse a `SASS_OPTIONS` environment variable:
 
 ```javascript
 const getSassOptions = () => {
@@ -56,9 +43,7 @@ const getSassOptions = () => {
 const sassOptions = getSassOptions();
 ```
 
-### 3. Configure Webpack to Use These Options
-
-Modify your webpack configuration to use these options:
+Wire it into the sass-loader config:
 
 ```javascript
 {
@@ -77,11 +62,9 @@ Modify your webpack configuration to use these options:
 },
 ```
 
-## How to Debug
+## Debugging when the override doesn't take
 
-### Hard Coding for Testing
-
-To test if the system works, you can first hard-code the primary color in your webpack config:
+Hardcode the value first, to confirm the wiring works before trusting the environment variable:
 
 ```javascript
 {
@@ -94,9 +77,7 @@ To test if the system works, you can first hard-code the primary color in your w
 },
 ```
 
-### Logging Processed Files
-
-To see which files are being processed and what variables are being injected, you can use a function for `additionalData`:
+To see exactly which files are being processed and what gets injected into each, use a function instead of a static string for `additionalData`:
 
 ```javascript
 {
@@ -112,9 +93,7 @@ To see which files are being processed and what variables are being injected, yo
 },
 ```
 
-### Debugging Sass
-
-As a last resort to confirm if the primary color is set when compiling, you can add this Sass code to your main stylesheet:
+As a last resort, force the Sass compiler to say what it thinks the variable is:
 
 ```sass
 @if (variable-exists(primary-color)) {
@@ -124,16 +103,12 @@ As a last resort to confirm if the primary color is set when compiling, you can 
 }
 ```
 
-This will cause the Sass compilation to fail and output an error message, which can be useful for debugging.
+This fails the build and prints the value, or its absence, which is the fastest way to tell whether the problem is on the Sass side or the webpack side.
 
-## Putting It All Together
-
-Once everything is set up, you can customize the primary color when building your project like this:
+## Using it
 
 ```bash
 SASS_OPTIONS='{"additionalData":"$primary: #ff216a;"}' npm run build
 ```
 
-This command sets the `SASS_OPTIONS` environment variable with a JSON string that defines the `additionalData` to be injected into every Sass file. The build process will then use this to override the default primary color.
-
-By implementing this system, we've created a flexible theming solution that allows easy customization of the primary color (and potentially other variables) without modifying the source code of either scrom-wrapper or training-components.
+The environment variable carries a JSON string with the `additionalData` to inject into every Sass file compiled in that build, which is what lets `scorm-wrapper` theme `training-components` without touching either one's source.

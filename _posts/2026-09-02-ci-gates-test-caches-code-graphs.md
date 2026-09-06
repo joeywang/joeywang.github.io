@@ -1,10 +1,10 @@
 ---
 layout: post
 title: "CI Gates, Test Result Caches, and the Code Graph That Might Tell Us What to Test"
-description: "What I learned from splitting CI by risk, caching exact test results, and exploring AI and code graphs for safer test selection."
+description: "What I learned from splitting Rails CI by risk, caching exact test results, and exploring whether AI and code graphs can make test selection safer."
 date: 2026-09-02 17:00:00 +0000
 author: "Joey Wang"
-tags: [ci, testing, ruby-on-rails, github-actions, ai, coding-agents, code-graph, developer-tools]
+tags: [ci, testing, rails, github-actions, ai, code-graph]
 categories: [Engineering, AI]
 ---
 
@@ -59,7 +59,7 @@ The levels are intentionally understandable:
 | L2 | Smoke | Fast specs plus request, controller, and view specs |
 | L3 | Full | The complete parallel RSpec suite |
 
-The classifier considers the changed paths, the branch name, and optional labels such as `risk:bugfix` or `risk:feat`. High-risk paths—dependencies, database changes, Dockerfiles, workflow files, and test boot configuration—escalate the level. A label can raise the required level, but it cannot lower a level implied by the changed files.
+The classifier considers the changed paths, the branch name, and optional labels such as `risk:bugfix` or `risk:feat`. High-risk paths, including dependencies, database changes, Dockerfiles, workflow files, and test boot configuration, escalate the level. A label can raise the required level, but it cannot lower a level implied by the changed files.
 
 That last rule matters. A label is a useful human signal. It is not permission to bypass evidence.
 
@@ -216,7 +216,7 @@ Mandatory:
   release-level full suite
 
 Confidence:
-  medium — dynamic dispatch and shared concerns are not fully resolved
+  medium: dynamic dispatch and shared concerns are not fully resolved
 ```
 
 The agent is useful because it gathers and explains relationships. It is not the authority that decides whether production is safe.

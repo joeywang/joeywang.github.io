@@ -4,11 +4,9 @@ title: "Voice Control for Hermes Agent over Telegram"
 date: 2026-07-27 09:00:00 +0100
 author: "Joey Wang"
 description: "How I wired Hermes Agent to accept Telegram voice notes, transcribe them locally, and reply with local text-to-speech without adding another paid speech API."
-tags: [hermes, ai-agents, telegram, voice, speech-to-text, text-to-speech, devops]
+tags: [hermes, agents, telegram, voice, devops]
 categories: [AI, DevOps]
 ---
-
-# Voice control for Hermes Agent over Telegram
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-27-voice-control-for-hermes-over-telegram-summary.ogg">
   Your browser does not support the audio element.

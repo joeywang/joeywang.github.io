@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "MCP, Skills, Agents, Rulesets, and Hooks: A Practical Map for AI Development"
+title: "MCP, Skills, Agents, Rulesets, and Hooks: A Practical Map"
 date: 2026-03-12
-categories: LLM AI software-engineering series
+categories: [AI, Engineering]
 series: "Software Engineering in the LLM Era"
 tags: [ai, llm, mcp, agents, tools, context-engineering]
 description: "A practical introduction to the main building blocks of modern AI development, with diagrams that show how MCP, skills, agents, rulesets, and hooks work together."
 ---
-
-# MCP, Skills, Agents, Rulesets, and Hooks: A Practical Map for AI Development
 
 <audio controls preload="metadata" src="/assets/audio/mcp-skills-agents-rulesets-hooks-summary.ogg">
   Your browser does not support the audio element.

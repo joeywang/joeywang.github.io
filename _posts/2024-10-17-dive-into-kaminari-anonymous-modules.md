@@ -1,39 +1,33 @@
 ---
 layout: post
-title: "Understanding and Debugging Anonymous Modules in Ruby: A Deep Dive with Kaminari"
-description: "When working with Rails caching, you might encounter the cryptic error: TypeError: can't dump anonymous module. This article explores what anonymous modules"
+title: "Why Kaminari's Anonymous Modules Break Rails Caching"
+description: "Why Rails caching raises TypeError: can't dump anonymous module with Kaminari-paginated collections, and how to trace and fix the module causing it."
 date: 2024-10-17 00:00 +0000
-tags: [kaminari, anonymous, modules, serialization, debugging]
+categories: [Rails]
+tags: [ruby, rails, kaminari, debugging]
 ---
-# Understanding and Debugging Anonymous Modules in Ruby: A Deep Dive with Kaminari
-
 <audio controls preload="metadata" src="/assets/audio/dive-into-kaminari-anonymous-modules-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-When working with Rails caching, you might encounter the cryptic error: `TypeError: can't dump anonymous module`. This article explores what anonymous modules are, why they can't be serialized, and how to debug these issues using Kaminari as a real-world example.
+`TypeError: can't dump anonymous module` is one of those Rails cache errors that gives you no clue where to look. It shows up when something you're caching includes a module with no name, and Kaminari is a common source of exactly that.
 
-## Table of Contents
-1. [Understanding Anonymous Modules](#understanding-anonymous-modules)
-2. [Why Anonymous Modules Can't Be Serialized](#why-anonymous-modules-cant-be-serialized)
-3. [The Kaminari Case Study](#the-kaminari-case-study)
-4. [Debugging Techniques](#debugging-techniques)
-5. [Solutions and Best Practices](#solutions-and-best-practices)
+## What makes a module anonymous
 
-## Understanding Anonymous Modules
-
-Anonymous modules in Ruby are modules created without an explicit name. They're commonly created using `Module.new` or through dynamic meta-programming:
+Ruby modules are usually declared with a name:
 
 ```ruby
-# Named module
 module NamedModule
   def some_method
     "Hello"
   end
 end
+```
 
-# Anonymous module
+`Module.new` skips the name entirely:
+
+```ruby
 Module.new do
   def some_method
     "Hello"
@@ -41,55 +35,32 @@ Module.new do
 end
 ```
 
-Anonymous modules are frequently used for:
-- Dynamic trait composition
-- Meta-programming features
-- Runtime behavior modification
-- Concern and mixin implementation
+Anonymous modules show up a lot in metaprogramming: dynamic trait composition, mixins built at runtime, concerns that configure themselves based on other state.
 
-## Why Anonymous Modules Can't Be Serialized
+## Why Marshal can't serialize them
 
-Ruby's Marshal, which Rails caching uses by default, can't serialize anonymous modules for several reasons:
+Rails' default cache serializer is `Marshal`, and it refuses anonymous modules for a structural reason, not an arbitrary one: it dumps objects by reference where it can, and a module's reference is its constant name.
 
-1. No constant reference:
 ```ruby
-# This works
 module Named
   def method; end
 end
-Marshal.dump(Named)
+Marshal.dump(Named) # fine, there's a constant to point to
 
-# This fails
 anonymous = Module.new { def method; end }
 Marshal.dump(anonymous) # TypeError: can't dump anonymous module
 ```
 
-2. No guaranteed uniqueness:
-```ruby
-# Each creates a new, unique module
-3.times do
-  Module.new { def method; end }
-end
-```
+No name also means no guaranteed identity. `3.times { Module.new { def method; end } }` creates three distinct modules with identical bodies. There's no name Marshal could restore that would tell you which one you're getting back, or whether the module still exists in the same form when you load it later.
 
-3. State restoration issues:
-```ruby
-# How would this be restored?
-class MyClass
-  include Module.new { def dynamic; end }
-end
-```
+## Where Kaminari creates one
 
-## The Kaminari Case Study
-
-Kaminari creates anonymous modules during pagination setup. Here's a simplified version of what happens:
+Kaminari builds part of its pagination behavior with dynamically generated modules:
 
 ```ruby
 module Kaminari
   module PageScopeMethods
-    # This creates anonymous modules dynamically
     Kaminari.config.instance_values.each do |key, value|
-      # Dynamic module creation for configuration
       Module.new do
         define_method(key) { value }
       end
@@ -98,16 +69,18 @@ module Kaminari
 end
 ```
 
-When you try to cache a paginated collection:
+Cache a paginated collection directly, and that anonymous module comes along for the ride:
 
 ```ruby
-# This fails because the paginated collection includes anonymous modules
 Rails.cache.write('posts', Post.page(1))
+# TypeError: can't dump anonymous module
 ```
 
-## Debugging Techniques
+## Finding the module that's causing it
 
-### 1. Module Creation Tracking
+A few ways to see what's anonymous and where it's coming from, roughly in order of how much digging you need:
+
+Trace module creation as it happens:
 
 ```ruby
 module ModuleTracker
@@ -122,68 +95,37 @@ module ModuleTracker
   end
 end
 
-# Usage
 ModuleTracker.trace_module_creation
-Post.page(1) # Will show module creation traces
+Post.page(1) # shows the module creation trace
 ```
 
-### 2. Object Space Analysis
+Search object space for existing anonymous modules:
 
 ```ruby
 module AnonymousModuleFinder
   def self.find_anonymous_modules
     ObjectSpace.each_object(Module).select { |mod| mod.name.nil? }
   end
-  
-  def self.analyze_anonymous_module(mod)
-    {
-      object_id: mod.object_id,
-      methods: mod.instance_methods(false),
-      included_in: find_including_classes(mod),
-      source_location: find_source_location(mod)
-    }
-  end
-  
-  private
-  
+
   def self.find_including_classes(mod)
     ObjectSpace.each_object(Class).select do |klass|
       klass.included_modules.include?(mod)
     end
   end
-  
-  def self.find_source_location(mod)
-    mod.instance_methods(false).map do |method|
-      [method, mod.instance_method(method).source_location]
-    end.to_h
-  end
 end
 ```
 
-### 3. Cache Operation Monitoring
+Catch the error at the point of caching, and dump what was being cached:
 
 ```ruby
 module CacheDebugger
   def write(name, value, options = nil)
-    begin
-      super
-    rescue TypeError => e
-      if e.message.include?('anonymous')
-        debug_value(value)
-        raise
-      end
-    end
-  end
-  
-  private
-  
-  def debug_value(value)
-    puts "Failed to cache: #{value.class}"
-    if value.respond_to?(:included_modules)
-      puts "Included modules:"
-      value.included_modules.each do |mod|
-        puts "- #{mod.name || '<anonymous>'}"
-      end
+    super
+  rescue TypeError => e
+    if e.message.include?('anonymous')
+      puts "Failed to cache: #{value.class}"
+      value.included_modules.each { |mod| puts "- #{mod.name || '<anonymous>'}" }
+      raise
     end
   end
 end
@@ -191,99 +133,14 @@ end
 Rails.cache.extend(CacheDebugger)
 ```
 
-### 4. Method Resolution Tracing
+That last one is usually the fastest path: it names the object and the included module that triggered the failure, instead of leaving you to guess from a stack trace that just points at `Marshal.dump`.
 
-```ruby
-module MethodResolutionTracer
-  def method_missing(method, *args)
-    if caller.any? { |line| line.include?('kaminari') }
-      puts "Method missing: #{method}"
-      puts "Called from: #{caller.first}"
-    end
-    super
-  end
-end
+## Fixing it
 
-class ActiveRecord::Base
-  prepend MethodResolutionTracer
-end
-```
+Once you know where the anonymous module comes from, there are three real options, in order of how invasive they are:
 
-### 5. Include Hook Monitoring
+1. **Cache the data, not the collection.** Almost always the right fix: `Rails.cache.fetch('posts') { Post.page(1).map { |p| { id: p.id, title: p.title } } }`. You rarely need to cache an ActiveRecord relation object; you need the data it would return.
+2. **Switch the cache serializer to JSON**, if you control the cache store: `config.cache_store = :memory_store, serializer: JSON`. This sidesteps the whole class of Marshal-specific failures, at the cost of losing Marshal's ability to round-trip arbitrary Ruby objects.
+3. **Replace the dynamic module with a named one or a plain method**, if you're the one generating it. A `Module.new` inside a loop is rarely necessary; a named module or a regular class method usually does the same job without creating an object that can't be serialized.
 
-```ruby
-module IncludeMonitor
-  def included(base)
-    if self.name.nil?
-      puts "Anonymous module included in #{base}"
-      puts "Include location: #{caller.first}"
-    end
-    super
-  end
-end
-
-Module.prepend(IncludeMonitor)
-```
-
-## Solutions and Best Practices
-
-1. Use Named Modules:
-```ruby
-# Instead of
-Module.new do
-  def method; end
-end
-
-# Use
-module NamedModule
-  def method; end
-end
-```
-
-2. Cache Serializable Data:
-```ruby
-# Instead of caching the collection
-Rails.cache.fetch('posts') do
-  Post.page(1)
-end
-
-# Cache the data
-Rails.cache.fetch('posts') do
-  Post.page(1).map { |p| { id: p.id, title: p.title } }
-end
-```
-
-3. Use Alternative Serialization:
-```ruby
-config.cache_store = :memory_store, {
-  serializer: JSON
-}
-```
-
-4. Extract Dynamic Behavior:
-```ruby
-# Instead of dynamic modules
-class Post
-  def self.paginate(page)
-    # Direct implementation
-  end
-end
-```
-
-## Conclusion
-
-Anonymous modules are powerful but can cause serialization issues. When debugging these problems:
-
-1. Track module creation
-2. Monitor object space
-3. Trace method resolution
-4. Watch include hooks
-5. Debug cache operations
-
-The key is understanding where and why anonymous modules are created, and either:
-- Replace them with named modules
-- Avoid caching objects containing them
-- Use alternative serialization methods
-- Restructure the code to avoid dynamic module creation
-
-Remember: Just because you can create anonymous modules doesn't mean you should, especially when caching is involved.
+Anonymous modules aren't a mistake by themselves; plenty of legitimate metaprogramming uses them. The mistake is caching an object that happens to include one, without noticing until Marshal refuses it in production.

@@ -4,15 +4,13 @@ title: "Codebase Memory for Coding Agents: Graft, Graphify, and codebase-memory-
 date: 2026-08-14 18:00:00 +0000
 author: "Joey Wang"
 description: "A practical comparison of Graft, Graphify, and codebase-memory-mcp: what each indexes, how each feeds coding agents, and when to use one instead of another."
-tags: [ai, coding-agents, code-intelligence, code-graph, context-engineering, mcp, developer-tools]
+tags: [ai, agents, mcp, code-intelligence, code-graph]
 categories: [AI, Engineering]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/codebase-memory-for-coding-agents-graft-graphify-codebase-memory-mcp-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# Codebase memory for coding agents: Graft, Graphify, and codebase-memory-mcp
 
 A coding agent has a bad habit.
 

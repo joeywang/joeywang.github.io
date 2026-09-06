@@ -5,10 +5,8 @@ date: 2026-07-19 12:30:00 +0100
 author: "Joey Wang"
 description: "A practical Rails performance field guide for diagnosing CPU, IO, GVL, GC, memory, Puma, and container-runtime bottlenecks before choosing a fix."
 tags: [rails, ruby, performance, puma, kubernetes]
-categories: [Ruby on Rails]
+categories: [Rails]
 ---
-
-# Rails Performance from the Metal Up: A Field Guide
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-19-rails-performance-from-the-metal-up-field-guide-summary.ogg">
   Your browser does not support the audio element.

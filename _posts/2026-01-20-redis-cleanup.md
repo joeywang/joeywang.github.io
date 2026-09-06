@@ -1,38 +1,21 @@
 ---
 layout: post
-title: "Redis Cleanup & Memory Management in Kubernetes"
-description: "This article is a practical, production-tested guide to keeping Redis healthy in a Kubernetes (K8s) environment. It focuses on memory control, cleanup"
+title: "Redis Cleanup and Memory Management in Kubernetes"
+description: "A production-tested guide to keeping Redis healthy in Kubernetes: memory control, safe cleanup patterns, Sidekiq pitfalls, backups, and troubleshooting."
 date: 2026-01-20 10:00:00 -0500
-categories: redis kubernetes sidekiq
+categories: [Database, DevOps]
+tags: [redis, kubernetes, sidekiq, devops, performance]
 ---
 
-# Redis Cleanup & Memory Management in Kubernetes
+This is a practical, production-tested guide to keeping Redis healthy in Kubernetes, covering memory control, cleanup strategies, Sidekiq-specific pitfalls, safe deletion scripts, backups, and troubleshooting. It's written for anyone running Redis in K8s (StatefulSet, Helm, managed Redis, or sidecar) for cache, background jobs, sessions, or ephemeral data, who has already hit a memory spike, fragmentation, or an OOM incident.
 
-This article is a **practical, production-tested guide** to keeping Redis healthy in a **Kubernetes (K8s)** environment. It focuses on **memory control, cleanup strategies, Sidekiq-specific pitfalls, safe deletion scripts, backups, and troubleshooting**.
+## 1. Core principles
 
-It is written for engineers who:
-
-* Run Redis in K8s (StatefulSet, Helm, managed Redis, or sidecar)
-* Use Redis for **cache, background jobs (Sidekiq), sessions, or ephemeral data**
-* Have experienced **memory spikes, fragmentation, or Redis OOM incidents**
-
----
-
-## 1. Core Principles (Read This First)
-
-Before touching any cleanup script, internalize these rules:
-
-1. **Redis memory issues are almost always caused by retention mistakes, not leaks**
-2. **KEYS *** is forbidden in production
-3. **DEL is dangerous for large keys — UNLINK is preferred**
-4. **Backups must come before cleanup**
-5. **TTL is the only sustainable memory strategy**
+Before touching any cleanup script, internalize these rules: Redis memory issues are almost always caused by retention mistakes, not leaks. `KEYS *` is forbidden in production. `DEL` is dangerous for large keys, `UNLINK` is preferred. Backups come before cleanup. TTL is the only sustainable memory strategy.
 
 If Redis data can grow forever, it eventually will.
 
----
-
-## 2. Redis in Kubernetes: What Makes It Tricky
+## 2. Redis in Kubernetes: what makes it tricky
 
 Kubernetes adds unique failure modes:
 
@@ -43,13 +26,9 @@ Kubernetes adds unique failure modes:
 
 ### Recommendation
 
-* Always set **Redis pod memory limits**
-* Always configure **Redis maxmemory**
-* Never rely on K8s eviction alone
+Always set Redis pod memory limits, always configure Redis `maxmemory`, and never rely on K8s eviction alone.
 
----
-
-## 3. Baseline Health Checks (Run These First)
+## 3. Baseline health checks
 
 ### Memory overview
 
@@ -71,13 +50,11 @@ Key fields:
 redis-cli INFO keyspace
 ```
 
-This tells you **where keys live**, not how large they are.
+This tells you where keys live, not how large they are.
 
----
+## 4. The silent killer: large keys
 
-## 4. The Silent Killers: Large Keys
-
-Redis is fast — until you store **huge values**.
+Redis is fast until you store huge values.
 
 Common offenders:
 
@@ -104,9 +81,7 @@ redis-cli -n "$DB" --scan \
 
 Never use `KEYS *`.
 
----
-
-## 5. Backups Before Cleanup (Non‑Negotiable)
+## 5. Backups before cleanup
 
 ### Recommended: RDB snapshot
 
@@ -122,24 +97,13 @@ redis-cli CONFIG GET dbfilename
 cp /var/lib/redis/dump.rdb /backup/redis/pre-cleanup-$(date +%F).rdb
 ```
 
-Why this works:
+This handles very large keys, is fast, and gives an easy restore path.
 
-* Handles very large keys
-* Fast
-* Easy restore
+## 6. Safe cleanup patterns
 
----
+`DEL` blocks Redis while freeing memory. `UNLINK` frees memory asynchronously, so it's the one to reach for.
 
-## 6. Safe Cleanup Patterns
-
-### Rule: UNLINK > DEL
-
-`DEL` blocks Redis while freeing memory.
-`UNLINK` frees memory asynchronously.
-
----
-
-### Pattern 1: Delete keys by pattern
+### Pattern 1: delete keys by pattern
 
 ```bash
 DB=0
@@ -150,9 +114,7 @@ redis-cli -n "$DB" --scan MATCH 'Course#linked_course_uuids_and_self*' \
   done
 ```
 
----
-
-### Pattern 2: Rate-limited cleanup (extra safe)
+### Pattern 2: rate-limited cleanup
 
 ```bash
 DB=0
@@ -164,23 +126,11 @@ redis-cli -n "$DB" --scan MATCH 'stat:*' \
   done
 ```
 
----
+## 7. Sidekiq: the biggest Redis memory trap
 
-## 7. Sidekiq: The Biggest Redis Memory Trap
+By default, `stat:*` keys never expire, retry jobs accumulate, and dead jobs remain for months. This is expected behavior, and it's dangerous without tuning.
 
-### Why Sidekiq causes Redis memory explosions
-
-By default:
-
-* `stat:*` keys **never expire**
-* Retry jobs accumulate
-* Dead jobs remain for months
-
-This is expected behavior — and dangerous without tuning.
-
----
-
-### Fix 1: Apply TTL to Sidekiq stats
+### Fix 1: apply TTL to Sidekiq stats
 
 `config/initializers/sidekiq.rb`
 
@@ -199,9 +149,7 @@ Sidekiq.configure_server do |config|
 end
 ```
 
----
-
-### Fix 2: Reduce retry pressure
+### Fix 2: reduce retry pressure
 
 ```ruby
 class MyWorker
@@ -216,9 +164,7 @@ Disable retries for non-critical jobs:
 sidekiq_options retry: false
 ```
 
----
-
-### Fix 3: Tune dead job retention
+### Fix 3: tune dead job retention
 
 ```ruby
 Sidekiq.configure_server do |config|
@@ -227,51 +173,28 @@ Sidekiq.configure_server do |config|
 end
 ```
 
----
-
-## 8. Redis maxmemory (K8s Safety Net)
+## 8. Redis maxmemory as a Kubernetes safety net
 
 Unbounded Redis is dangerous in containers.
-
-### Recommended baseline
 
 ```bash
 redis-cli CONFIG SET maxmemory 512mb
 redis-cli CONFIG SET maxmemory-policy allkeys-lru
 ```
 
-Choose a value **below your pod memory limit**.
+Choose a value below the pod memory limit.
 
----
+## 9. Fragmentation and RSS troubleshooting
 
-## 9. Fragmentation & RSS Troubleshooting
-
-### When RSS is much higher than used_memory
-
-Run:
+When RSS is much higher than `used_memory`, run:
 
 ```bash
 redis-cli MEMORY DOCTOR
 ```
 
-If caused by historical peak:
+If it's caused by a historical peak, it's harmless and the RSS will be reused. `redis-cli MEMORY PURGE` can help. A rolling restart is the guaranteed fix.
 
-* Harmless
-* RSS will be reused
-
-Try:
-
-```bash
-redis-cli MEMORY PURGE
-```
-
-Guaranteed fix:
-
-* Rolling restart
-
----
-
-## 10. Production Troubleshooting Checklist
+## 10. Production troubleshooting checklist
 
 ### Check eviction & hit rate
 
@@ -292,34 +215,8 @@ redis-cli ZCARD dead
 redis-cli --scan | head -n 20
 ```
 
----
+## 11. Kubernetes-specific recommendations
 
-## 11. Kubernetes-Specific Recommendations
+Use a StatefulSet for Redis, set `resources.limits.memory`, avoid OOMKills by setting Redis `maxmemory`, and prefer managed Redis for critical workloads.
 
-* Use **StatefulSet** for Redis
-* Set **resources.limits.memory**
-* Avoid OOMKills by setting Redis maxmemory
-* Prefer managed Redis for critical workloads
-
----
-
-## 12. Final Takeaways
-
-* Redis problems are **predictable**
-* TTL beats cleanup scripts
-* UNLINK beats DEL
-* Backups beat regret
-* Sidekiq defaults are not production-safe
-
-If you fix retention, Redis becomes boring again — and boring is good.
-
----
-
-If you want, this guide can be adapted into:
-
-* An internal runbook
-* A Helm chart checklist
-* A Sidekiq-specific hardening guide
-* A Grafana alerting spec
-
-Just say the word.
+Redis problems are predictable: TTL beats cleanup scripts, UNLINK beats DEL, backups beat regret, and Sidekiq's defaults are not production-safe out of the box. Fix retention and Redis goes back to being boring, which is exactly what you want from it.

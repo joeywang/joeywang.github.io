@@ -1,23 +1,16 @@
 ---
 layout: post
-title: 'Google Cloud Container Credential Rotation: A Comprehensive Guide'
-description: "In the dynamic world of cloud security, regularly managing and rotating credentials is crucial for maintaining the integrity and security of your Kubernetes"
+title: "How to Rotate GKE Cluster Credentials"
+description: "The gcloud commands for checking certificate expiry, starting rotation, upgrading nodes to the new certificate, and completing GKE credential rotation."
 date: 2024-09-03 09:37 +0100
-categories: devops
-tags: [gcp, kubernetes, credential]
+categories: [DevOps]
+tags: [gcp, kubernetes, security]
 ---
-# Google Cloud Container Credential Rotation: A Comprehensive Guide
-
 <audio controls preload="metadata" src="/assets/audio/google-cloud-container-credential-rotation-a-comprehensive-guide-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
-In the dynamic world of cloud security, regularly managing and rotating credentials is crucial for maintaining the integrity and security of your Kubernetes clusters. Google Cloud Platform (GCP) offers a robust mechanism for credential rotation in its Kubernetes Engine, a feature that is indispensable for upholding the security of your cloud infrastructure.
-
-## Why Rotate Credentials?
-
-Credentials, such as passwords and API keys, can become compromised over time. By periodically rotating these credentials, you minimize the risk of unauthorized access and data breaches.
+GKE's master certificate and API server credentials aren't meant to live forever. Rotating them periodically limits how much damage a leaked credential can do, and GCP's Kubernetes Engine has a built-in rotation flow for exactly this.
 
 ## Prerequisites
 
@@ -113,8 +106,6 @@ gcloud container clusters update $CLUSTER_NAME \
     --complete-credential-rotation
 ```
 
-## Conclusion
+## The sequence
 
-Credential rotation is a critical component of securing your GCP Kubernetes Engine clusters. By following the steps in this guide, you can ensure that your cluster's credentials are kept up-to-date, reducing the risk of unauthorized access and enhancing the security of your infrastructure.
-
-For further information and best practices, refer to the official [Google Cloud documentation on credential rotation](https://cloud.google.com/kubernetes-engine/docs/how-to/credential-rotation).
+Start rotation, upgrade nodes to pick up the new certificate and IP, point every client at the new credentials, then complete the rotation. Skip the node upgrade step and clients will keep hitting the old control plane IP until it's retired, which is the failure mode worth watching for. The [official documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/credential-rotation) covers edge cases like private clusters and Workload Identity in more depth.

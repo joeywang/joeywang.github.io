@@ -1,14 +1,12 @@
 ---
 layout: post
-title: "Using Cloud Run as a Gemini Proxy When Your Region Is Not Supported"
+title: "Cloud Run as a Gemini proxy for an unsupported region"
 date: 2026-07-18 16:46:00 +0100
 author: "Joey Wang"
 description: "How I used Google Cloud Run as a small AI gateway so clients in an unsupported region can still call Gemini through a supported GCP region."
-tags: [gcp, cloud-run, gemini, ai, proxy, infrastructure, llm]
-categories: [AI, GCP]
+tags: [gcp, cloud-run, gemini, ai, llm]
+categories: [AI, DevOps]
 ---
-
-# Using Cloud Run as a Gemini Proxy When Your Region Is Not Supported
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-18-cloud-run-gemini-proxy-summary.ogg">
   Your browser does not support the audio element.

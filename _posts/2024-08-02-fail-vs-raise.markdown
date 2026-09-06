@@ -1,33 +1,31 @@
 ---
 layout: post
-title:  "Fail VS. Raise - more about exception in Ruby"
+title:  "fail vs raise in Ruby: They're the Same Method"
+description: "Ruby's fail is a plain alias for raise, both dispatch to the same Kernel method, confirmed here in the C source and with an lldb backtrace."
 date:   2024-08-02 14:41:26 +0100
 categories: Rails
+tags: [ruby, debugging]
 ---
-# Fail VS. Raise - more about exception in Ruby
 
-When I read some code I can see somewhere we are using fail and somewhere else raise instead. 
-It got me thinking about the difference. 
-
-It turns out that fail is just an alias of raise
+Reading through some code, I kept seeing `fail` in one place and `raise` in another. The distinction turned out to be simpler than expected: `fail` is just an alias for `raise`.
 
 ```ruby
 r = method(:raise)
 f = method(:fail)
 
-f == r # => true
-f.owner == r.owner # => Kernel
+f == r          # => true
+f.owner == r.owner  # => Kernel
 ```
 
-And you can see this in C as well
+You can see the same thing in the C source:
 
 ```c
-//Actually they are same in eval.c  
+// Actually they are the same in eval.c
 rb_define_global_function("raise", f_raise, -1);
 rb_define_global_function("fail", f_raise, -1);
 ```
 
-And you can also confirm this with lldb
+And confirm it with lldb:
 
 ```bash
 (lldb) b rb_f_raise
@@ -58,3 +56,5 @@ Target 0: (ruby) stopped.
     frame #11: 0x0000000100003f08 ruby`main(argc=2, argv=0x000000016fdfeb90) at main.c:58:12
     frame #12: 0x000000019226a0e0 dyld`start + 2360
 ```
+
+Both names walk into the same `rb_f_raise`. Any convention that reserves `fail` for one kind of exception and `raise` for another is a style choice your linter enforces, not something the language distinguishes.

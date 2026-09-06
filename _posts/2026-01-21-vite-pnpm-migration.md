@@ -1,12 +1,11 @@
 ---
 layout: post
 title: Migrating a Rails App from Yarn + Webpacker to pnpm + Vite
-description: "We recently migrated a Rails application from a legacy JavaScript toolchain (yarn + webpacker) to a modern stack (pnpm + vite). This write-up captures the"
+description: "A migration path from Webpacker and Yarn to pnpm and Vite in a Rails app, including the dependency, Docker, and asset-hash pitfalls we hit along the way."
 date: 2026-01-21
-categories: Rails
+categories: [Rails]
+tags: [rails, javascript, docker, ci]
 ---
-# Migrating a Rails App from Yarn + Webpacker to pnpm + Vite
-
 <audio controls preload="metadata" src="/assets/audio/vite-pnpm-migration-summary.ogg">
   Your browser does not support the audio element.
 </audio>
@@ -71,8 +70,8 @@ Install Vite and plugin:
 
 Add config files:
 
-- `/Users/joeyw/public_html/cms/config/vite.json`
-- `/Users/joeyw/public_html/cms/vite.config.mjs`
+- `config/vite.json`
+- `vite.config.mjs`
 
 ### 2.2 Migrate layout helpers
 
@@ -132,10 +131,10 @@ npm install -g pnpm@10.29.3
 
 Applied consistently across:
 
-- `/Users/joeyw/public_html/cms/Dockerfile`
-- `/Users/joeyw/public_html/cms/Dockerfile.prod`
-- `/Users/joeyw/public_html/cms/Dockerfile.slim`
-- `/Users/joeyw/public_html/cms/Dockerfile.alpine`
+- `Dockerfile`
+- `Dockerfile.prod`
+- `Dockerfile.slim`
+- `Dockerfile.alpine`
 
 ### 4.2 Prevent recursive Vite builds
 
@@ -213,9 +212,5 @@ After stabilizing the migration, we saw practical gains:
 - [ ] Make pnpm installation Docker-image-safe (avoid relying on corepack).
 - [ ] Validate all production web pods serve the same asset hash set.
 
-## Final Thoughts
-
-The migration is very manageable if you treat it as an end-to-end platform change, not just a frontend package swap. Most failures happen at integration boundaries: Docker, CI, deploy scripts, and runtime traffic distribution.
-
-Once those are aligned, `pnpm + vite` is a clear upgrade over `yarn + webpacker` for Rails apps that still carry legacy asset tooling.
+The migration is manageable if you treat it as an end-to-end platform change, not just a frontend package swap. Most failures happen at integration boundaries: Docker, CI, deploy scripts, and runtime traffic distribution. Once those are aligned, `pnpm` and `vite` are a clear upgrade over `yarn` and `webpacker` for a Rails app still carrying legacy asset tooling.
 

@@ -4,13 +4,12 @@ date: 2025-10-01
 layout: post
 description: "Static CSS color values vs. variables: why hard-coded colors bite you later, and how to structure colors so they stay maintainable."
 tags: [css, frontend, web-development]
+categories: [Engineering]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/css-style-to-web-app-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-## 🎨 Choosing Your CSS Color Strategy: Static Values vs. Dynamic Variables
 
 Most CSS color problems do not start with color theory. They start six months later, when you need to change one shade and realize you hard-coded it in forty places.
 
@@ -54,9 +53,9 @@ Imagine you have a primary brand color, `#4A90E2`. Your CSS might look like this
 
 ### The Problems with This Approach
 
-  * **🚫 Poor maintainability:** If the brand color changes to `#D0021B`, you now have to find and replace every instance of `#4A90E2`. You will miss one eventually. Or replace a different blue you did not mean to touch.
-  * **🚫 No theming:** Dark mode gets ugly fast. You end up overriding color after color after color.
-  * **🚫 Inconsistency:** People introduce slight variations like `#4a90e2`, `#4A90E2`, or `rgb(74, 144, 226)`. They look the same. Your code does not.
+  * **Poor maintainability:** If the brand color changes to `#D0021B`, you now have to find and replace every instance of `#4A90E2`. You will miss one eventually. Or replace a different blue you did not mean to touch.
+  * **No theming:** Dark mode gets ugly fast. You end up overriding color after color after color.
+  * **Inconsistency:** People introduce slight variations like `#4a90e2`, `#4A90E2`, or `rgb(74, 144, 226)`. They look the same. Your code does not.
 
 -----
 
@@ -103,12 +102,10 @@ Here is the same example with CSS variables instead.
 
 ### The Benefits of This Approach
 
-  * **✅ Excellent maintainability:** If the brand color changes, you change it in one place: `:root`.
-  * **✅ Easy theming:** This is the real win. Dark mode becomes a variable override problem instead of a rewrite-the-stylesheet problem.
+  * **Excellent maintainability:** If the brand color changes, you change it in one place: `:root`.
+  * **Easy theming:** This is the real win. Dark mode becomes a variable override problem instead of a rewrite-the-stylesheet problem.
 
-Let's see it in action.
-
-### ✨ Killer Example: Adding Dark Mode
+### Example: Adding Dark Mode
 
 This is where the approach starts paying for itself. You do not touch the component styles. You just provide new values for the variables when a `dark-mode` class is on the `body`.
 

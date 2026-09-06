@@ -1,179 +1,69 @@
 ---
-title: "Building a Website on a 1C1G Server: Technology Choices, Pros & Cons"
-description: "Once your 1C1G server is optimized, the next question is:"
+title: "Choosing a Website Stack for a 1C1G Server"
+description: "A comparison of static sites, WordPress, headless CMS, and Node.js CMS options for a 1 vCPU, 1GB RAM server, by memory use and stability."
 layout: post
 date: 2026-01-02T00:00:00+00:00
 draft: false
 categories:
     - website
+tags: [jekyll, performance, devops]
 ---
 <audio controls preload="metadata" src="/assets/audio/blog-websiste-techstack-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-## Building a Website on a 1C1G Server: Technology Choices, Pros & Cons
+Once a 1C1G server is optimized at the OS level, the next question is which website stack to actually run on it. Not all web technologies are equal under resource constraints, and the choice matters more than it would on a bigger box. Here is how the common options compare on memory use, stability, and maintainability.
 
-### Introduction
+## 1. Static sites: the best choice for 1C1G
 
-Once your 1C1G server is optimized, the next question is:
+Examples: Hugo, Astro (static output), Jekyll, Hexo.
 
-> **What website stack should I actually run on this thing?**
+Pros: no database, no runtime backend, near-zero memory usage, handles traffic spikes without extra work, and a small attack surface.
 
-Not all web technologies are equal under resource constraints.
-This article compares **popular website-building approaches**, focusing on **performance, maintainability, and suitability for low-end servers**.
+Cons: the content editing workflow feels less CMS-like, and every change needs a rebuild to publish.
 
----
+Best for homepages, blogs, landing pages, and documentation sites.
 
-## 1. Static Sites (Best Choice for 1C1G)
+## 2. Static site with a visual editor: the best balance
 
-### Examples
+Publii paired with Nginx runs the visual editor on your local machine and lets the server just serve static files.
 
-* Hugo
-* Astro (static output)
-* Jekyll
-* Hexo
+Pros: real WYSIWYG editing, zero server-side processing, and almost no maintenance once it's set up.
 
-### Pros
+Cons: editing doesn't happen directly on the server, so a workflow built around SSH access to content won't fit.
 
-* No database
-* No runtime backend
-* Near-zero memory usage
-* Extremely secure
-* Handles traffic spikes easily
+This is the most practical setup for a 1C1G server if you want an editor and don't want a database.
 
-### Cons
+## 3. Traditional CMS: WordPress
 
-* Content editing workflow may feel less “CMS-like”
-* Requires rebuild to publish changes
+Pros: a huge plugin ecosystem and an admin interface most people already know.
 
-### Best For
+Cons: PHP and MySQL both carry real memory overhead, there's an ongoing security maintenance burden, and performance is poor without deliberate tuning.
 
-* Homepages
-* Blogs
-* Landing pages
-* Documentation sites
+Acceptable only with strict optimization (see the MySQL and PHP-FPM tuning in the previous post). Overkill for a simple homepage.
 
----
+## 4. Headless CMS with a static frontend
 
-## 2. Static Site + Visual Editor (Best Balance)
+Examples: Hugo with Decap CMS, or a Next.js static export backed by a CMS.
 
-### Example
+Pros: online editing with a clean separation between content and presentation.
 
-* **Publii + Nginx**
-
-Architecture:
-
-* Visual editor runs on your local machine
-* Server only serves static files
-
-### Pros
-
-* True WYSIWYG editing
-* Zero server-side processing
-* Ideal for non-developers
-* Almost no maintenance
-
-### Cons
-
-* Editing not done directly on server
-
-### Verdict
-
-👉 **The most practical solution for 1C1G servers**
-
----
-
-## 3. Traditional CMS (WordPress)
-
-### Pros
-
-* Huge ecosystem
-* Familiar admin interface
-* Plugins for everything
-
-### Cons
-
-* PHP + MySQL memory overhead
-* Security maintenance burden
-* Poor performance without tuning
-
-### Verdict
-
-⚠️ Acceptable only with **strict optimization**
-❌ Overkill for simple homepages
-
----
-
-## 4. Headless CMS + Static Frontend
-
-### Examples
-
-* Hugo + Decap CMS
-* Next.js static export + CMS
-
-### Pros
-
-* Online editing
-* Clean separation of content & presentation
-* Modern workflow
-
-### Cons
-
-* Setup complexity
-* Git-based workflow may confuse non-technical users
-
----
+Cons: more setup complexity, and a Git-based workflow can confuse non-technical editors.
 
 ## 5. Node.js CMS (Ghost, Strapi)
 
-### Pros
+Pros: modern interfaces, API-driven.
 
-* Modern interfaces
-* API-driven
+Cons: high memory usage and a database dependency make this a poor fit for 1C1G. Not recommended here.
 
-### Cons
+## Comparison
 
-* High memory usage
-* Database dependency
-* Poor fit for 1C1G
-
-### Verdict
-
-❌ Not recommended
-
----
-
-## 6. Comparison Table
-
-| Stack         | Memory Usage | Stability | Ease of Use | 1C1G Friendly |
+| Stack | Memory use | Stability | Ease of use | Fits 1C1G |
 | ------------- | ------------ | --------- | ----------- | ------------- |
-| Static (Hugo) | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐     | ⭐⭐⭐         | ✅             |
-| Publii        | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐     | ⭐⭐⭐⭐⭐       | ✅             |
-| WordPress     | ⭐⭐           | ⭐⭐        | ⭐⭐⭐⭐⭐       | ⚠️            |
-| Headless CMS  | ⭐⭐⭐          | ⭐⭐⭐⭐      | ⭐⭐          | ⚠️            |
-| Node CMS      | ⭐            | ⭐⭐        | ⭐⭐⭐         | ❌             |
+| Static (Hugo) | Very low | Very high | Moderate | Yes |
+| Publii | Very low | Very high | High | Yes |
+| WordPress | High | Low | High | Only with tuning |
+| Headless CMS | Moderate | High | Low | Only with tuning |
+| Node CMS | High | Low | Moderate | No |
 
----
-
-## Final Recommendation
-
-For a **1C1G cloud server**:
-
-> **Static-first architectures are not a compromise—they are the optimal design.**
-
-If you need:
-
-* Maximum stability → **Static site**
-* Visual editing → **Publii**
-* Dynamic features → **Carefully optimized WordPress**
-
----
-
-If you want, next I can:
-
-* Edit these into **Medium / dev.to formatting**
-* Add **SEO titles & summaries**
-* Turn them into a **series with diagrams**
-* Localize them into Chinese or bilingual versions
-
-Just tell me how you plan to publish them.
+For a 1C1G cloud server, static-first is not a compromise, it's the right design. Static site for maximum stability, Publii if you want visual editing without giving up that stability, and a carefully optimized WordPress only if you actually need its dynamic features and are willing to maintain it.

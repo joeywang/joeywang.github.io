@@ -3,12 +3,10 @@ layout: post
 title: "Using LM Studio and Gemma as a Local Engine for Coding Agents"
 date: 2026-04-13
 author: "Joey Wang"
-description: "A practical guide to using LM Studio and Gemma as a local OpenAI-compatible backend for coding agents, including what broke, what settings mattered, and where the setup still falls short."
-tags: [ai, llm, gemma, lm-studio, agents, coding-agent, local-llm]
+description: "Using LM Studio and Gemma as a local OpenAI-compatible backend for coding agents: what broke, which settings mattered, and where it still falls short."
+tags: [ai, llm, gemma, lm-studio, agents, local-llm]
 categories: [AI, Engineering]
 ---
-
-# Using LM Studio and Gemma as a Local Engine for Coding Agents
 
 <audio controls preload="metadata" src="/assets/audio/lm-studio-gemma4-summary.ogg">
   Your browser does not support the audio element.

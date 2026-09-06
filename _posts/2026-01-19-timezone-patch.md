@@ -1,12 +1,11 @@
 ---
 layout: post
-title: "Time Zone Patch: Solving the Asia/Rangoon Postgres Error in Alpine Linux"
+title: "Fixing the Asia/Rangoon Postgres Error on Alpine Linux"
 description: "If you recently updated your Docker images and were greeted by a PG::InvalidParameterValue: ERROR: time zone \"Asia/Rangoon\" not recognized, you aren't alone."
 date: 2026-01-19
-categories: ["Alpine Linux", "Docker", "Postgres"]
+categories: [DevOps, Database]
+tags: [postgresql, docker, linux, debugging]
 ---
-
-# When Time Zones Vanish: Solving the Asia/Rangoon Postgres Error in Alpine Linux
 
 <audio controls preload="metadata" src="/assets/audio/timezone-patch-summary.ogg">
   Your browser does not support the audio element.
@@ -19,7 +18,7 @@ If you recently updated your Docker images and were greeted by a `PG::InvalidPar
 
 In 1989, Rangoon was renamed **Yangon**. For decades, the IANA time zone database kept `Asia/Rangoon` as a "link" (an alias) to `Asia/Yangon`.
 
-However, modern minimalist distributions like **Alpine Linux** have started splitting their `tzdata` package. To keep images small, they moved legacy aliases into a separate, optional package called `tzdata-backward`. If your database contains the old string and your OS doesn't have the "backward" links, PostgreSQL—which relies on the OS for time zone definitions—will fail.
+However, modern minimalist distributions like **Alpine Linux** have started splitting their `tzdata` package. To keep images small, they moved legacy aliases into a separate, optional package called `tzdata-backward`. If your database contains the old string and your OS doesn't have the "backward" links, PostgreSQL, which relies on the OS for time zone definitions, will fail.
 
 ## The Strategy: Defense in Depth
 
@@ -130,11 +129,8 @@ end
 
 ---
 
-## Conclusion: Build for Portability
+## Build for portability
 
-By moving the mapping logic into your application, you gain two major benefits:
+Moving the mapping logic into your application buys two things: portability, since the app now runs on any OS regardless of legacy time zone support, and predictability, since you're no longer at the mercy of whatever `tzdata` maintainers decide to split out next.
 
-1. **Portability:** Your app will run on any OS, even those with zero legacy time zone support.
-2. **Predictability:** You are no longer at the mercy of `tzdata` maintainers.
-
-Don't just fix the error—fix the architecture. Standardizing on current IANA names is a small step that prevents major headaches during your next infrastructure upgrade.
+Don't just fix the error, fix the architecture. Standardizing on current IANA names is a small step that prevents a repeat of this during the next infrastructure upgrade.

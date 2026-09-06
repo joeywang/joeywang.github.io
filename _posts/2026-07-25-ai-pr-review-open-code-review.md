@@ -5,10 +5,8 @@ date: 2026-07-25 19:53:02 +0100
 author: "Joey Wang"
 description: "A practical look at Alibaba OpenCodeReview, why diff-only AI review is not enough, and how to use AI reviewers without trusting them too much."
 tags: [ai, code-review, github-actions, devops, testing]
-categories: [AI Engineering]
+categories: [AI, Engineering]
 ---
-
-# The hard part of AI PR review is not reading the diff
 
 <div class="audio-summary">
   <p><strong>Audio summary:</strong> a short spoken version of this post.</p>

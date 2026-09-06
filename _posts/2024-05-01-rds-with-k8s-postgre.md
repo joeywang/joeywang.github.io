@@ -1,116 +1,92 @@
 ---
 layout: post
 title:  "Scaling PostgreSQL on Kubernetes with Kubegres"
-description: "As a small company or startup, managing a relational database like PostgreSQL can be challenging, especially when it comes to ensuring high availability,"
+description: "How Kubegres brings primary/standby failover, automatic backups, and PITR to a self-hosted PostgreSQL cluster on Kubernetes without a managed database bill."
 date:   2024-05-01 14:41:26 +0100
-categories: PostgreSQL
+categories: [Database]
+tags: [postgresql, kubernetes, devops, database]
 pin: true
 ---
-
-# Scaling PostgreSQL on Kubernetes with Kubegres
 
 <audio controls preload="metadata" src="/assets/audio/rds-with-k8s-postgre-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-## Introduction
+Running PostgreSQL yourself on a VM works until you need real availability. Our setup was Postgres 13.1 on a single GCP VM, with daily exports to a storage bucket and weekly base backups plus WAL for point-in-time recovery. Disaster recovery from that setup took up to two hours: rebuild the VM, restore the base backup, replay the WAL. Two hours of downtime is hard to explain to customers, and the VM itself was a single point of failure the whole time.
 
-As a small company or startup, managing a relational database like PostgreSQL can be challenging, especially when it comes to ensuring high availability, scalability, and cost-effectiveness. While services like Amazon RDS (Relational Database Service) or Google Cloud SQL offer attractive solutions, the associated costs can be prohibitive for smaller organizations.
+Kubegres is a Kubernetes operator for PostgreSQL that gets you a primary/standby cluster without paying for a managed service like RDS or Cloud SQL. It handles the parts that make self-hosted Postgres risky: failover, replication, and backups.
 
-To address this, we can turn to open-source projects that provide a homemade version of a managed database service. In this article, we'll explore one such solution: Kubegres, a Kubernetes operator for deploying and managing PostgreSQL clusters.
+## What Kubegres gives you
 
-## Current Challenges
+- **Primary/standby out of the box**: if a node in the GKE cluster goes down, the cluster keeps serving.
+- **Automatic failover**: a standby takes over as primary within seconds, without manual intervention.
+- **Lifecycle management**: Kubegres owns the PVCs, services, and StatefulSet for you.
+- **Backups and PITR**: daily backups run as Kubernetes Jobs, with point-in-time recovery built in.
 
-Your current setup involves running a PostgreSQL 13.1 instance on a Google Cloud Platform (GCP) VM, with daily database exports to GCP storage buckets and weekly base backups with Write-Ahead Logs (WAL) for Point-In-Time Recovery (PITR). While this solution provides some level of reliability, it also comes with significant drawbacks:
+## Deploying it
 
-- **Expensive and Time-Consuming Disaster Recovery**: The process of rebuilding the VM, recovering the database from the base backup, and restoring the data using PITR can take up to 2 hours, which is unacceptable for your customers.
-- **Lack of High Availability**: The stability of the GCP VM is a single point of failure, and any downtime can significantly impact your service.
+Install the operator:
 
-## Introducing Kubegres
+```
+kubectl apply -f https://raw.githubusercontent.com/reactive-tech/kubegres/v1.12/kubegres.yaml
+```
 
-To address these challenges, you've decided to explore the use of Kubegres, a Kubernetes operator for PostgreSQL. Kubegres offers several benefits that can improve the reliability and manageability of your PostgreSQL deployment:
+Create the password secret:
 
-1. **High Availability**: Kubegres provides a built-in primary/standby setup, ensuring zero downtime even when nodes in your GKE (Google Kubernetes Engine) cluster go down.
-2. **Automatic Failover**: Kubegres automatically manages the failover process, allowing the standby instance to take over as the primary within seconds if the primary instance fails.
-3. **Simplified Management**: Kubegres handles the complex tasks of managing the lifecycle and data replication of PostgreSQL instances within a Kubernetes environment.
-4. **Backups and Disaster Recovery**: Kubegres integrates daily backups using Kubernetes Jobs and supports PITR, making it easier to recover from data loss or corruption.
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: default
+type: Opaque
+stringData:
+  superUserPassword: postgresSuperUserPsw
+  replicationUserPassword: postgresReplicaPsw
+```
 
-## Deploying Kubegres
+Create the cluster:
 
-To set up your Kubegres cluster, follow these steps:
+```yaml
+apiVersion: kubegres.reactive-tech.io/v1
+kind: Kubegres
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  replicas: 3
+  image: postgres:13.2
+  database:
+    size: 200Mi
+  env:
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: postgres-secret
+          key: superUserPassword
+    - name: POSTGRES_REPLICATION_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: postgres-secret
+          key: replicationUserPassword
+```
 
-1. Install the Kubegres operator:
-   ```
-   kubectl apply -f https://raw.githubusercontent.com/reactive-tech/kubegres/v1.12/kubegres.yaml
-   ```
-2. Create a secret resource for storing the PostgreSQL passwords:
-   ```yaml
-   apiVersion: v1
-   kind: Secret
-   metadata:
-     name: postgres-secret
-     namespace: default
-   type: Opaque
-   stringData:
-     superUserPassword: postgresSuperUserPsw
-     replicationUserPassword: postgresReplicaPsw
-   ```
-3. Create a Kubegres cluster:
-   ```yaml
-   apiVersion: kubegres.reactive-tech.io/v1
-   kind: Kubegres
-   metadata:
-     name: postgres
-     namespace: default
-   spec:
-     replicas: 3
-     image: postgres:13.2
-     database:
-       size: 200Mi
-     env:
-       - name: POSTGRES_PASSWORD
-         valueFrom:
-           secretKeyRef:
-             name: postgres-secret
-             key: superUserPassword
-       - name: POSTGRES_REPLICATION_PASSWORD
-         valueFrom:
-           secretKeyRef:
-             name: postgres-secret
-             key: replicationUserPassword
-   ```
+Kubegres creates the PVCs, services, and a StatefulSet with three PostgreSQL instances from that spec.
 
-Kubegres will create the necessary resources, including PersistentVolumeClaims (PVCs), Services, and a StatefulSet with 3 PostgreSQL instances.
+## Migrating with minimal downtime
 
-## Migration Plan
+1. Stand up the Kubegres cluster as above, but reduced to a single primary instance.
+2. Point Pgpool-II (already in front of the old VM-based Postgres) at the existing VM as primary.
+3. Route the application to the Pgpool-II service instead of talking to the VM directly.
+4. At low-traffic time, repoint Pgpool-II's configuration at the Kubegres primary.
+5. Promote the Kubegres instance to primary.
+6. Scale the Kubegres cluster back up to three or more replicas.
 
-To migrate your existing PostgreSQL service to the new Kubegres-based solution, follow these steps:
+The application keeps serving requests through the whole migration; only the target behind Pgpool-II changes.
 
-1. Set up the Kubegres cluster as described above.
-2. Reduce the Kubegres cluster to a single primary instance.
-3. Configure PgPool-II to act as a load balancer, pointing it to your existing VM-based PostgreSQL instance as the primary.
-4. Update your application to connect to the PgPool-II service instead of the VM-based PostgreSQL instance.
-5. At a time with minimal user activity, change the PgPool-II configuration to point to the primary instance in the Kubegres cluster.
-6. Promote the Kubegres primary instance to become the new primary.
-7. Expand the Kubegres cluster by increasing the number of replicas to 3 or more.
+## Scaling and upkeep
 
-This approach allows you to migrate your service with minimal downtime, as the application continues to serve users throughout the process.
+Scaling out is a one-line change: bump `replicas` in the manifest and apply it. Kubegres spins up the new standbys and handles replication itself.
 
-## Scalability and Expansion
-
-As your user base grows, you can easily scale the Kubegres cluster by modifying the `replicas` field in the Kubegres manifest and applying the changes. Kubegres will automatically spin up new standby instances and handle the replication process.
-
-## Monitoring and Maintenance
-
-To ensure the health and reliability of your Kubegres-based PostgreSQL deployment, you should implement monitoring and maintenance practices, such as:
-
-- Configuring alerting and monitoring tools to track key metrics and events.
-- Regularly reviewing backup and recovery procedures, and testing the disaster recovery plan.
-- Staying up-to-date with Kubegres and PostgreSQL version updates to apply security patches and benefit from new features.
-
-## Conclusion
-
-By leveraging Kubegres, you can create a highly available, scalable, and cost-effective PostgreSQL solution on Kubernetes. The simplified management, automatic failover, and built-in backup and recovery features of Kubegres can help you overcome the challenges of your current setup and provide a more reliable service for your customers.
-
-As you continue to expand and grow your business, the flexibility and scalability of the Kubegres-based solution will be a valuable asset, allowing you to adapt to changing requirements and ensure the long-term success of your PostgreSQL deployment.
+What it doesn't do for you: alerting on the metrics that matter, testing your disaster recovery plan against a real failure, and keeping Kubegres and Postgres versions current. Those stay on you.

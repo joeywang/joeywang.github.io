@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "When the Report Button Becomes a Competitive Weapon"
-description: "From Reddit's invented users to AI-generated consensus, how unfair competition learned to exploit platforms, moderation systems, and the time between takedown and appeal."
+description: "Unfair competition has learned to exploit platforms, moderation systems, and the gap between takedown and appeal, from invented users to AI-generated consensus."
 date: 2026-08-24 09:00:00 +0100
 author: "Joey Wang"
 tags: [ai, platforms, trust-and-safety, competition, misinformation, social-media]
@@ -145,7 +145,7 @@ users see the answer as an independent synthesis
 
 Research on Generative Engine Optimisation shows that content can be shaped to improve its visibility in generative search systems. That research is not itself evidence of abuse; legitimate organisations also need to make accurate information discoverable. The risk appears when the same techniques are used to create a large, artificial body of apparently independent evidence.
 
-Reports about fake Reddit posts and misleading restaurant recommendations have already illustrated how weak or coordinated user-generated content can contaminate AI-assisted search experiences. Stronger claims—that a named company systematically manipulated a particular AI assistant—require case-by-case evidence and should not be inferred merely from suspicious-looking posts.
+Reports about fake Reddit posts and misleading restaurant recommendations have already illustrated how weak or coordinated user-generated content can contaminate AI-assisted search experiences. Stronger claims, that a named company systematically manipulated a particular AI assistant, require case-by-case evidence and should not be inferred merely from suspicious-looking posts.
 
 The likely future conflict is therefore not only over rankings. It is over **what an AI system believes counts as corroboration**.
 

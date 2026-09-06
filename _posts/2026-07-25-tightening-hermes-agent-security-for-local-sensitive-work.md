@@ -3,12 +3,10 @@ layout: post
 title: "Tightening Hermes Agent Security for Local Sensitive Work"
 date: 2026-07-25 14:27:42 +0100
 author: "Joey Wang"
-description: "How I tightened my Hermes Agent setup after adding a local model path for PII and credential-sensitive implementation work."
-tags: [hermes, ai-agents, security, local-llm, privacy, devops]
+description: "How I tightened my Hermes agent setup after adding a local model for PII and credential-sensitive work: tool limits, manual approvals, and a quiet watchdog."
+tags: [hermes, agents, security, local-llm, privacy, devops]
 categories: [AI, Security]
 ---
-
-# Tightening Hermes Agent security for local sensitive work
 
 <audio controls preload="metadata" src="/assets/audio/2026-07-25-tightening-hermes-agent-security-for-local-sensitive-work-summary.ogg">
   Your browser does not support the audio element.

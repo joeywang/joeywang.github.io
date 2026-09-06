@@ -1,10 +1,13 @@
 ---
 layout: post
-title: JS to notify Slack
+title: Sending Pub/Sub Notifications to Slack With a Webhook
+description: "A small Node.js Cloud Function that decodes a Pub/Sub message, filters it by type, and forwards it to Slack through an incoming webhook."
 date: 2024-08-08 19:27 +0100
-categories: JavaScript
-tags: [javascript, slack, webhook, pubsub]
+categories: DevOps
+tags: [javascript, gcp, slack, automation]
 ---
+
+A Cloud Function that takes a Pub/Sub message and forwards it to Slack through an incoming webhook, filtering by an optional list of type URLs so only the notifications worth seeing get through.
 
 ```js
 const { IncomingWebhook } = require('@slack/webhook');
@@ -61,6 +64,4 @@ const createSlackMessage = (data, attributes) => {
   };
   return message;
 }
-
 ```
-

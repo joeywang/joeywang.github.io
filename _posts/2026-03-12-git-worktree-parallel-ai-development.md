@@ -3,11 +3,9 @@ layout: post
 title: "Git Worktree for Parallel AI Development"
 date: 2026-03-12
 tags: [git, git-worktree, ai, rails, productivity, development]
-categories: [Development, AI, Tools]
+categories: [Engineering, AI]
 description: "How to use git worktree to run parallel AI coding sessions safely, with practical patterns for isolating gems, databases, ports, and runtime state."
 ---
-
-# Git Worktree for Parallel AI Development
 
 <audio controls preload="metadata" src="/assets/audio/git-worktree-parallel-ai-development-summary.ogg">
   Your browser does not support the audio element.

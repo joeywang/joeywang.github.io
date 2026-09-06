@@ -1,40 +1,26 @@
 ---
 layout: post
-title:  "Mastering AWS Access: Securely Managing Credentials with aws-vault and 1Password"
-description: "In the world of cloud computing, security is paramount. For developers and operations teams working with Amazon Web Services (AWS), managing access credentials"
+title:  "Securing AWS Credentials: aws-vault vs 1Password"
+description: "Storing long-lived AWS access keys in ~/.aws/credentials is a common anti-pattern; aws-vault and the 1Password AWS Shell Plugin both fix it with short-lived STS tokens."
 date:   2025-09-13 10:00:00 -0400
-categories: aws security
-tags: [aws, security, aws-vault, 1Password]
+categories: [Security]
+tags: [aws, security, devops]
 ---
-
-# Mastering AWS Access: Securely Managing Credentials with `aws-vault` and 1Password
 
 <audio controls preload="metadata" src="/assets/audio/aws-vault-security-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Storing long-lived AWS access keys directly in `~/.aws/credentials` is a common anti-pattern, and it's a bigger risk than it looks: a leaked key doesn't expire on its own, and there's nothing stopping it from sitting in a laptop backup or a shell history file for years. `aws-vault` and the 1Password AWS Shell Plugin both fix this by generating short-lived STS credentials on demand instead of reading a long-lived key off disk every time. This covers setting up both and where each one fits.
 
-## Introduction: The Challenge of AWS Credential Management
+## The security model both tools rely on
 
-In the world of cloud computing, security is paramount. For developers and operations teams working with Amazon Web Services (AWS), managing access credentials is a critical, yet often overlooked, security challenge. Storing long-lived access keys directly in configuration files (`~/.aws/credentials`) is a common anti-pattern that significantly increases the risk of credential compromise.
-
-This article will guide you through two robust and secure methods for managing your AWS credentials:
-
-1.  **`aws-vault`**: A widely-adopted tool for securely storing and accessing AWS credentials, leveraging your operating system's native secret storage.
-2.  **1Password AWS Shell Plugin**: A modern, biometric-driven solution that integrates directly with your 1Password vault, eliminating the need for separate credential storage.
-
-We'll cover step-by-step setup instructions for both, discuss their core security principles, and help you choose the best fit for your workflow.
-
-## Understanding Security Principles for AWS Credentials
-
-Before diving into the tools, let's establish the fundamental security principles we aim to achieve:
-
-  * **Never Store Long-Lived Credentials on Disk (Unencrypted):** This is the golden rule. Hardcoding access keys and secret keys in plain text files is a major vulnerability.
-  * **Leverage Short-Lived Credentials (STS):** AWS Security Token Service (STS) allows you to generate temporary security credentials (access key, secret key, session token) with a limited lifespan. This significantly reduces the window of opportunity for attackers if credentials are leaked. Both `aws-vault` and the 1Password plugin heavily rely on STS.
-  * **Multi-Factor Authentication (MFA):** Always enforce MFA for your IAM users. Even if an attacker obtains your primary credentials, they cannot assume roles or perform sensitive actions without the MFA code.
-  * **Least Privilege:** Grant users only the permissions necessary to perform their tasks. When assuming roles, ensure the roles themselves adhere to least privilege.
-  * **Biometric/System Integration:** Integrate with your operating system's secure authentication mechanisms (e.g., Touch ID, Face ID, system password) to unlock access to secrets. This avoids typing passwords into the terminal or exposing them in command history.
-  * **Process Isolation:** Ensure that credentials are only available to the specific processes that need them, and are removed from the environment once the task is complete.
+  * **Never store long-lived credentials on disk unencrypted.** Hardcoding access keys and secret keys in plain text files is the actual vulnerability both tools exist to close.
+  * **Use short-lived credentials (STS).** AWS Security Token Service issues temporary access key, secret key, and session token triples with a limited lifespan, which shrinks the window an attacker gets if credentials leak. Both tools generate these behind the scenes.
+  * **Enforce MFA on IAM users.** Even if an attacker gets the primary credentials, they can't assume roles or take sensitive actions without the MFA code.
+  * **Grant least privilege**, both to the base IAM user and to any role it can assume.
+  * **Unlock secrets through the OS's own authentication** (Touch ID, Face ID, system password) instead of typing passwords into a terminal where they end up in scrollback or history.
+  * **Scope credentials to the process that needs them**, and let them expire once that process ends.
 
 ## Option 1: Securing AWS Credentials with `aws-vault`
 
@@ -57,7 +43,7 @@ Before diving into the tools, let's establish the fundamental security principle
 brew install aws-vault
 ```
 
-**Linux (from source or package manager):** Refer to the [official `aws-vault` documentation](https://www.google.com/search?q=%5Bhttps://github.com/99designs/aws-vault%23install%5D\(https://github.com/99designs/aws-vault%23install\)) for details, as installation methods vary by distribution. For example, using `go install`:
+**Linux (from source or package manager):** Refer to the [official `aws-vault` documentation](https://github.com/99designs/aws-vault#install) for details, as installation methods vary by distribution. For example, using `go install`:
 
 ```bash
 go install github.com/99designs/aws-vault@latest
@@ -75,7 +61,7 @@ You will be prompted to enter your AWS Access Key ID and Secret Access Key. `aws
 
 #### 3\. Configure MFA (Strongly Recommended)
 
-If your IAM user requires MFA (and it should\!), `aws-vault` can manage the MFA token. First, add the ARN of your MFA device to your `~/.aws/config` file:
+If your IAM user requires MFA (and it should), `aws-vault` can manage the MFA token. First, add the ARN of your MFA device to your `~/.aws/config` file:
 
 ```ini
 # ~/.aws/config
@@ -144,7 +130,7 @@ This command will:
 
 ## Option 2: Enhanced Security with 1Password AWS Shell Plugin
 
-For users already invested in 1Password for their password management, the official 1Password AWS Shell Plugin offers a powerful and highly integrated solution. It leverages 1Password's secure storage and biometric authentication (Touch ID/Face ID) to manage your AWS credentials, completely bypassing the need to store them in a separate system or manually unlock keychains.
+For users already invested in 1Password, the official AWS Shell Plugin uses 1Password's secure storage and biometric authentication (Touch ID/Face ID) to manage AWS credentials directly, with no separate credential store or manual keychain unlock step.
 
 ### 1Password AWS Shell Plugin Security Principles:
 
@@ -183,7 +169,7 @@ The wizard will guide you to:
 
 #### 3\. Configure Multi-Factor Authentication (MFA)
 
-If your AWS IAM user requires MFA (and it should\!), ensure your 1Password Login item for AWS credentials includes a "One-Time Password" field. The wizard can help you set this up if it's missing.
+If your AWS IAM user requires MFA (and it should), ensure your 1Password Login item for AWS credentials includes a "One-Time Password" field. The wizard can help you set this up if it's missing.
 
 #### 4\. Define Credential Scope
 
@@ -221,7 +207,7 @@ aws sts get-caller-identity
 
 #### 7\. Assuming Roles with 1Password Plugin
 
-Similar to `aws-vault`, the 1Password plugin works seamlessly with AWS profiles defined in `~/.aws/config`:
+Like `aws-vault`, the 1Password plugin works directly with AWS profiles defined in `~/.aws/config`:
 
 ```ini
 # ~/.aws/config
@@ -249,20 +235,8 @@ aws s3 ls --profile dev-admin
 
 This will trigger the biometric prompt, fetch your `my-base-user` credentials from 1Password, use them to assume the `dev-admin` role via STS, and then execute the S3 command.
 
-## Conclusion: Choosing Your Secure Credential Manager
+## Choosing one
 
-Both `aws-vault` and the 1Password AWS Shell Plugin offer significant security improvements over traditional unencrypted credential storage.
+Pick `aws-vault` if you want a standalone, open-source tool scoped to AWS, don't already use 1Password for credentials, or need a specific backend like `pass` on Linux. Pick the 1Password plugin if you're already centralizing secrets there and want MFA and STS token generation handled from that single source rather than a second tool.
 
-  * **Choose `aws-vault` if:**
-
-      * You prefer a standalone, open-source solution specifically for AWS.
-      * You don't use 1Password for credential management, or prefer to keep AWS credentials separate.
-      * You need flexibility with different backend storage options (e.g., `pass` on Linux).
-
-  * **Choose 1Password AWS Shell Plugin if:**
-
-      * You are already a 1Password user and want to centralize all your secrets.
-      * You value the seamless biometric authentication experience.
-      * You want an integrated solution that automatically handles MFA and STS token generation from a single, trusted source.
-
-Regardless of your choice, migrating to one of these solutions is a crucial step towards a more secure and efficient AWS development workflow. Embrace short-lived credentials, enforce MFA, and protect your cloud resources.
+Either way, the point isn't the tool, it's getting long-lived keys off disk. If your team is still pasting access keys into `~/.aws/credentials`, that's the actual fix to make first.

@@ -1,6 +1,6 @@
 ---
 title: "一起交通悲剧背后，我们可能正在掉进的三个误区"
-description: "——以及三点必须认真面对的法理反思"
+description: "从一起醉驾肇事逃逸案引发的舆论争议出发，反思刑法责任边界与'逃逸'认定标准中的三个常见直觉误区。"
 date: 2026-01-06
 tags:
   - 法律
@@ -12,8 +12,6 @@ categories:
   - 社会观察
 layout: post
 ---
-
-# 一起交通悲剧背后，我们可能正在掉进的三个误区
 
 <audio controls preload="metadata" src="/assets/audio/baoshan-driver-summary.ogg">
   Your browser does not support the audio element.
@@ -44,7 +42,7 @@ layout: post
 
 但刑法并不是这样运作的。
 
-👉 **刑法追问的不是“有没有更好的结局”，
+**刑法追问的不是“有没有更好的结局”，
 而是“这个人，是否应当为这个结果承担刑事责任”。**
 
 如果只要结果严重，就不断前推责任边界，那么：
@@ -106,11 +104,7 @@ layout: post
 * 刑责边界高度不确定
 * 人人都可能成为“事后最该负责的人”
 
----
-
-# 那么，真正需要反思的是什么？
-
----
+## 那么，真正需要反思的是什么？
 
 ## 反思一：
 

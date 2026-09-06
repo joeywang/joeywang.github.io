@@ -1,17 +1,14 @@
 ---
-title: "Browsing Through a Remote SSH Server Without DNS Leaks"
-description: "Even when your web traffic is encrypted (HTTPS), DNS requests can reveal which domains you’re visiting. On managed networks (office Wi-Fi, corporate VPN,"
+title: "An SSH SOCKS5 proxy that stops DNS leaks"
+description: "An SSH dynamic port forward (ssh -D) turns a remote server into a SOCKS5 proxy so DNS resolution happens remotely, which matters when DoH is blocked by policy."
 date: 2025-12-03
 tags:
     - security
     - ssh
     - dns
-    - socks5
+    - networking
     - privacy
-    - tutorial
 ---
-# Browsing Through a Remote SSH Server Without DNS Leaks (Security Education)
-
 <audio controls preload="metadata" src="/assets/audio/ssh-socks5-proxy-summary.ogg">
   Your browser does not support the audio element.
 </audio>
@@ -74,7 +71,7 @@ Optional but recommended:
 
 ---
 
-## Step 1 — Create the SSH SOCKS tunnel
+## Step 1: create the SSH SOCKS tunnel
 
 Open Terminal on your Mac and run:
 
@@ -102,7 +99,7 @@ ssh -D 1080 -N \
 
 ---
 
-## Step 2 — Configure Firefox to proxy traffic *and DNS*
+## Step 2: configure Firefox to proxy traffic and DNS
 
 Firefox is the easiest way to avoid DNS leaks with SOCKS.
 
@@ -115,15 +112,13 @@ Firefox is the easiest way to avoid DNS leaks with SOCKS.
    * **SOCKS Host**: `127.0.0.1`
    * **Port**: `1080`
    * Select **SOCKS v5**
-6. Enable:
-
-   * ✅ **Proxy DNS when using SOCKS v5**
+6. Enable **Proxy DNS when using SOCKS v5**.
 
 That checkbox is critical. Without it, Firefox might still do DNS locally.
 
 ---
 
-## Step 3 — Verify: public IP + DNS should be remote
+## Step 3: verify the public IP and DNS are remote
 
 With the SSH tunnel running and Firefox proxy enabled:
 
@@ -141,7 +136,7 @@ If you still see corporate DNS servers, double-check:
 
 ---
 
-## Step 4 — Common pitfalls (and how to avoid them)
+## Step 4: common pitfalls
 
 ### Pitfall A: WebRTC leaks
 
@@ -175,7 +170,7 @@ lsof -i :1080
 
 ---
 
-## Step 5 — Optional: Put the SSH config in `~/.ssh/config`
+## Step 5: put the SSH config in `~/.ssh/config`
 
 This makes the command clean and repeatable.
 
@@ -204,7 +199,7 @@ ssh -D 1080 -N my-ssh-proxy
 
 ---
 
-## Step 6 — Server-side hygiene (recommended)
+## Step 6: server-side hygiene
 
 Your DNS privacy now depends on what the server uses for DNS.
 
@@ -245,15 +240,5 @@ It’s not a replacement for:
 
 ---
 
-## Summary
-
-Using an **SSH SOCKS proxy** lets you browse through a remote machine so that **DNS resolution happens remotely**, reducing DNS leakage on your local network. It’s simple, auditable, and uses widely accepted primitives (SSH + SOCKS5 + browser proxy).
-
-### Quick checklist
-
-* ✅ `ssh -D 1080 -N user@server`
-* ✅ Firefox SOCKS v5 → `127.0.0.1:1080`
-* ✅ Enable “Proxy DNS when using SOCKS v5”
-* ✅ Verify with ipleak/dnsleaktest
-* ✅ Consider disabling WebRTC
+An SSH SOCKS proxy lets you browse through a remote machine so DNS resolution happens remotely, cutting DNS leakage on your local network. It's simple, auditable, and built entirely from widely used primitives: SSH, SOCKS5, and a browser proxy setting. The checklist is short: tunnel up (`ssh -D 1080 -N user@server`), Firefox pointed at `127.0.0.1:1080` over SOCKS v5 with DNS proxying enabled, verified against ipleak or dnsleaktest, and WebRTC disabled if you want to close that last leak too.
 

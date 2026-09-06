@@ -3,7 +3,7 @@ layout: post
 title: "Don't Leave Good AI Workflows in Chat"
 date: 2026-07-31 17:48:57 +0100
 author: "Joey Wang"
-description: "A practical note on promoting repeated AI workflows into slash commands, scripts, APIs, and scheduled jobs, with the trade-offs between judgment, cost, performance, and safety."
+description: "A practical note on promoting repeated AI workflows into slash commands, scripts, and cron jobs, weighing judgment, cost, and safety trade-offs."
 tags: [ai, agents, automation, workflows, hermes, commands]
 categories: [AI, Engineering]
 ---
@@ -11,8 +11,6 @@ categories: [AI, Engineering]
 <audio controls preload="metadata" src="/assets/audio/promoting-ai-workflows-into-commands-summary.ogg">
   Your browser does not support the audio element.
 </audio>
-
-# Don't leave good AI workflows in chat
 
 I started with a small housekeeping question to my agent:
 

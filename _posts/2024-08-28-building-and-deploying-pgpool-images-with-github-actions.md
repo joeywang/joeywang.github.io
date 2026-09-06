@@ -1,35 +1,23 @@
 ---
 layout: post
-title: Building and Deploying PGPool Images with GitHub Actions
-description: "In the ever-evolving landscape of DevOps and CI/CD pipelines, containerization has become a pivotal component for deploying applications. One such application,"
+title: "Building and Deploying pgpool Images with GitHub Actions"
+description: "A GitHub Actions workflow that builds multi-architecture pgpool images for several versions in parallel and pushes them to GitHub Container Registry."
 date: 2024-08-28 00:00 +0000
-categories: [GitHub, Actions]
-tags: [GitHub, Actions]
+categories: [DevOps]
+tags: [github-actions, docker, ci, postgresql]
 ---
-
-# Building and Deploying PGPool Images with GitHub Actions
 
 <audio controls preload="metadata" src="/assets/audio/building-and-deploying-pgpool-images-with-github-actions-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+pgpool is a connection pooler and load balancer for PostgreSQL, and keeping a custom image for it up to date across versions is exactly the kind of repetitive job worth automating. Here's a GitHub Actions workflow that builds pgpool images for multiple versions and pushes them to GitHub Container Registry.
 
-## Introduction
+A matrix strategy is what makes this worth automating rather than scripting by hand: one job definition runs once per version, in parallel, instead of a hand-rolled loop or a copy-pasted job per version.
 
-In the ever-evolving landscape of DevOps and CI/CD pipelines, containerization has become a pivotal component for deploying applications. One such application, PGPool, a connection pooler for PostgreSQL, is widely used to enhance the performance and scalability of database clusters. However, maintaining up-to-date and customized images for such applications can be challenging. This article will guide you through setting up a GitHub Action to build and deploy PGPool images to GitHub Container Registry.
+## Setting up the workflow
 
-## Why GitHub Actions for Building Images?
-
-GitHub Actions provide a powerful platform for automating workflows, including the building and deploying of Docker images. With GitHub Actions, you can:
-
-- Automate the building process for different versions of an application.
-- Ensure consistency across environments.
-- Integrate seamlessly with GitHub repositories.
-- Utilize matrix strategies for building multiple versions concurrently.
-
-## Setting Up GitHub Action for PGPool
-
-To build and deploy PGPool images using GitHub Actions, we will use a YAML configuration file that defines the steps and environment needed for the process. Below is a detailed breakdown of the YAML configuration provided:
+Below is a breakdown of the YAML configuration.
 
 ### Workflow Trigger
 
@@ -119,9 +107,7 @@ steps:
 - **login-action**: Logs into the GitHub Container Registry using the GITHUB_TOKEN.
 - **build-push-action**: Builds the Docker image for the specified platform and pushes it to the registry.
 
-## Conclusion
+## The result
 
-By leveraging GitHub Actions, you can streamline the process of building and deploying PGPool images. This not only ensures that you have the latest versions available but also automates the process, reducing the potential for human error and freeing up time for more critical tasks.
-
-With the provided YAML configuration, you can easily adapt and extend the workflow to include additional versions or even other types of database tools. The flexibility of GitHub Actions makes it an excellent choice for automating your container image pipelines.
+This workflow keeps pgpool images current without a manual build step: add a version to the matrix, and the next push builds and pushes it. The same shape, checkout, buildx, login, matrix build, works for any other database tool image you need to maintain the same way.
 

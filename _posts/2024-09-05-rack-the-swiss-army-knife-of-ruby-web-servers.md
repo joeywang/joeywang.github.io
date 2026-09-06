@@ -1,22 +1,19 @@
 ---
 layout: post
-title: 'Rack: The Swiss Army Knife of Ruby Web Servers'
-description: "Rack provides a minimal, modular, and adaptable interface for developing web applications in Ruby. It serves as a standard interface between web servers and"
+title: "Rack: The Interface Between Ruby Web Servers and Apps"
+description: "Rack is the standard interface between Ruby web servers and frameworks, traced here through its middleware stack from request to response."
 date: 2024-09-05 00:00 +0000
-categories: Ruby
-tags: [rack, web]
+categories: [Engineering]
+tags: [rack, ruby, web]
 ---
-
-# Rack: The Swiss Army Knife of Ruby Web Servers
 
 <audio controls preload="metadata" src="/assets/audio/rack-the-swiss-army-knife-of-ruby-web-servers-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
-
 ## What is Rack?
 
-Rack provides a minimal, modular, and adaptable interface for developing web applications in Ruby. It serves as a standard interface between web servers and web applications, allowing developers to use different web servers and frameworks seamlessly.
+Rack is a minimal, modular interface for building web applications in Ruby. It sits between the web server and the application, which is what lets Rails, Sinatra, and Hanami all run on Puma, WEBrick, or any other Rack-compatible server without caring which one is underneath.
 
 ## Rack App
 
@@ -191,7 +188,7 @@ module Rackup
 end
 ```
 
-## Conclusion
+## The principle
 
-Rack, with its simple and flexible design, allows developers to build web applications in Ruby with ease. Whether you're using Rails, Sinatra, or any other framework, Rack provides a consistent interface for handling requests and responses. The ability to chain middleware and the simplicity of setting up a web server make Rack an indispensable tool in the Ruby web developer's toolbox.
+Every Rack app is the same shape: an object that responds to `call(env)` and returns `[status, headers, body]`. Middleware works because it's the same shape wrapped around another instance of itself, which is why the "Russian doll" model composes as cleanly as it does regardless of framework.
 

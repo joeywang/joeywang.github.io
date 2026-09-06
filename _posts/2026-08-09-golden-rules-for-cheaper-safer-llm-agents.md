@@ -9,8 +9,6 @@ categories: [AI, Engineering]
 start_here: true
 ---
 
-# Golden rules for cheaper, safer LLM agents
-
 *Part of the [AI & Agents reading path](/ai-agents/).*
 
 A small thing happened while I was wiring a few Hermes hosts together.

@@ -1,31 +1,24 @@
 ---
 layout: post
-title: Demystifying Number Overflow and the Anomalies of Floating-Point Arithmetic
-description: "In the world of computing, numbers are represented and manipulated in ways that may not always align with our intuitive understanding of mathematics. Two"
+title: "Integer Overflow and Floating-Point Precision: Ruby vs JS"
+description: "Why 0.1 + 0.2 doesn't equal 0.3, how Ruby's arbitrary-precision integers avoid overflow, and how JavaScript's BigInt does the same for large integers."
 date: 2024-09-01 00:00 +0000
-categories: [overflow, float]
-tags: [ruby, javascript, overflow]
+categories: [Engineering]
+tags: [ruby, javascript, debugging]
 ---
-# Demystifying Number Overflow and the Anomalies of Floating-Point Arithmetic
-
 <audio controls preload="metadata" src="/assets/audio/demystifying-number-overflow-and-the-anomalies-of-floating-point-arithmetic-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Two number problems come up often enough to be worth knowing cold: what happens when a number gets bigger than its type can hold, and why `0.1 + 0.2` doesn't equal `0.3`. Neither is a bug in the language, both are consequences of how numbers are represented in memory.
 
-## Introduction
+## Number overflow
 
-In the world of computing, numbers are represented and manipulated in ways that may not always align with our intuitive understanding of mathematics. Two common issues that developers and programmers encounter are number overflow and the inaccuracies of floating-point arithmetic, such as why `0.1 + 0.2` might not equal `0.3`. This article delves into these topics, explaining the underlying causes and providing practical examples.
+Overflow happens when a calculation produces a value larger than the maximum a variable's type can hold. Depending on the language and type, that shows up as a crash, a wrapped-around value, or silent promotion to a bigger type.
 
-## Number Overflow: When Numbers Get Too Big
+### Ruby integers don't overflow
 
-### What is Number Overflow?
-
-Number overflow occurs when a calculation attempts to create a number larger than the maximum value that a variable or data type can hold. This can lead to unexpected results, errors, or system crashes.
-
-### Managing Overflow in Ruby
-
-In Ruby, integers can grow arbitrarily large, limited only by the available memory, which is a significant advantage in managing large numbers. However, floating-point numbers are still subject to the IEEE 754 standard, which defines a maximum representable value.
+Ruby integers grow arbitrarily large, limited only by available memory, so `Integer` overflow isn't something you need to guard against. Floats are a different story: they still follow the IEEE 754 standard, which has a real maximum representable value.
 
 ```ruby
 # Float in Ruby: IEEE 754
@@ -45,27 +38,20 @@ def main(num1, num2)
 end
 ```
 
-## The Curious Case of Floating-Point Arithmetic
+## Why `0.1 + 0.2` is not `0.3`
 
-### Why `0.1 + 0.2` is Not Equal to `0.3`
-
-Floating-point numbers are represented in binary, and many decimal fractions cannot be represented exactly in binary form. This leads to rounding errors when performing arithmetic operations.
+Floating-point numbers are stored in binary, and most decimal fractions, `0.1` included, have no exact binary representation. Each one is stored as the nearest approximation, and arithmetic on approximations produces rounding error.
 
 ```ruby
 0.1 + 0.2       # => 0.30000000000000004
 (2e+16 + 0.5) == (2e+16 + 0.0) + 0.5 # => true
 ```
 
-### Practical Implications
+In practice this means: never compare floats for exact equality, use a tolerance instead, and for money or anything else where precision actually matters, reach for a decimal or arbitrary-precision type rather than a float.
 
-- **Comparing Floating-Point Numbers**: It's often recommended to use a tolerance or epsilon value when comparing floating-point numbers due to potential rounding errors.
-- **Financial and Scientific Calculations**: Precision is critical, and arbitrary precision arithmetic or decimal data types may be necessary.
+## JavaScript and Ruby, side by side
 
-## Floating-Point Arithmetic in Different Programming Languages
-
-### JavaScript
-
-JavaScript handles large integers and floating-point numbers with a single `Number` type, which can represent both integer and floating-point numbers. For very large integers, JavaScript introduced `BigInt` to maintain precision.
+JavaScript represents both integers and floats with a single `Number` type, which is a `float64` under the hood. That's fine until you need an integer bigger than `Number.MAX_SAFE_INTEGER`, which is where `BigInt` comes in.
 
 ```javascript
 function bigIntMean(a, b) {
@@ -80,15 +66,9 @@ const result = bigIntMean("5000000000000000000000", "5000000000000000000000");
 console.log("The mean is:", result.toString());
 ```
 
-### Ruby
+Ruby 3 unified `Fixnum` and `Bignum` into a single `Integer` type with arbitrary precision, so the equivalent of JavaScript's `BigInt` problem doesn't come up for integers. Floats in Ruby still follow IEEE 754, same as everywhere else.
 
-Ruby 3 and later versions unify `Fixnum` and `Bignum` into a single `Integer` type with arbitrary precision. This approach helps manage large integers effectively but still follows the IEEE 754 standard for floating-point numbers.
-
-## Conclusion
-
-Understanding the intricacies of number overflow and the quirks of floating-point arithmetic is crucial for developers. By being aware of these issues and the tools available to manage them, programmers can write more robust and reliable software.
-
-## Further Reading
+## Further reading
 
 - [IEEE 754 Standard](https://ieeexplore.ieee.org/document/4610935)
 - [Understanding JavaScript's Number Type](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Numbers_and_dates)

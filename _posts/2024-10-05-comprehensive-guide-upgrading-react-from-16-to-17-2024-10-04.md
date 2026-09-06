@@ -1,30 +1,19 @@
 ---
 layout: post
-title: 'Comprehensive Guide: Upgrading React from 16 to 17 2024-10-04'
-description: "React 17 brought several changes that, while not introducing many new features, laid the groundwork for future improvements. This guide will walk you through"
+title: "Upgrading React 16 to 17: Dependencies, Jest, and ESLint Fixes"
+description: "A practical walkthrough of upgrading a React 16 app to React 17, covering dependency updates, Jest and Enzyme test fixes, and new ESLint warnings."
 date: 2024-10-05 00:40 +0100
-tags: [react, upgrade]
+categories: [Engineering]
+tags: [react, javascript, testing, debugging]
 ---
-# Comprehensive Guide: Upgrading React from 16 to 17
-
 <audio controls preload="metadata" src="/assets/audio/comprehensive-guide-upgrading-react-from-16-to-17-2024-10-04-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-React 17 brought several changes that, while not introducing many new features, laid the groundwork for future improvements. This guide will walk you through the process of upgrading your React application from version 16 to 17, covering package updates, testing modifications, and common issues you might encounter.
+React 17 doesn't add much on its own; it exists to make React 18's concurrent rendering possible without forcing every app to jump straight there. Upgrading is mostly dependency bumps and test cleanup, but a few of the failures are non-obvious enough to be worth writing down.
 
-## 1. Upgrade Helper
-
-Before diving into the upgrade process, it's worth mentioning the React Native Upgrade Helper:
-
-[React Native Upgrade Helper](https://react-native-community.github.io/upgrade-helper/)
-
-This tool can provide valuable insights into the changes required for your specific project.
-
-## 2. Updating Node Modules
-
-The first step in the upgrade process is to update your package.json file with the new versions of React and related packages.
+## Updating dependencies
 
 ```diff
 -   "react": "^16.9.0",
@@ -48,13 +37,13 @@ The first step in the upgrade process is to update your package.json file with t
 +   "enzyme": "^3.11.0",
 ```
 
-After updating these dependencies, run `npm install` or `yarn install` to install the new versions.
+Run `npm install` (or `yarn install`) after updating `package.json`.
 
-## 3. Fixing Tests
+## Fixing tests
 
-### 3.1 Use `beforeEach` instead of `beforeAll`
+### `beforeAll` to `beforeEach`
 
-In your test files, replace `beforeAll` with `beforeEach` to ensure a fresh setup for each test:
+Tests that shared setup across cases via `beforeAll` need `beforeEach` instead, or state from one test leaks into the next:
 
 ```diff
     describe('index edge', () => {
@@ -62,11 +51,9 @@ In your test files, replace `beforeAll` with `beforeEach` to ensure a fresh setu
 +     beforeEach(() => {
 ```
 
-### 3.2 Jest Changes (from 24 to 27)
+### Jest 24 to 27
 
-#### Mocking with `spyOn`
-
-The behavior of `jest.spyOn` has changed. You now need to explicitly mock the implementation:
+`jest.spyOn` no longer calls the original implementation by default; you have to mock it explicitly:
 
 ```diff
 -     jest.spyOn(_, 'shuffle') # call original but not with 27
@@ -75,9 +62,7 @@ The behavior of `jest.spyOn` has changed. You now need to explicitly mock the im
 +     })
 ```
 
-#### Handling `_.once` in multiple tests
-
-To prevent issues with `_.once` across multiple tests, mock it in your test setup:
+`_.once` needs mocking in test setup, or the "only runs once" behavior bleeds across tests that expect a fresh call each time:
 
 ```diff
 +import _ from 'underscore';
@@ -88,9 +73,9 @@ To prevent issues with `_.once` across multiple tests, mock it in your test setu
 +}));
 ```
 
-### 3.3 Enabling Jest Fetch Mocks
+### Enabling Jest fetch mocks
 
-Update your `setupTests.js` file:
+`setupTests.js` needs the new import and an explicit enable call:
 
 ```diff
 # setupTests.js
@@ -101,7 +86,7 @@ Update your `setupTests.js` file:
 +enableFetchMocks()
 ```
 
-When mocking responses, use `doMock()`:
+Mocked responses now go through `doMock()`:
 
 ```diff
      beforeEach((done) => {
@@ -111,11 +96,9 @@ When mocking responses, use `doMock()`:
      })
 ```
 
-## 4. Fixing ESLint Warnings
+## Fixing ESLint warnings
 
-### 4.1 Update `.eslintrc`
-
-Add the following rules to your `.eslintrc` file:
+Add this rule to `.eslintrc` to catch anonymous default exports:
 
 ```json
 {
@@ -134,15 +117,13 @@ Add the following rules to your `.eslintrc` file:
 }
 ```
 
-To automatically fix ESLint issues, you can use this command:
+To autofix what ESLint can fix:
 
 ```bash
 npx eslint --fix --ext .js,.jsx src|grep .js> files; vim `cat files|sort|tr '\n' ' '`
 ```
 
-### 4.2 Refactor Default Exports
-
-Replace anonymous default exports with named exports:
+Replace anonymous default exports with named ones:
 
 ```diff
 -export default {
@@ -153,17 +134,13 @@ Replace anonymous default exports with named exports:
 +export default actions
 ```
 
-### 4.3 Remove Unused Imports
-
-Clean up your imports by removing unused ones:
+Clean up imports that are now unused:
 
 ```diff
 -import { CORRECT, INCORRECT } from '../../../../../constants'
 +import { CORRECT } from '../../../../../constants'
 ```
 
-## Conclusion
+## The pattern
 
-Upgrading from React 16 to 17 involves several steps, from updating dependencies to modifying your test setup and addressing ESLint warnings. While the process may seem daunting, following this guide should help you navigate the upgrade smoothly. Remember to thoroughly test your application after the upgrade to ensure everything works as expected.
-
-For more detailed information on the changes in React 17, refer to the [official React 17 release notes](https://reactjs.org/blog/2020/10/20/react-v17.html).
+Most of what breaks on a 16-to-17 bump isn't React itself, it's Jest and Enzyme catching up to it: `beforeAll` sharing state where you meant `beforeEach`, `spyOn` losing its automatic passthrough, and fetch mocks needing an explicit `enableFetchMocks()` call. None of it is hard to fix once you know to expect it; the point of writing it down is not having to rediscover it project by project.

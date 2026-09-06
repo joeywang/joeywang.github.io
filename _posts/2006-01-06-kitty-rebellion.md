@@ -1,11 +1,11 @@
 ---
 layout: post
 title: 小乖的霸权与猫咪们的逆袭
-description: "当小乖初次踏入我们家的门槛，它便迅速宣告了对这个新领地的主权。它以一种不容置疑的姿态，将猫咪们逼上了窗台，接着发出了震耳欲聋的吼叫，仿佛在向它们宣告：“这是我的地盘，我说了算。”这一切发生得如此之快，以至于它似乎并未注意到苹果的离去，只是一味地向小白和小黑展示自己的威力。"
+description: "一篇随笔：新来的小乖起初独霸家中地盘，把猫咪们逼上窗台，直到小白反击，一场家庭里的猫狗权力交替就此上演。"
 date: 2006-01-06 00:00 +0000
+categories: [Notes]
+tags: [essay, life, pets]
 ---
-# 小乖的霸权与猫咪们的逆袭
-
 <audio controls preload="metadata" src="/assets/audio/kitty-rebellion-summary.ogg">
   Your browser does not support the audio element.
 </audio>

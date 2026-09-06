@@ -4,7 +4,7 @@ title: "When Productivity Turns Against Its Purpose"
 description: "The AI boom promises abundance, but without a fairer distribution of power it may deepen the poverty, dependency, and cultural depletion it claims to overcome."
 date: 2026-08-26 16:00:00 +0100
 author: "Joey Wang"
-tags: [ai, ethics, society, productivity, poverty, technology, creativity]
+tags: [ai, ethics, society, productivity, poverty, creativity]
 categories: [AI, Society]
 ---
 

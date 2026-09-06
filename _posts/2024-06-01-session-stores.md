@@ -1,22 +1,21 @@
 ---
 layout: post
-title:  "Ruby on Rails Session Management Options"
-description: "Ruby on Rails offers various methods for managing sessions, each with its own set of advantages and disadvantages. Let's explore the primary options available."
+title:  "Rails Session Stores: Cookie, ActiveRecord, and Redis"
+description: "A comparison of Rails session stores: cookie sessions, ActiveRecord, and Redis, including how to share sessions across subdomains and multiple apps."
 date:   2024-06-01 14:41:26 +0100
-categories: Rails
+categories: [Rails]
+tags: [rails, ruby, security, redis]
 ---
-# Ruby on Rails Session Management Options
-
 <audio controls preload="metadata" src="/assets/audio/session-stores-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-Ruby on Rails offers various methods for managing sessions, each with its own set of advantages and disadvantages. Let's explore the primary options available.
+Rails supports several ways to store session data, and they trade off differently on security, capacity, and how much control you have over ending a session early.
 
 ## Cookie Session Store
 
-The cookie session store involves encoding and encrypting session information as a value in a session cookie saved on the client's side. This method is easy to manage, as all information is sent to the server with each request, allowing stateless app pods to handle authentication and authorization seamlessly. The encryption key is changed with each response to ensure security.
+The cookie session store encodes and encrypts session information into a cookie saved on the client's side. It's easy to manage: every piece of session data travels with each request, so stateless app pods can handle authentication and authorization without a shared session store. The encryption key changes with each response to keep it secure.
 
 ### Pros
 
@@ -60,6 +59,6 @@ Another option for session management is storing session data directly in the da
 
 Using Redis as a cache for session data offers high performance and scalability. It's particularly useful for applications with high traffic or those that require quick access to session data.
 
-## Conclusion
+## Which one to use
 
-Each session management method in Ruby on Rails has its own strengths and weaknesses. The choice of which to use depends on your application's specific requirements, security considerations, and performance needs.
+Cookie sessions are the default for a reason: no server-side storage, no extra infrastructure. Reach for ActiveRecord or Redis once you need to forcibly end a session, store more than a cookie can hold, or share session state across more services than a shared encryption key comfortably supports.

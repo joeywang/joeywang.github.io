@@ -1,88 +1,35 @@
 ---
-title: "Improving Daily Git Workflow with Stacked Git (StGit)"
+title: "Stacked Git: a Patch-Stack Workflow on Top of Git"
 date: 2026-01-02
-tags: ["git", "workflow", "productivity", "stgit", "development"]
-categories: ["Development", "Tools"]
-description: "Enhance your daily Git workflow with Stacked Git (StGit) for better commit management and productivity."
+tags: ["git", "stgit", "productivity", "workflow"]
+categories: [Engineering]
+description: "Stacked Git (StGit) separates the messy work of thinking through code from the clean history Git commits are for, using a patch-stack workflow."
 layout: post
 ---
-
-# Improving Daily Git Workflow with Stacked Git (StGit)
 
 <audio controls preload="metadata" src="/assets/audio/stacked-git-worklflow-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+Most Git workflows are optimized for sharing code, not for thinking while coding. That mismatch is the root cause of messy commits, endless rebases, and painful code reviews. Stacked Git (StGit) is a patch-stack workflow on top of Git that fixes this without giving up Git compatibility.
 
-> *Stop fighting commits. Start stacking ideas.*
+## The core problem with a plain Git workflow
 
-Most Git workflows are optimized for **sharing code**, not for **thinking while coding**.
-That mismatch is the root cause of messy commits, endless rebases, and painful code reviews.
+Git commits are immutable history units. Development work is not: it's non-linear, exploratory, frequently reordered, and revised many times before review.
 
-This article introduces **Stacked Git (StGit)** — a patch-stack–based workflow that dramatically improves day-to-day development productivity while staying fully compatible with Git.
+Typical pain points: "I should have refactored first," "this commit mixes three unrelated changes," "the reviewer wants a small change in commit #3," "I need to temporarily remove this change to debug."
 
----
+Git's answer to all of these is interactive rebase, stashing, resetting, commit squashing, and a fair amount of mental gymnastics. Git is doing its job. We're just using it for the wrong phase of the work.
 
-## The Core Problem with Traditional Git Workflow
+## The key insight: commits are not ideas
 
-Git commits are immutable history units.
-But during development, our work is:
-
-* non-linear
-* exploratory
-* frequently reordered
-* revised many times before review
-
-### Typical pain points
-
-* “I should have refactored first”
-* “This commit mixes 3 unrelated changes”
-* “Reviewer wants a small change in commit #3”
-* “I need to temporarily remove this change to debug”
-
-### What Git forces you to do
-
-* Interactive rebase
-* Stashing
-* Resetting
-* Commit squashing
-* Mental gymnastics
-
-Git is doing its job — **we’re using it for the wrong phase**.
-
----
-
-## The Key Insight: Commits ≠ Ideas
-
-During development:
-
-* You think in **ideas**
-* Git stores **commits**
-
-These are not the same thing.
-
----
+During development you think in ideas; Git stores commits. Those are not the same unit, and forcing one into the other is where the friction comes from.
 
 ## Enter Stacked Git (StGit)
 
-**StGit** introduces a lightweight abstraction on top of Git:
+StGit adds a lightweight abstraction on top of Git: patches, arranged as a stack. Each patch represents one logical idea. You work in patches, reorder them, edit them, and temporarily disable them, and only convert them into Git commits once you're ready to share.
 
-> **Patches**, arranged as a **stack**
-
-Each patch represents **one logical idea**.
-
-You:
-
-* work in patches
-* reorder patches
-* edit patches
-* temporarily disable patches
-
-Only when ready do you convert patches into Git commits.
-
----
-
-## Mental Model: Git vs StGit
+## Mental model: Git vs StGit
 
 ### Traditional Git
 
@@ -91,8 +38,6 @@ A --- B --- C --- D   (commits are fixed)
 ```
 
 Reordering or editing history requires rewriting everything after the change.
-
----
 
 ### Stacked Git
 
@@ -104,29 +49,13 @@ Base commit
    ├─ Patch: tests
 ```
 
-Patches are:
+Patches are movable, editable, and applied independently. Git commits get generated later, once the shape of the change is settled.
 
-* movable
-* editable
-* independently applied
+## Under the hood: what StGit actually does
 
-Git commits are generated **later**.
+StGit stores patches as metadata, applies them on top of a Git branch, and keeps Git history clean and linear underneath. You are not replacing Git, you're adding a layer for development ergonomics.
 
----
-
-## Under the Hood: What StGit Actually Does
-
-StGit:
-
-* stores patches as metadata
-* applies them on top of a Git branch
-* keeps Git history clean and linear
-
-You are **not replacing Git** — you are adding a layer for development ergonomics.
-
----
-
-## Initial Setup
+## Initial setup
 
 ```bash
 stg init
@@ -140,9 +69,7 @@ Check status:
 stg series
 ```
 
----
-
-## Basic Daily Workflow
+## Basic daily workflow
 
 ### 1. Start a new logical change
 
@@ -156,9 +83,7 @@ Make changes, then record them:
 stg refresh
 ```
 
-> Think of `stg refresh` as “update this patch”.
-
----
+Think of `stg refresh` as "update this patch."
 
 ### 2. Stack another idea on top
 
@@ -189,24 +114,17 @@ stg series
 + tests
 ```
 
-Each line is one **clean, reviewable idea**.
+Each line is one clean, reviewable idea.
 
----
+## Reordering work without a rebase
 
-## Reordering Work (Without Rebase Hell)
-
-Real life happens:
-
-> “That refactor should have happened first.”
-
-With Git: interactive rebase.
-With StGit:
+Real life happens: "that refactor should have happened first." With plain Git, that's an interactive rebase. With StGit:
 
 ```bash
 stg float refactor-api
 ```
 
-That’s it.
+That's it.
 
 ### Conceptual diagram
 
@@ -222,37 +140,27 @@ After float:
   tests
 ```
 
-The stack adjusts safely, automatically.
+The stack adjusts safely and automatically.
 
----
+## Temporarily removing a change to debug
 
-## Temporarily Removing a Change (Debugging Superpower)
-
-Suspect a patch causes a bug?
+Suspect a patch is causing a bug?
 
 ```bash
 stg pop add-endpoint
 ```
 
-Bug gone? Confirmed.
-
-Restore it:
+If the bug is gone, that confirms it. Restore it with:
 
 ```bash
 stg push add-endpoint
 ```
 
-No stash. No branch. No reset.
+No stash, no branch, no reset.
 
----
+## Fixing reviewer comments without touching unrelated code
 
-## Fixing Reviewer Comments (Surgically)
-
-Reviewer says:
-
-> “Please change validation logic.”
-
-That logic lives in `add-endpoint`.
+Say the reviewer wants a change to validation logic that lives in `add-endpoint`:
 
 ```bash
 stg goto add-endpoint
@@ -260,15 +168,11 @@ stg goto add-endpoint
 stg refresh
 ```
 
-Everything above re-applies automatically.
+Everything above it re-applies automatically. This is where StGit earns its keep.
 
-This is **where StGit shines**.
+## Switching tasks without a branch explosion
 
----
-
-## Switching Tasks Without Branch Explosion
-
-Mid-feature, urgent bug appears.
+Mid-feature, an urgent bug appears.
 
 ```bash
 stg pop feature-x
@@ -289,33 +193,21 @@ stg pop hotfix-null-check
 stg push feature-x
 ```
 
----
+## From patches to Git commits
 
-## From Patches to Git Commits
-
-When ready to share:
-
-### Export patches as commits
+When ready to share, export patches as commits:
 
 ```bash
 stg export --commit
 ```
 
-Each patch becomes one Git commit.
-
----
-
-### Squash selectively
+Each patch becomes one Git commit. To squash selectively before opening a PR:
 
 ```bash
 stg squash refactor-api add-endpoint
 ```
 
-Perfect for clean PRs.
-
----
-
-## Visual Summary: Development vs Sharing
+## Development vs sharing
 
 ```
 Development phase:
@@ -325,14 +217,9 @@ Sharing phase:
   [commit][commit]
 ```
 
-StGit optimizes **development**.
-Git optimizes **distribution**.
+StGit optimizes development. Git optimizes distribution. Use each for what it's good at.
 
-Use both for what they’re best at.
-
----
-
-## Recommended Alias Setup
+## Recommended alias setup
 
 ```bash
 git config --global alias.ss "!stg series"
@@ -350,28 +237,9 @@ git sr
 git ss
 ```
 
----
+## When StGit is especially valuable
 
-## When StGit Is Especially Valuable
+Long-lived feature branches, heavy refactors, frequent review iteration, and frequent context switching are where it pays off most. It's also just a better fit for anyone who cares about a clean, linear history.
 
-* Long-lived feature branches
-* Heavy refactors
-* Frequent review iteration
-* Context switching
-* Senior engineers who care about clean history
-
----
-
-## Final Takeaway
-
-> **Git commits are for history.
-> StGit patches are for thinking.**
-
-Once you separate those concerns, your workflow becomes:
-
-* calmer
-* cleaner
-* faster
-
-And code reviews become a joy instead of a negotiation.
+Git commits are for history. StGit patches are for thinking. Once those two concerns are separated, code review stops being a negotiation over commit boundaries and goes back to being a review of the code.
 

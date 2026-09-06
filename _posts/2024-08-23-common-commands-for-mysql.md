@@ -1,13 +1,17 @@
 ---
 layout: post
-title: common commands for MySQL
-description: "SHOW DATABASES;"
+title: "Common MySQL Commands: Databases, Users, and Grants"
+description: "A quick-reference list of MySQL and MariaDB commands for databases, tables, users, and grants, kept for copy-pasting from the shell."
 date: 2024-08-23 00:00 +0000
+categories: [Database]
+tags: [mysql, database, sql]
 ---
 
 <audio controls preload="metadata" src="/assets/audio/common-commands-for-mysql-summary.ogg">
   Your browser does not support the audio element.
 </audio>
+
+Commands I reach for most often when working with MySQL or MariaDB from the shell.
 
 ```sql
 -- Show databases
@@ -32,7 +36,7 @@ CREATE USER 'user'@'localhost' IDENTIFIED BY 'mypassword';
 CREATE USER 'user'@'%' IDENTIFIED BY 'mypassword';
 
 -- Drop user
-CREATE USER 'user'@'host';
+DROP USER 'user'@'host';
 
 -- Create a database
 CREATE DATABASE IF NOT EXISTS mydb;

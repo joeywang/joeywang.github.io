@@ -1,44 +1,41 @@
 ---
 layout: post
-title:  "Advanced Debugging Techniques for Production Issues"
+title: "Production Debugging Techniques for Rails Apps"
 date:   2024-07-02 14:41:26 +0100
 categories: Rails
+description: "Practical production debugging techniques for Rails: log analysis, replicating production data, rbtrace live injection, feature-flagged debug modes, and replica apps."
+tags: [rails, debugging, devops, kubernetes]
 ---
-# Advanced Debugging Techniques for Production Issues
 
-## Introduction
+In an ideal world every production problem reproduces locally, gets debugged with pry, and ships as a patch in the next release. In practice, the bugs that matter are often the ones that refuse to reproduce anywhere but production. This post walks through the techniques I reach for, ordered from least invasive to most.
 
-In an ideal world, developers would be able to replicate all production problems locally, debug them, and roll out patches with the next release. However, real-life scenarios are often far more complex. Production environments present unique challenges that are difficult to replicate in development or even staging environments. This article explores various techniques for troubleshooting production issues, ranging from pre-production strategies to advanced debugging in live environments.
+## Why production bugs resist reproduction
 
-## Challenges of Production Debugging
+A few things make production different in ways that matter:
 
-Several factors make production debugging particularly challenging:
+1. Data volume: production databases are larger and messier than anything in development.
+2. Feature flags: different configurations may be active for different users.
+3. Environment configuration: production has settings tuned for performance and security that other environments skip.
+4. Customer-specific setups: some issues only occur for one customer's particular configuration.
+5. Load and scale: concurrency bugs need concurrency to show up.
 
-1. Data Volume: Production databases are often much larger and more complex than development or staging environments.
-2. Feature Flags: Different configurations may be active in production.
-3. Environment Configurations: Production often has unique settings for performance and security.
-4. Customer-Specific Configurations: Some issues may only occur for specific customers due to their unique setups.
-5. Load and Scale: Production environments handle much higher traffic and concurrency than other environments.
+Staging tries to mimic production and usually falls short on exactly the dimensions that triggered the bug: request volume and data complexity.
 
-Even staging environments, which aim to mimic production, often fall short in replicating exact conditions, especially in terms of request volume and data complexity.
+## Before touching production
 
-## Pre-Production Debugging Techniques
+### Read the telemetry you already have
 
-Before resorting to production debugging, consider these strategies:
+Tools like Sentry and Datadog often contain the answer if you look hard enough:
 
-### 1. Utilize Logging and Monitoring Tools
+- Error logs and stack traces
+- Request payloads and responses
+- Performance metrics and anomalies
 
-Tools like Sentry and Datadog can provide valuable insights:
+This only works if the logging was set up before the incident. Instrumentation added after the fire starts is archaeology, not observability.
 
-- Review error logs and stack traces
-- Analyze request payloads and responses
-- Examine performance metrics and anomalies
+### Replicate production data locally
 
-Best Practice: Set up comprehensive logging and monitoring early in your development process.
-
-### 2. Replicate Production Data Locally
-
-Download a subset of production data to your local environment:
+Pull a subset of production data into your local environment:
 
 ```bash
 pg_dump -h production-db-host -U username -d dbname -t specific_table > dump.sql
@@ -47,41 +44,39 @@ psql -d local_db < dump.sql
 
 Pros:
 - Full control over the environment
-- Ability to use local debugging tools (pry, byebug)
+- Local debugging tools work (pry, byebug)
 
 Cons:
-- Time-consuming for large databases
-- Potential security concerns with sensitive data
+- Slow for large databases
+- Sensitive data now lives on a laptop, which your security team will have opinions about
 
-### 3. Use Port Forwarding
+### Port forwarding to a read replica
 
-Connect your local development environment to the remote production database:
+Connect your local app to the remote database instead of copying it:
 
 ```bash
 ssh -L 5432:localhost:5432 user@production-server
 ```
 
 Pros:
-- Saves time compared to downloading entire database
-- Works with read-only production replicas
+- No lengthy dump and restore
+- Works against read-only replicas
 
 Cons:
-- Slower than a local database
-- Requires secure SSH access to production
+- Every query pays a network round trip
+- Requires SSH access to production, which should be tightly controlled
 
-## Staging Environment Strategies
+## Staging techniques
 
-When local debugging isn't sufficient, try these approaches in staging:
-
-### 1. Simulate User Actions
+### Simulate the user's exact path
 
 - Log in as a system admin or impersonated user
-- Replicate the exact steps that lead to the issue
-- Use tools like Capybara or Selenium for automated reproduction
+- Replicate the exact steps that led to the issue
+- Automate the reproduction with Capybara or Selenium so you can rerun it after each fix attempt
 
-### 2. Use rbtrace for Live Code Injection
+### rbtrace: inject code into a running process
 
-rbtrace allows you to inject code into a running Ruby process:
+rbtrace lets you attach to a live Ruby process and run code inside it:
 
 ```ruby
 # Enable rbtrace in your Gemfile
@@ -99,19 +94,20 @@ TracePoint.new(:call) do |tp|
 end.enable
 ```
 
-Important Considerations:
+Things that will bite you if you skip them:
+
 - rbtrace must be enabled via environment variables
-- Changes are temporary and reset on process restart
-- Run Puma in single mode for easier debugging
-- Ensure your requests go to the debugged Puma process
+- Injected changes are temporary and vanish on process restart
+- Run Puma in single mode, or you will attach to one worker while your requests hit another
+- Verify your test requests actually reach the debugged process
 
-## Production Debugging Techniques
+## Debugging in production itself
 
-When all else fails, you may need to debug in production:
+When nothing else reproduces the problem, you debug where it lives. Carefully.
 
-### 1. Enhanced Logging
+### Targeted logging
 
-Set up additional logging for specific users or scenarios:
+Add detailed logging scoped to the affected user or scenario:
 
 ```ruby
 if current_user.email == "problematic_user@example.com"
@@ -119,9 +115,9 @@ if current_user.email == "problematic_user@example.com"
 end
 ```
 
-### 2. Feature Flags for Debugging
+### Feature-flagged debug modes
 
-Use feature flags to enable debug modes for specific users:
+Flags let you switch verbose diagnostics on for one user without a deploy to turn them off:
 
 ```ruby
 if Flipper.enabled?(:debug_mode, current_user)
@@ -129,14 +125,11 @@ if Flipper.enabled?(:debug_mode, current_user)
 end
 ```
 
-### 3. Replica App with Load Balancer
+### A replica app behind the load balancer
 
-For complex issues:
-- Set up a replica of your production app
-- Use a load balancer to forward specific requests to this replica
-- Apply more intensive debugging techniques on the replica
+For the truly stubborn cases: run a replica of the production app, route only the affected requests to it, and apply heavier instrumentation there without touching the traffic everyone else sees.
 
-Example Kubernetes configuration:
+Example Kubernetes service targeting the debug deployment:
 
 ```yaml
 apiVersion: v1
@@ -153,6 +146,6 @@ spec:
       targetPort: 9376
 ```
 
-## Conclusion
+## The principle
 
-Debugging production issues requires a strategic approach, moving from least invasive techniques to more direct interventions. Always prioritize user experience and data security when applying these methods. Remember, the goal is to gather enough information to reproduce and fix the issue, not to solve it directly in the production environment whenever possible.
+Escalate deliberately: telemetry first, local reproduction second, staging third, production last. The goal in production is to gather enough information to reproduce the bug somewhere safer, not to fix it live. Every technique that touches production trades some risk to users for information, so make sure the information is worth it.

@@ -1,11 +1,17 @@
 ---
 layout: post
-title: Improve your productivity with irbrc
-description: "begin require 'irbtools'"
+title: "A .irbrc Full of Ruby Debugging and Introspection Helpers"
+description: "A collection of .irbrc helpers for tracing method calls, logging SQL queries, profiling code, and inspecting Ruby objects during Rails console debugging."
 date: 2024-06-09 00:00 +0000
-categories: Ruby
-tags: irb
+categories: [Engineering]
+tags: [ruby, rails, debugging, productivity]
 ---
+
+<audio controls preload="metadata" src="/assets/audio/irbrc-for-development-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
+
+This is the `.irbrc` I load for Rails console work: helpers for tracing method calls and SQL queries, profiling code, inspecting an object's method sources and ancestry, and swapping in a debugger without touching the app's source. Drop it in `~/.irbrc` and every method below is available in any `rails console` or plain `irb` session. Everything past the prompt configuration is lazy: `objspace`, `ruby-prof`, and `httparty` are only required when the corresponding helper is actually called, so having fifty methods defined here costs nothing until you use one.
 
 ```ruby
 begin
@@ -15,7 +21,7 @@ begin
   require 'fancy_irb'
   FancyIrb.start
 rescue LoadError => e
-  puts e.messge
+  puts e.message
 end
 
 IRB.conf[:PROMPT][:DEV] = { # name of prompt mode
@@ -39,11 +45,6 @@ IRB.conf[:PROMPT][:DOC] = { # name of prompt mode
 IRB.conf[:PROMPT_MODE] = :DOC
 
 # Tracking and Debugging Helpers
-
-<audio controls preload="metadata" src="/assets/audio/irbrc-for-development-summary.ogg">
-  Your browser does not support the audio element.
-</audio>
-
 
 # Log method calls with their arguments
 # Usage: track_method_calls(User, :save)

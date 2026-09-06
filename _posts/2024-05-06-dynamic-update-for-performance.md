@@ -1,91 +1,29 @@
 ---
 layout: post
-title:  "Dynamic updates to improve performance"
-description: "Improving the performance of a web application that handles a large number of lessons with dynamic information can be challenging. Here are some strategies and"
+title:  "Fragment Caching a Large List That Changes Constantly"
+description: "How splitting static and dynamic fields, granular fragment caching, and incremental loading keep a large, frequently updated list fast without stale data."
 date:   2024-05-06 14:41:26 +0100
-categories: Rails
-tags: [postgres, rails]
+categories: [Rails]
+tags: [rails, redis, performance, database]
 ---
-
-Improving the performance of a web application that handles a large number of lessons with dynamic information can be challenging. Here are some strategies and refinements to the solutions you've proposed:
-
-### Initial Problem Analysis
-
-- High Volume of Data: 200 lessons is manageable, but scaling to 1000 lessons could indeed strain the server and client-side performance.
-
-- Data Immutability: Static lesson properties are rarely changed, whereas dynamic information like status and scores are updated frequently.
-
-### Proposed Solutions and Enhancements
-
-1. Caching Strategy Enhancement
-
-   - Rails.cache: Continue caching static lesson properties.
-
-   - Cache Invalidation: Use a more granular cache invalidation strategy. Instead of invalidating the entire cache on any change, invalidate only the specific lesson or related fragments.
-
-2. Fragment Caching
-
-   - Redis: Store lesson nodes in Redis for quick access.
-
-   - Cache Keys: Use unique keys that include both student ID and lesson ID to ensure that updates to one student's progress don't affect others.
-
-3. Front-End Optimization
-
-   - Initial Load: Load static content first from the server cache.
-
-   - Dynamic Update: Use AJAX to request only the dynamic changes, updating the DOM as needed.
-
-4. Front-End Frameworks
-
-   - React/Vue: For more complex applications, using a front-end framework can help manage state and updates more efficiently.
-
-5. Incremental Loading
-
-   - Pagination or Infinite Scroll: Instead of loading all lessons at once, implement pagination or infinite scrolling to load lessons in chunks as the user scrolls.
-
-6. WebSockets for Real-Time Updates
-
-   - If the application requires real-time updates, consider using WebSockets to push updates to the client whenever a lesson's status changes.
-
-7. Database Optimization
-
-   - Indexes: Ensure that the database has appropriate indexes for quick lookup of lessons based on status or other frequently queried fields.
-
-   - Read Replicas: Use read replicas to distribute the load of database reads.
-
-8. Selective Rendering
-
-   - Only re-render components or parts of the page that have actually changed, rather than refreshing the entire list.
-
-9. Service Workers
-
-   - Use service workers to cache data on the client side, allowing for offline access and reducing server load.
-
-10. API Design
-
-    - Design the API to allow for fetching only the necessary data, such as endpoints for fetching only lessons that have changed since the last check.
-
-### Implementation Considerations
-
-- Testing: Ensure that any caching strategy is thoroughly tested to avoid serving stale data.
-
-- Monitoring: Implement monitoring to understand the impact of caching and to identify any performance bottlenecks.
-
-- Fallbacks: Have a fallback mechanism in case the cache fails or becomes stale.
-
-### Example Code Snippet for Cache Invalidation
-
-Here's a simple example of how you might handle cache invalidation in Rails:
-
-```ruby
-
-# When a lesson is updated
 
 <audio controls preload="metadata" src="/assets/audio/dynamic-update-for-performance-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
+A page listing lessons works fine at 200 rows. At 1000, with per-user dynamic fields like status and score updating constantly, the same approach starts to strain both the server and the client. The fix is separating what changes rarely from what changes on every request, and caching each at the right level.
 
+### Split static from dynamic
+
+Most of a lesson's data doesn't change: title, description, structure. What changes is per-student progress: status, score. Cache the static part with `Rails.cache` and invalidate it only when the lesson itself changes, not on every student update. Mixing the two into one cache entry means every score update busts a cache full of data that never changed.
+
+### Fragment cache with a key that matches the blast radius
+
+Store the rendered lesson fragment in Redis keyed by both student ID and lesson ID. Keying it this way means updating one student's progress does not invalidate anyone else's cached fragment:
+
+```ruby
+
+# When a lesson is updated
 def update_lesson(lesson, attributes)
 
   lesson.update!(attributes)
@@ -96,7 +34,11 @@ end
 
 ```
 
-And for the front-end, you might have an AJAX call that looks something like this:
+Invalidating the whole cache on any change is the easy path, and the one that erases the benefit of caching in the first place.
+
+### Load static content first, patch in the dynamic part
+
+Render the page from cache, then fetch only what changed:
 
 ```javascript
 
@@ -124,5 +66,13 @@ setInterval(fetchUpdatedLessons, 10000); // Every 10 seconds
 
 ```
 
-By combining these strategies, you can create a more efficient system that scales better as the number of lessons increases.
+An endpoint that returns only lessons changed since the last check keeps the payload small regardless of how many lessons exist in total. If updates need to show up immediately rather than on a ten-second poll, replace the interval with a WebSocket push.
 
+### Where else the volume shows up
+
+- Index the columns you filter or sort lessons by; a table scan that was fine at 200 rows is not fine at 1000.
+- Use a read replica if the read volume from this page competes with writes elsewhere.
+- Paginate or infinite-scroll rather than rendering every lesson at once; the DOM cost of 1000 nodes is real even if the query is fast.
+- Re-render only the lesson rows that actually changed, not the whole list, when the update comes back.
+
+None of this replaces testing the cache under real invalidation patterns. A caching strategy that hasn't been tested against concurrent updates is a caching strategy that will eventually serve someone else's score.

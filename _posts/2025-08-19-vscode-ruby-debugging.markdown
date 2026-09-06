@@ -1,32 +1,25 @@
 ---
 layout: post
-title:  "Mastering Ruby Debugging in VS Code: Shopify, rdbg, and RSpec Setup"
+title:  "Ruby Debugging in VS Code: Shopify LSP, rdbg, and RSpec"
+description: "How to wire up VS Code for Ruby debugging with the Shopify Liquid LSP, the rdbg debugger from Ruby's debug gem, and launch configs for RSpec, Minitest, and Cucumber."
 date:   2025-08-19 10:00:00 +0000
-categories: Ruby VSCode Debugging
-tags: [ruby, vscode, debugging, shopify, rspec, rdbg]
+categories: [Rails]
+tags: [ruby, debugging, testing, vscode, rspec, shopify]
 ---
 
-# Mastering Ruby Debugging in VS Code: Shopify, rdbg, and RSpec Setup
-
-Debugging is an essential part of any developer's workflow, and having a solid debugging setup can significantly improve your productivity. In this article, we'll explore how to configure Visual Studio Code for debugging Ruby applications, with a special focus on three key areas:
-
-1. Setting up the Shopify Language Server Protocol (LSP)
-2. Using the `rdbg` debugger from the `debug` gem
-3. Configuring the debugger for RSpec and other testing frameworks
-
-Whether you're working on a standard Ruby on Rails application or a Shopify theme/plugin, these techniques will help you debug your code more effectively.
+VS Code's Ruby debugging only gets good once you wire up three separate things: language support for whatever you're actually editing, the `rdbg` debugger from Ruby's `debug` gem, and launch configs pointed at your test framework rather than at a plain script. Here's each piece.
 
 ## Prerequisites
 
-Before we dive in, make sure you have the following installed:
+You'll need:
 
 - Visual Studio Code
 - Ruby (preferably managed with a version manager like rbenv, rvm, or mise)
-- A Ruby project to debug (we'll use a simple example)
+- A Ruby project to debug
 
 ## 1. Setting up the Shopify Language Server Protocol (LSP)
 
-If you're working with Shopify themes or apps, setting up the Shopify LSP will greatly enhance your development experience with features like:
+If you're working with Shopify themes or apps, the Shopify LSP gets you:
 
 - Syntax highlighting
 - Auto-completion
@@ -77,7 +70,7 @@ With the Shopify LSP, you'll get auto-completion for Liquid objects, filters, an
 
 ## 2. Using rdbg from the debug gem
 
-Ruby 3.1+ comes with the `debug` gem as the default debugger, which provides a more powerful debugging experience than the older `byebug`. The `rdbg` command-line tool allows you to debug your Ruby applications effectively.
+Ruby 3.1+ ships with the `debug` gem as the default debugger, which does more than `byebug` did. The `rdbg` command-line tool is how you drive it from outside an editor.
 
 ### Installation
 
@@ -182,7 +175,7 @@ Once you're in a debugging session, you can use these common commands:
 
 ## 3. Debugger Setup for RSpec and Testing Frameworks
 
-Setting up debugging for your test suite is crucial for test-driven development and troubleshooting failing tests.
+A debugger in your test suite matters as much as one in application code, maybe more, since a failing test with no visibility into why is where you lose the most time.
 
 ### RSpec Configuration
 
@@ -364,8 +357,6 @@ If debugging is slow:
 2. Avoid stepping through large loops
 3. Use `continue` to skip over uninteresting code sections
 
-## Conclusion
+## The payoff
 
-Setting up an effective debugging environment in VS Code for Ruby development can significantly improve your productivity. With the Shopify LSP, `rdbg` from the `debug` gem, and proper configurations for RSpec and other testing frameworks, you'll have a powerful toolkit for diagnosing and fixing issues in your Ruby applications.
-
-Remember that debugging is a skill that improves with practice. The more familiar you become with these tools and techniques, the more efficient you'll be at identifying and resolving issues in your code. Happy debugging!
+None of this is complicated on its own, the LSP, `rdbg`, and the launch configs are each a few lines of setup. What it buys you is being able to set a breakpoint in a Rails console session or an RSpec run and actually inspect state, instead of littering the code with `puts` and rerunning until the output tells you enough.

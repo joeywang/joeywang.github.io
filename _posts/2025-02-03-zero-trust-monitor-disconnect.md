@@ -1,79 +1,52 @@
 ---
 layout: post
-title: Monitoring Cloudflare Zero Trust & WARP on macOS
-description: "This article explores how to detect and respond to Cloudflare WARP and Zero Trust activity on a macOS system — especially useful when you're off-duty but find"
+title: "Detecting Cloudflare Zero Trust Beyond the WARP Flag"
+description: "WARP can report itself as off while Zero Trust still routes your Mac's traffic; here is how to check DNS, ASN, and DoH to find out for sure."
 date: "2025-02-03"
-categories: security cloudflare zero-trust macos
+categories: [Security, DevOps]
+tags: [security, macos, networking, dns]
 ---
 
-## Monitoring Cloudflare Zero Trust & WARP on macOS
+<audio controls preload="metadata" src="/assets/audio/zero-trust-monitor-disconnect-summary.ogg">
+  Your browser does not support the audio element.
+</audio>
 
-This article explores how to detect and respond to Cloudflare WARP and Zero Trust activity on a macOS system — especially useful when you're off-duty but find your corporate WARP client rerouting traffic against your intentions.
+Checking whether WARP is "on" only answers half the question. A Mac can still be routed through a Zero Trust tunnel while `warp=off`, and the reverse trip - confirming you're actually off the corporate network - takes a few more checks: DNS, ASN, and whether internal domains still resolve.
 
-### 📌 Goals
-- Detect WARP and Zero Trust usage
-- Provide lightweight visibility into DNS, routing, and ASN info
-- Offer reversible ways to disable routing
-- Avoid conflicts with company MDM settings
-
----
-
-## 🔍 Detecting WARP Status
-
-Use Cloudflare's trace endpoint:
+## Detecting WARP status
 
 ```bash
 curl -s https://www.cloudflare.com/cdn-cgi/trace | grep warp
 ```
 
-Expected outputs:
-- `warp=on` → WARP is active
-- `warp=off` → WARP is not active
+`warp=on` means WARP is active, `warp=off` means it isn't. It says nothing about whether you're still inside a Zero Trust tunnel through some other path.
 
-This does **not** indicate if you're still connected to a Zero Trust tunnel.
-
----
-
-## 🧠 Detecting DNS-over-HTTPS (DoH) Usage
-
-Run:
+## Detecting DNS-over-HTTPS usage
 
 ```bash
 scutil --dns
 ```
 
-Look for Cloudflare DoH endpoints like:
+Look for a Cloudflare DoH endpoint such as `https://cloudflare-dns.com/dns-query`. If your DNS is going through an encrypted resolver, tools like `dig` and `nslookup` won't show you what's actually being resolved.
 
-```
-https://cloudflare-dns.com/dns-query
-```
+## Detecting Zero Trust routing directly
 
-This shows whether your DNS is going through encrypted resolvers. DoH bypasses traditional tools like `dig` or `nslookup`.
-
----
-
-## 🌐 Detect Zero Trust Network Routing
-
-Even if WARP is off, you might still be routed through a Zero Trust tunnel. Run:
+Even with WARP off, you can still be routed through Zero Trust. Check the ASN:
 
 ```bash
 curl -s http://whoami.cloudflareclient.com
 curl -s https://ipinfo.io
 ```
 
-Check the returned ASN. If it's Cloudflare (AS13335), you're likely still routed through them.
-
-The most reliable way to verify Zero Trust routing is to check if **internal-only domains resolve**:
+If the ASN comes back as Cloudflare (AS13335), you're likely still routed through them. The more reliable test is whether internal-only domains resolve at all:
 
 ```bash
 dig internal.corp.example
 ```
 
-If this resolves, you're likely in the tunnel.
+If that resolves, you're in the tunnel, regardless of what the WARP flag says.
 
----
-
-## ✅ Lightweight Monitoring Script
+## A lightweight monitoring script
 
 ```bash
 #!/bin/bash
@@ -87,31 +60,25 @@ echo "ASN: $ASN"
 echo "DoH in use: $DNS"
 ```
 
-You can run this on a schedule or via `launchd`.
+Run it on a schedule via `launchd` if you want a standing check rather than a one-off.
 
----
+## Blocking Zero Trust DNS with /etc/hosts
 
-## 🔌 Blocking Zero Trust DNS with /etc/hosts
+If MDM restrictions mean you can't touch WARP itself, you can override DNS locally with `/etc/hosts`. This doesn't kill WARP, but it stops key services from resolving.
 
-If you can’t disable WARP due to MDM restrictions, you can override DNS locally with `/etc/hosts`. This doesn't kill WARP, but it prevents key services from resolving.
+### Step 1: create a blocklist
 
-### Step 1: Create a Blocklist
 Save as `~/scripts/zero_trust_blocklist.txt`:
 
 ```txt
 # Zero Trust Block Rules START
-
-<audio controls preload="metadata" src="/assets/audio/zero-trust-monitor-disconnect-summary.ogg">
-  Your browser does not support the audio element.
-</audio>
-
 127.0.0.1 api.corp.example
 127.0.0.1 sso.example.com
 127.0.0.1 warp.cloudflareclient.com
 # Zero Trust Block Rules END
 ```
 
-### Step 2: Toggle Script
+### Step 2: a toggle script
 
 ```bash
 #!/bin/bash
@@ -120,32 +87,26 @@ HOSTS_FILE="/etc/hosts"
 BLOCKLIST="$HOME/scripts/zero_trust_blocklist.txt"
 
 if grep -q "# Zero Trust Block Rules START" "$HOSTS_FILE"; then
-    echo "🟢 Unblocking Zero Trust domains..."
+    echo "Unblocking Zero Trust domains..."
     sudo sed -i.bak '/# Zero Trust Block Rules START/,/# Zero Trust Block Rules END/d' "$HOSTS_FILE"
 else
-    echo "🔴 Blocking Zero Trust domains..."
+    echo "Blocking Zero Trust domains..."
     sudo cp "$HOSTS_FILE" "$HOSTS_FILE.bak"
     sudo bash -c "cat '$BLOCKLIST' >> '$HOSTS_FILE'"
 fi
 ```
 
-Make it executable:
-
 ```bash
 chmod +x ~/scripts/toggle_zero_trust_hosts.sh
 ```
 
-### Step 3: Optional Notifications
-
-Use `terminal-notifier` to show a desktop alert:
+### Step 3: optional notification
 
 ```bash
 terminal-notifier -title "Zero Trust Hosts" -message "Block mode enabled"
 ```
 
-### Step 4: Run Off-Hours Automatically
-
-You can use `launchd` to schedule the toggle during off-duty hours. Sample logic:
+### Step 4: run it off-hours automatically
 
 ```bash
 HOUR=$(date +%H)
@@ -154,8 +115,4 @@ if [[ $HOUR -ge 18 || $HOUR -lt 9 ]]; then
 fi
 ```
 
----
-
-## 🧠 Wrap-up
-
-This toolkit gives you visibility and reversible control over Cloudflare Zero Trust behaviors, using safe methods like detection scripts and `/etc/hosts` overrides — without violating system protections.
+None of this disables WARP. It gives you visibility into whether you're actually routed through Zero Trust, and a reversible way to block specific domains when the client won't let you disconnect outright.

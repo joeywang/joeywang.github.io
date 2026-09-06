@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Font Support with Prawn and test 2025-01-03
-description: "When working with PDF generation in Ruby using Prawn and testing with PDF::Inspector, developers often encounter challenges with non-ASCII character support,"
+title: Testing Non-ASCII Fonts with Prawn and PDF::Inspector
+description: "How to debug Unicode font rendering in Ruby's Prawn PDF library and work around PDF::Inspector's limits when testing non-ASCII characters like it."
 date: 2025-01-03 14:58 +0000
+categories: [Engineering]
+tags: [ruby, testing, debugging, pdf]
 ---
-# Debugging Font Support Issues with Prawn and PDF::Inspector in Ruby
-
 <audio controls preload="metadata" src="/assets/audio/font-support-with-prawn-and-test-summary.ogg">
   Your browser does not support the audio element.
 </audio>
@@ -150,15 +150,9 @@ end
 end
 ```
 
-## Conclusion
+## The takeaway
 
-Font support issues in PDF generation and testing require a multi-faceted approach. Key takeaways:
-
-1. Always verify PDF output manually before automated testing
-2. Use appropriate fonts with complete character support
-3. Consider alternative testing strategies when PDF::Inspector falls short
-4. Implement proper error handling and fallback mechanisms
-5. Choose simpler text patterns for testing when possible
+Most of these failures are not Prawn bugs, they are testing-tool limitations. Verify the rendered PDF manually first, embed a font with full character coverage, and when PDF::Inspector cannot read a string back correctly, fall back to `PDF::Reader` or a simpler substring before assuming the render is broken.
 
 ## Resources
 

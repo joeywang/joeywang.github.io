@@ -1,21 +1,19 @@
 ---
 layout: post
-title: 'Upgrading React from 17 to 18: A Comprehensive Guide'
-description: "React 18 introduces several new features and improvements that enhance performance and developer experience. This guide will walk you through the process of"
+title: "Upgrading React 17 to 18: Root API, Batching, and Test Fixes"
+description: "What changes when you upgrade React 17 to 18: the new root API, automatic batching, Strict Mode's double-invoked effects, and test setup fixes."
 date: 2024-10-05 23:51 +0100
+categories: [Engineering]
+tags: [react, javascript, testing]
 ---
-# Upgrading React from 17 to 18: A Comprehensive Guide
-
 <audio controls preload="metadata" src="/assets/audio/comprehensive-guide-upgrading-react-from-17-to-18-summary.ogg">
   Your browser does not support the audio element.
 </audio>
 
 
-React 18 introduces several new features and improvements that enhance performance and developer experience. This guide will walk you through the process of upgrading your React application from version 17 to 18, covering dependency updates, breaking changes, and best practices.
+React 18's headline change for most apps isn't a feature, it's the new root API: `ReactDOM.render` is deprecated in favor of `createRoot`, and that one swap is what turns on automatic batching, concurrent rendering, and Strict Mode's double-invoked effects. Here's what breaks and what to fix when you make that swap.
 
-## 1. Update Dependencies
-
-The first step in upgrading to React 18 is to update your dependencies. Here are the key packages you need to update:
+## Updating dependencies
 
 ```json
 {
@@ -30,24 +28,15 @@ The first step in upgrading to React 18 is to update your dependencies. Here are
 }
 ```
 
-To update these dependencies, run:
-
 ```bash
 npm install react@18.2.0 react-dom@18.2.0 react-redux@8.0.5
 npm install --save-dev @cfaester/enzyme-adapter-react-18@0.8.0
-```
-
-Note: Make sure to remove the old Enzyme adapter for React 17:
-
-```bash
 npm uninstall @wojtekmaj/enzyme-adapter-react-17
 ```
 
-## 2. Update Test Setup
+## Fixing the test setup
 
-### Fix TextEncoder Missing
-
-In some testing environments, you might encounter issues with `TextEncoder` and `TextDecoder`. To resolve this, add the following to your `src/setupTests.js` file:
+`TextEncoder`/`TextDecoder` go missing in some test environments after the upgrade. Add them to `src/setupTests.js`:
 
 ```javascript
 import { TextEncoder, TextDecoder } from 'util';
@@ -55,9 +44,7 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 ```
 
-### Update Enzyme Adapter
-
-If you're using Enzyme for testing, update the adapter in your `src/setupTests.js` file:
+If you're on Enzyme, swap the adapter in the same file:
 
 ```javascript
 import { configure } from 'enzyme'
@@ -66,9 +53,7 @@ import Adapter from '@cfaester/enzyme-adapter-react-18'
 configure({ adapter: new Adapter() })
 ```
 
-## 3. Update ReactDOM Rendering
-
-React 18 introduces a new root API for rendering. Update your `src/index.jsx` file:
+## Switching to the root API
 
 ```javascript
 import React from 'react';
@@ -80,43 +65,15 @@ const root = createRoot(container);
 root.render(<App />);
 ```
 
-This replaces the old `ReactDOM.render()` method.
+This replaces `ReactDOM.render()`.
 
-## 4. Handle Breaking Changes
+## What the new root API changes
 
-### Automatic Batching
+- **Automatic batching**: state updates are now batched even inside promises, timeouts, and native event handlers, not just inside React event handlers. Code that relied on a state update applying synchronously, right after the call that triggered it, needs to account for that.
+- **Strict Mode double-invokes effects**: mount, unmount, mount, specifically to surface effects that don't clean up after themselves. A `useEffect` that was quietly leaking a subscription or a timer becomes visible here.
+- **New hooks** become available: `useId`, `useTransition`, `useDeferredValue`. Nothing forces you to adopt them immediately.
+- **`act()`'s behavior changed slightly.** If a test suite leaned on its exact semantics, expect a few assertions to need adjusting.
 
-React 18 introduces automatic batching for better performance. This means that multiple state updates will be batched together, potentially reducing the number of re-renders. If you rely on immediate state updates, you might need to adjust your code.
+## The upgrade order that works
 
-### Strict Mode Changes
-
-In React 18, Strict Mode now double-invokes effects to help identify potential issues with effect cleanup. This might expose bugs in your existing code, so be prepared to fix any issues that arise.
-
-### New Hooks
-
-React 18 introduces new hooks like `useId`, `useTransition`, and `useDeferredValue`. Consider using these hooks to optimize your application's performance and user experience.
-
-## 5. Leverage New Features
-
-### Concurrent Rendering
-
-React 18 introduces concurrent rendering, which allows React to interrupt rendering to handle more urgent updates. This can lead to a more responsive user interface.
-
-### Suspense on the Server
-
-Server-side rendering now supports Suspense, allowing you to specify loading states for different parts of your application.
-
-## 6. Testing Considerations
-
-- Update any test utilities or libraries that depend on React internals.
-- Be aware that the behavior of `act()` has changed slightly in React 18. Make sure your tests are still passing and update them if necessary.
-
-## 7. Performance Monitoring
-
-After upgrading, monitor your application's performance. React 18's changes, especially around automatic batching and concurrent rendering, may affect your app's behavior and performance.
-
-## Conclusion
-
-Upgrading to React 18 brings significant improvements and new capabilities to your application. While the process is generally straightforward, it's important to thoroughly test your application after the upgrade to ensure everything works as expected.
-
-Remember to consult the official React documentation and release notes for more detailed information on specific features and changes in React 18.
+Switch the root API call first, since it's what the rest of the migration hinges on, then run the test suite and fix whatever Strict Mode's double-invoked effects expose. Most of what looks like a React 18 bug is actually an effect that was already leaking a subscription or a timer; the framework just started telling you.
