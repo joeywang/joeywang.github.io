@@ -63,7 +63,7 @@ Frequently used tags include:
 
 ## Technical Configuration
 
-- Jekyll theme: jekyll-theme-chirpy
+- Jekyll theme: minimal-mistakes-jekyll (Ruby-forward, no theme-level upper Ruby bound)
 - Posts are paginated (5 per page by default)
 - Comments enabled for all posts
 - Table of contents enabled by default

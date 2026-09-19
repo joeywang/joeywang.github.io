@@ -11,5 +11,5 @@ updates:
     ignore:
       - dependency-name: "jekyll"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "jekyll-theme-chirpy"
-        update-types: ["version-update:semver-major"]
+    # The theme is deliberately not pinned to a major version so Dependabot can
+    # open tested compatibility updates as new releases arrive.
