@@ -36,7 +36,7 @@ social:
   email: joeyw@reallyenglish.com
 
 # Build settings
-theme: jekyll-theme-chirpy
+theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
   - jekyll-archives
