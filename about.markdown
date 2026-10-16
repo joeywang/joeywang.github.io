@@ -3,47 +3,48 @@ layout: page
 title: About
 permalink: /about/
 author_profile: true
+description: "Joey Wang: senior software engineer focused on applied AI, agent workflows, systems integration, and reliable delivery."
 ---
 
-[📄 Download Resume (PDF)](/assets/pdf/JoeyW-dev.pdf){: .btn .btn-link .btn-lg style="float: right;"}
+[Download résumé (PDF)](/assets/pdf/JoeyW-dev.pdf) · [Read résumé online](/resume.html)
 
-## I build software that can be operated with confidence
+## Applied AI, built on production engineering
 
-I’m Joey Wang, a software engineer and consultant focused on Ruby on Rails, learning platforms, and the work that keeps established products dependable as they evolve.
+I'm Joey Wang, a senior software engineer with a background in Ruby on Rails, learning platforms, cloud infrastructure, and production reliability. My current focus is applied AI: connecting models, tools, and existing software to solve useful problems.
 
-My background is rooted in long-lived web systems. I’ve designed and maintained learning platforms, worked on product teams, modernized application and deployment infrastructure, and supported systems where reliability matters to the people using them every day.
+I'm interested in the gap between a promising demo and a solution people can depend on. A model endpoint is only one part of that work. The surrounding application needs clear boundaries, useful context, tests, and a way to recover when something fails.
 
-The interesting work is rarely just choosing a framework. It is understanding the existing system, finding the constraint that is actually limiting it, making a change that can be explained, and leaving the next person with a safer path forward.
+## What I bring
 
-## What I work on
+- **Applied AI and agent workflows** — hands-on experiments with local models, coding agents, tool integration, and bounded engineering tasks. I document both working paths and limitations rather than treating an experiment as a production deployment.
+- **Systems integration** — experience connecting application features, APIs, databases, and delivery infrastructure. At Kitman Labs, I also collaborated with data scientists on integrating machine learning models and predictive analytics features.
+- **Rails and learning-platform engineering** — architecture, application development, and incremental modernization of long-lived systems.
+- **Production reliability** — performance investigation, PostgreSQL, cloud delivery, testing, and operational feedback that helps a team understand what changed.
 
-- **Rails and LMS modernization** — improving established applications without pretending that a rewrite is always the answer.
-- **Reliability and performance** — tracing slow paths, reducing avoidable complexity, and making failures easier to diagnose.
-- **Cloud and delivery systems** — improving deployment, infrastructure, testing, and operational feedback loops.
-- **Practical AI workflows** — using AI to support engineering judgment and repeatable work, with explicit boundaries around verification, privacy, and human approval.
+## How I approach a problem
 
-## How I work
+I start with the people using the system and the workflow they need to complete. Then I inspect the code, data, and operational constraints before choosing an implementation. Sometimes AI is useful; sometimes a deterministic integration is the better answer.
 
-I start with evidence: the code, the data, the deployment path, the logs, and the experience of the people using the system. I prefer a small, reversible improvement over a broad redesign justified by fashion.
+My preferred delivery loop is to:
 
-A typical engagement may involve:
+1. understand the problem and agree what a useful result would look like;
+2. identify integration constraints, risks, and a small first slice;
+3. implement it and check the result against explicit criteria;
+4. document limitations, human approval points, and recovery steps.
 
-1. understanding the current architecture and the problem behind the request;
-2. identifying risks, dependencies, and a practical first slice;
-3. implementing and testing the smallest coherent change;
-4. documenting what was learned and how to operate or roll it back.
+That is what draws me toward **Forward Deployed Engineering (FDE)**: staying close to the user's problem while taking responsibility for implementation, integration, and the feedback needed to improve it. It is a direction for my work, not a replacement title for my previous roles.
 
-That approach is useful when a team has a Rails application that has grown over time, an LMS that is difficult to change safely, or a delivery process that no longer gives enough confidence.
+## Selected work and experiments
 
-## Selected work
+- [Local coding-agent integration]({% post_url 2026-04-21-lm-studio-local-agent-runbook %}) — wiring an OpenAI-compatible model endpoint into agent clients, checking the integration, and troubleshooting runtime constraints.
+- [Testing small local LLMs]({% post_url 2026-08-12-portable-local-llm-benchmark %}) — a repeatable workflow for checking task output and runtime behavior on modest hardware.
+- [Durable codebase context]({% post_url 2026-07-18-durable-codebase-context-hermes-gitnexus-lsp %}) — combining code relationships, semantic diagnostics, and stable project instructions for engineering agents.
+- [Rails and LMS modernization]({% post_url 2026-08-13-rails-lms-reliability-modernization %}) — diagnosing platform friction before committing to a rewrite.
 
-- [Consulting](/consulting/) — a practical starting point for Rails, LMS, reliability, and modernization conversations.
-- [When a Rails or LMS Platform Becomes Hard to Change](/posts/rails-lms-reliability-modernization/) — an evidence-led way to diagnose platform friction.
-- [AI’s Impact on the Software Development Lifecycle](/posts/ai-impact-software-development-lifecycle/) — thinking about useful AI without confusing assistance with judgment.
-- [Durable Codebase Context](/posts/durable-codebase-context-hermes-gitnexus-lsp/) — notes on making engineering context easier to inspect and reuse.
+## What I'm interested in
 
-## A note on this site
+Applied AI and FDE opportunities where I can combine hands-on software delivery with understanding users' problems. My strongest contribution is the engineering around the model: integrations, context, verification, and reliable operation.
 
-This site is a working record rather than a catalogue of buzzwords. Some posts describe completed engineering work; others are experiments or developing ideas. I try to make that distinction clear, show the reasoning behind decisions, and avoid presenting an interesting possibility as a shipped result.
+This site includes completed engineering work, experiments, and developing ideas. I try to keep those categories distinct and show the evidence behind each claim.
 
-If you are dealing with a difficult-to-change Rails or learning platform, [get in touch through the Consulting page](/consulting/).
+For a conversation about applied AI, integrations, or an established Rails or learning platform, [get in touch](/consulting/).

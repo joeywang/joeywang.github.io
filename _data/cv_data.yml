@@ -1,103 +1,78 @@
-# _data/cv_data.yml
-
-title: "Joey Wang - Senior Software Engineer" # Page title
+# Public résumé source. Employment titles and dates retained from the established résumé.
+title: "Joey Wang - Senior Software Engineer | Applied AI & Agent Workflows"
 name: "Joey Wang"
-job_title: "Senior Software Engineer"
-
+job_title: "Senior Software Engineer | Applied AI & Agent Workflows"
 contact_email: "joeyw@reallyenglish.com"
 github_url: "https://github.com/joeywang"
 linkedin_url: "https://www.linkedin.com/in/joey-dev"
-
-summary_text: "Senior Software Engineer focused on Ruby on Rails, learning platforms, reliability, cloud infrastructure, and practical delivery systems. Experienced in understanding long-lived applications, improving them incrementally, and making technical decisions easier to test, operate, and explain."
-
+summary_text: >-
+  Senior software engineer combining Ruby on Rails, systems integration, and production
+  reliability with hands-on applied AI experiments. Work includes local-model agent
+  integration, codebase context, and repeatable task evaluation. Interested in Applied AI
+  and Forward Deployed Engineering roles that connect user problems with implementation,
+  integration, and dependable delivery.
 experience:
-  - id: 'kitman'
-    company: 'Kitman Labs'
-    role: 'Senior Web Engineer'
-    period: 'Feb 2023 – July 2024'
+  - id: kitman
+    company: Kitman Labs
+    role: Senior Web Engineer
+    period: Feb 2023 – July 2024
     details:
-      - 'Designed and developed features for athlete management and performance tracking systems.'
-      - 'Investigated application performance through code refactoring and database query optimization.'
-      - 'Collaborated with data scientists on the integration of machine learning models and predictive analytics features.'
-  - id: 'ably'
-    company: 'Ably'
-    role: 'Senior Web Engineer'
-    period: 'Jan 2022 – Nov 2022'
+      - Collaborated with data scientists on integrating machine learning models and predictive analytics features.
+      - Developed athlete-management and performance-tracking features.
+      - Investigated application performance through code refactoring and database query optimization.
+  - id: ably
+    company: Ably
+    role: Senior Web Engineer
+    period: Jan 2022 – Nov 2022
     details:
-      - 'Worked on Ruby and Puma performance investigation and optimization.'
-      - 'Helped containerize complex Ruby on Rails applications and improve deployment consistency.'
-      - 'Implemented features for a real-time data platform.'
-  - id: 'reallyenglish'
-    company: 'Reallyenglish'
-    role: 'Lead Ruby Developer'
-    period: 'Oct 2005 - Jan 2022'
+      - Implemented features for a real-time data platform.
+      - Helped containerize complex Rails applications and improve deployment consistency.
+      - Investigated and optimized Ruby and Puma performance.
+  - id: reallyenglish
+    company: Reallyenglish
+    role: Lead Ruby Developer
+    period: Oct 2005 - Jan 2022
     details:
-      - 'Led architecture and development across multiple generations of a learning management platform.'
-      - 'Worked across application delivery, infrastructure automation, databases, and production operations.'
-      - 'Mentored developers and promoted testing, code quality, and maintainable engineering practices.'
-
+      - Led architecture and development across multiple generations of a learning management platform.
+      - Worked across application delivery, infrastructure automation, databases, and production operations.
+      - Mentored developers and promoted testing, code quality, and maintainable engineering practices.
 skills:
-  'Languages & Frameworks':
-    - name: 'Ruby on Rails'
-      value: 95
-    - name: 'Ruby'
-      value: 95
-    - name: 'JavaScript'
-      value: 85
-    - name: 'Node.js'
-      value: 70
-    - name: 'React Native'
-      value: 65
-    - name: 'Python'
-      value: 75
-    - name: 'PHP'
-      value: 60
-  'Databases':
-    - name: 'PostgreSQL'
-      value: 90
-    - name: 'MySQL'
-      value: 85
-    - name: 'MongoDB'
-      value: 70
-    - name: 'Oracle'
-      value: 65
-  'DevOps & Tools':
-    - name: 'Docker'
-      value: 80
-    - name: 'CI/CD'
-      value: 85
-    - name: 'GCP/AWS'
-      value: 70
-    - name: 'Git'
-      value: 95
-  'Practices & Architecture':
-    - name: 'Agile/Scrum'
-      value: 90
-    - name: 'TDD'
-      value: 90
-    - name: 'System Design'
-      value: 85
-    - name: 'API Design'
-      value: 88
-
+  Applied AI practice:
+    - Local-model and agent integration
+    - OpenAI-compatible APIs
+    - Codebase context and MCP tooling
+    - Task-output checks and runtime benchmarking
+    - Human approval boundaries
+  Software and integration:
+    - Ruby / Ruby on Rails
+    - JavaScript / Node.js
+    - Python
+    - React Native
+    - API design / System design
+  Data and delivery:
+    - PostgreSQL / MySQL
+    - Docker / CI/CD
+    - GCP / AWS
+    - Git / Test-driven development
+    - Performance investigation
 projects:
-  - title: 'Enterprise Learning Management System (LMS)'
-    description: 'Architected and led the development of a scalable, customizable learning management platform using Ruby on Rails.'
-  - title: 'Advanced Course Management System'
-    description: 'Engineered a course-management system using Ruby on Rails, Stimulus, and Turbo.'
-  - title: 'Mobile Learning Application'
-    description: 'Led development of a React Native learning application, including offline-learning capabilities.'
-  - title: 'Practical English Course Platform'
-    description: 'Architected and delivered an e-learning platform using Node.js, Ruby, and JavaScript.'
-  - title: 'Education Platform WordPress Homepage'
-    description: 'Developed and maintained a performance- and SEO-focused WordPress main site.'
-  - title: 'Containerization Initiative'
-    description: 'Pioneered efforts to Dockerize complex legacy applications, significantly improving deployment consistency and developer onboarding.'
-
-open_source_intro: "Public engineering work and repository contributions typically focus on:"
-open_source_contributions:
-  - 'Identifying and resolving potential bugs to improve software stability and reliability.'
-  - 'Proactively upgrading project dependencies to maintain security and leverage modern functionalities.'
-  - 'Enhancing projects by forking repositories, developing, and contributing new features.'
-  - 'Improving project accessibility and deployment by adding Docker containerization.'
-  - 'Building and deploying public Docker images to facilitate sharing and ease of use for the community.'
+  - title: Local coding-agent integration (hands-on experiment)
+    description: >-
+      Connected LM Studio's OpenAI-compatible endpoint to agent clients for coding workflows.
+      Documented setup checks, context limits, cache issues, and output-handling failures.
+    post: 2026-04-21-lm-studio-local-agent-runbook
+  - title: Local LLM evaluation (hands-on experiment)
+    description: >-
+      Documented a repeatable small-model testing workflow covering instruction following,
+      structured output, coding tasks, and runtime constraints on modest hardware.
+    post: 2026-08-12-portable-local-llm-benchmark
+  - title: Durable codebase context (engineering workflow)
+    description: >-
+      Combined a local code graph, semantic diagnostics, and stable project instructions
+      to give coding agents inspectable context about existing systems.
+    post: 2026-07-18-durable-codebase-context-hermes-gitnexus-lsp
+  - title: Learning platforms and mobile delivery
+    description: >-
+      Led development of Rails learning platforms and a React Native learning application,
+      including offline-learning capabilities. Built course-management features with Stimulus and Turbo.
+open_source_intro: "Public repository work includes bug fixes, dependency maintenance, feature contributions, and Docker packaging."

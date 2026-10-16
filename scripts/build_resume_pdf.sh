@@ -23,6 +23,8 @@ fi
 mkdir -p "$(dirname "$output")"
 cd "$repo_root"
 mise exec -- bundle exec jekyll build --destination "$build_dir/site"
+# Root-relative CSS does not load via file://. Prepare a self-contained print document.
+mise exec -- bundle exec ruby scripts/prepare_resume_print.rb "$build_dir/site" "$build_dir/resume-print.html"
 chmod -R a+rX "$build_dir"
 
 "$chromium_bin" \
@@ -31,12 +33,15 @@ chmod -R a+rX "$build_dir"
   --disable-gpu \
   --run-all-compositor-stages-before-draw \
   --virtual-time-budget=12000 \
-  --print-to-pdf="$output" \
-  "file://$build_dir/site/resume.html" >/dev/null 2>&1
+  --no-pdf-header-footer \
+  --print-to-pdf="$build_dir/resume.pdf" \
+  "file://$build_dir/resume-print.html" >/dev/null 2>&1
 
-if [[ ! -s "$output" ]]; then
+if [[ ! -s "$build_dir/resume.pdf" ]]; then
   printf 'PDF generation failed: %s\n' "$output" >&2
   exit 1
 fi
+# Chromium snap writes within its accessible staging tree; copy only after export.
+cp "$build_dir/resume.pdf" "$output"
 
 printf 'Wrote %s\n' "$output"

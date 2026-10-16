@@ -1,113 +1,45 @@
-/* assets/css/resume_custom.css */
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #F8F7F4;
-    color: #3D3D3D;
+/* Self-contained résumé: all content remains readable without scripts or remote fonts. */
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f5f3; color: #252c35; font: 16px/1.5 system-ui, sans-serif; }
+main, nav { max-width: 900px; margin: 0 auto; }
+main { background: white; padding: 40px 48px; }
+nav { display: flex; gap: 24px; padding: 20px 24px; }
+a { color: #175c76; text-underline-offset: 3px; }
+h1 { font-size: 2rem; margin: 0; }
+.job-title { font-size: 1.1rem; font-weight: 600; margin: 4px 0; }
+.contact { font-size: 0.85rem; overflow-wrap: anywhere; }
+section { margin-top: 24px; }
+h2 { font-size: 1.1rem; border-bottom: 1px solid #d5dce1; padding-bottom: 5px; margin: 0 0 10px; }
+h3 { font-size: 1rem; margin: 0 0 3px; }
+p { margin: 5px 0 10px; }
+.entry { margin-bottom: 13px; }
+.period { color: #53616e; font-size: 0.85rem; margin: 0 0 5px; }
+ul { margin: 4px 0; padding-left: 20px; }
+li { margin-bottom: 3px; }
+dl { margin: 0; }
+dl > div { margin-bottom: 8px; }
+dt { font-weight: 650; }
+dd { margin: 0; }
+@media (max-width: 600px) {
+  main { padding: 24px 20px; }
+  nav { gap: 16px; }
+  h1 { font-size: 1.8rem; }
 }
-.chart-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    height: 400px;
-}
-@media (min-width: 768px) {
-    .chart-container {
-        height: 500px;
-    }
-}
-.nav-link.active {
-    background-color: #EAE8E2;
-    color: #2D2D2D;
-    font-weight: 600;
-}
-.timeline-item.active .timeline-dot {
-    background-color: #BF9270;
-    transform: scale(1.25);
-}
- .timeline-item.active .timeline-title {
-    color: #BF9270;
-    font-weight: 600;
-}
-.project-card {
-    transition: all 0.3s ease-in-out;
-}
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-/* Custom class for the active skill filter button */
-#skill-filters button.active-filter {
-    background-color: #EAE8E2;
-    color: #2D2D2D;
-    font-weight: 600;
-}
-
 @media print {
-    @page {
-        size: A4;
-        margin: 12mm;
-    }
-
-    body {
-        background: #ffffff;
-        color: #222222;
-        font-size: 10pt;
-    }
-
-    .min-h-screen {
-        min-height: 0 !important;
-    }
-
-    aside {
-        display: none !important;
-    }
-
-    main {
-        padding: 0 !important;
-    }
-
-    section {
-        margin-bottom: 18pt !important;
-        break-inside: avoid;
-    }
-
-    section#experience,
-    section#skills,
-    section#projects {
-        break-inside: auto;
-    }
-
-    h2 {
-        font-size: 18pt !important;
-        margin-bottom: 8pt !important;
-    }
-
-    h3 {
-        break-after: avoid;
-    }
-
-    #skill-filters {
-        display: none !important;
-    }
-
-    .chart-container {
-        height: 150px !important;
-    }
-
-    .bg-white,
-    .project-card {
-        box-shadow: none !important;
-    }
-
-    .project-card {
-        padding: 10pt !important;
-        break-inside: avoid;
-    }
-
-    a {
-        color: inherit;
-        text-decoration: none;
-    }
+  @page { size: A4; margin: 13mm 15mm; }
+  body { background: white; color: #222; font: 11pt/1.45 Arial, sans-serif; }
+  main { max-width: none; padding: 0; }
+  .screen-only { display: none; }
+  h1 { font-size: 22pt; }
+  .job-title { font-size: 11pt; }
+  .contact, .period { font-size: 8.5pt; }
+  section { margin-top: 13pt; }
+  h2 { font-size: 12pt; margin-bottom: 7pt; break-after: avoid; }
+  h3 { font-size: 10pt; break-after: avoid; }
+  .entry { margin-bottom: 9pt; break-inside: avoid; }
+  p { margin: 3pt 0 6pt; }
+  dl > div { margin-bottom: 5pt; break-inside: avoid; }
+  a { color: inherit; }
+  #experience { break-before: page; }
 }
