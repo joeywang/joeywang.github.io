@@ -44,5 +44,5 @@ gem "base64", "~> 0.3.0"
 gem "logger", "~> 1.6"
 
 group :test do
-  gem "html-proofer", "~> 5.0"
+  gem "html-proofer", "~> 5.2"
 end
